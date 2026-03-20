@@ -1,0 +1,27 @@
+evidence_id: "evidence-slo-status-payments-api-001"
+type: "slo_status"
+description: "SLO compliance for payments-api availability target (99.9% over 30-day rolling window)"
+reference:
+  uri: "https://app.datadoghq.com/api/v1/slo/abc123def456"
+  format: "application/json"
+  authentication:
+    method: "api_key"
+    hint: "DATADOG_API_KEY"
+claim_ids:
+  - "claim-payments-api-uptime-001"
+freshness_window: "PT12H"
+quality_score: 0.92
+methodology:
+  description: "Query Datadog SLO API for the payments-api availability SLO, capturing target vs actual performance over the current 30-day rolling window"
+  tooling: "datadog"
+  frequency: "PT1H"
+  coverage: "All production traffic to payments-api across all regions"
+metadata:
+  source_system: "datadog"
+  environment: "production"
+  slo_target: "99.9%"
+  slo_window: "30d"
+
+# result (outcome, summary, value, unit, run_id, timestamp, isStale) is runtime state —
+# written to swamp data by the rave/prometheus-evidence model instance for this entity.
+# Swamp model instance name: evidence-slo-status-payments-api-001
