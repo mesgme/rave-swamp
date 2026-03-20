@@ -1,0 +1,22 @@
+claim_id: "claim-swamp-workflows-valid-001"
+statement: "All swamp workflow YAML files in workflows/ pass schema validation"
+owner:
+  name: "mellens"
+  contact: "mesgme/rave-swamp"
+status: "draft"
+category: "reliability"
+scope:
+  type: "component"
+  target: "mesgme/rave-swamp/workflows"
+assumptions:
+  - "The swamp CLI is available in the CI environment"
+  - "workflows/ contains at least one workflow file"
+falsification_signals:
+  - "swamp workflow validate --json returns passed: false for any workflow"
+  - "Any workflow fails schema validation"
+  - "Any workflow references a model or step that does not exist"
+decay_lambda: 0.05
+annotations: []
+
+# status=draft until the first workflow is committed.
+# Activate once workflows/ is non-empty and validated.

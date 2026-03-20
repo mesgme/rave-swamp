@@ -1,0 +1,20 @@
+falsifier_id: "falsifier-ci-failure-on-main-001"
+name: "CI Failure on Main Branch"
+description: "Detects when any GitHub Actions workflow run on main has a conclusion of 'failure' or 'timed_out', directly contradicting the claim that all CI runs on main succeed."
+condition:
+  type: "composite"
+  parameters:
+    operator: "OR"
+    sub_conditions:
+      - type: "regex"
+        parameters:
+          field: "$.workflow_runs[*].conclusion"
+          pattern: "^(failure|timed_out)$"
+  evaluation_window: "P7D"
+evidence_ids:
+  - "evidence-github-actions-runs-001"
+claim_ids:
+  - "claim-ci-green-on-main-001"
+metadata:
+  repo: "mesgme/rave-swamp"
+  branch: "main"

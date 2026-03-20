@@ -1,0 +1,27 @@
+version: "0.1.0"
+description: "Scope hierarchy for the rave-swamp repository"
+scopes:
+  - type: "repository"
+    target: "mesgme/rave-swamp"
+    description: "The rave-swamp repository — swamp-based RAVE spec implementation"
+
+  - type: "pipeline"
+    target: "mesgme/rave-swamp/main"
+    parent:
+      type: "repository"
+      target: "mesgme/rave-swamp"
+    description: "GitHub Actions CI pipeline on the main branch"
+
+  - type: "component"
+    target: "mesgme/rave-swamp/extensions"
+    parent:
+      type: "repository"
+      target: "mesgme/rave-swamp"
+    description: "Swamp extension models in extensions/models/"
+
+  - type: "component"
+    target: "mesgme/rave-swamp/workflows"
+    parent:
+      type: "repository"
+      target: "mesgme/rave-swamp"
+    description: "Swamp workflow YAML files in workflows/"
