@@ -1,0 +1,14 @@
+falsifier_id: "falsifier-model-validation-fail-001"
+name: "Swamp Model Validation Failed"
+description: "Detects when swamp model validate reports one or more models failing validation, contradicting the claim that all extension models are valid."
+condition:
+  type: "boolean"
+  parameters:
+    field: "$.passed"
+    expected: true
+evidence_ids:
+  - "evidence-swamp-model-validate-001"
+claim_ids:
+  - "claim-swamp-models-valid-001"
+metadata:
+  repo: "mesgme/rave-swamp"

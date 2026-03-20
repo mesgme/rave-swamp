@@ -1,0 +1,15 @@
+falsifier_id: "falsifier-branch-protection-missing-001"
+name: "Branch Protection Disabled on Main"
+description: "Detects when the main branch no longer has required pull request reviews configured, meaning direct pushes are possible and the protection claim is contradicted."
+condition:
+  type: "boolean"
+  parameters:
+    field: "$.required_pull_request_reviews"
+    expected: true
+evidence_ids:
+  - "evidence-github-branch-protection-001"
+claim_ids:
+  - "claim-branch-protection-001"
+metadata:
+  repo: "mesgme/rave-swamp"
+  branch: "main"

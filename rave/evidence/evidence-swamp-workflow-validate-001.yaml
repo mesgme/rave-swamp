@@ -1,0 +1,22 @@
+evidence_id: "evidence-swamp-workflow-validate-001"
+type: "ci_log"
+description: "swamp workflow validate output for all workflow files in mesgme/rave-swamp"
+reference:
+  uri: "https://api.github.com/repos/mesgme/rave-swamp/actions/workflows/validate.yml/runs?branch=main&per_page=1"
+  format: "application/json"
+  authentication:
+    method: "bearer_token"
+    hint: "GITHUB_TOKEN"
+claim_ids:
+  - "claim-swamp-workflows-valid-001"
+freshness_window: "P1D"
+quality_score: 0.98
+methodology:
+  description: "Run 'swamp workflow validate --json' against all workflows in the repository in a GitHub Actions workflow step; pass if all validations have passed: true"
+  tooling: "github-actions"
+  frequency: "P1D"
+  coverage: "All workflow YAML files in workflows/"
+metadata:
+  source_system: "github-actions"
+  repo: "mesgme/rave-swamp"
+  workflow: "validate.yml"

@@ -1,0 +1,14 @@
+falsifier_id: "falsifier-workflow-validation-fail-001"
+name: "Swamp Workflow Validation Failed"
+description: "Detects when swamp workflow validate reports one or more workflows failing validation, contradicting the claim that all workflow files are valid."
+condition:
+  type: "boolean"
+  parameters:
+    field: "$.passed"
+    expected: true
+evidence_ids:
+  - "evidence-swamp-workflow-validate-001"
+claim_ids:
+  - "claim-swamp-workflows-valid-001"
+metadata:
+  repo: "mesgme/rave-swamp"

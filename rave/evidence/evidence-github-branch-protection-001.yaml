@@ -1,0 +1,22 @@
+evidence_id: "evidence-github-branch-protection-001"
+type: "policy_output"
+description: "GitHub branch protection settings for mesgme/rave-swamp main branch"
+reference:
+  uri: "https://api.github.com/repos/mesgme/rave-swamp/branches/main/protection"
+  format: "application/json"
+  authentication:
+    method: "bearer_token"
+    hint: "GITHUB_TOKEN"
+claim_ids:
+  - "claim-branch-protection-001"
+freshness_window: "PT1H"
+quality_score: 1.0
+methodology:
+  description: "Query the GitHub REST API branch protection endpoint and verify required_pull_request_reviews is present and enforce_admins is enabled"
+  tooling: "github-api"
+  frequency: "PT1H"
+  coverage: "main branch protection rules for mesgme/rave-swamp"
+metadata:
+  source_system: "github"
+  repo: "mesgme/rave-swamp"
+  branch: "main"

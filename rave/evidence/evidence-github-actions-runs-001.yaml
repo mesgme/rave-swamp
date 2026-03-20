@@ -1,0 +1,22 @@
+evidence_id: "evidence-github-actions-runs-001"
+type: "ci_log"
+description: "GitHub Actions workflow run results on the main branch for mesgme/rave-swamp"
+reference:
+  uri: "https://api.github.com/repos/mesgme/rave-swamp/actions/runs?branch=main&per_page=10"
+  format: "application/json"
+  authentication:
+    method: "bearer_token"
+    hint: "GITHUB_TOKEN"
+claim_ids:
+  - "claim-ci-green-on-main-001"
+freshness_window: "P1D"
+quality_score: 0.95
+methodology:
+  description: "Query GitHub Actions API for the 10 most recent workflow runs on main, check that all completed runs have conclusion 'success'"
+  tooling: "github-api"
+  frequency: "PT1H"
+  coverage: "All GitHub Actions workflows on the main branch of mesgme/rave-swamp"
+metadata:
+  source_system: "github"
+  repo: "mesgme/rave-swamp"
+  branch: "main"

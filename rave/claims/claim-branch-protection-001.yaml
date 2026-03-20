@@ -1,0 +1,23 @@
+claim_id: "claim-branch-protection-001"
+statement: "The main branch requires a pull request before any commit can be merged"
+owner:
+  name: "mellens"
+  contact: "mesgme/rave-swamp"
+status: "active"
+category: "change_risk"
+scope:
+  type: "pipeline"
+  target: "mesgme/rave-swamp/main"
+assumptions:
+  - "The repository is hosted on GitHub"
+  - "The GitHub branch protection API accurately reflects enforced policy"
+  - "Admin enforcement is enabled so owners cannot bypass protection"
+falsification_signals:
+  - "Branch protection is disabled or removed from main"
+  - "required_pull_request_reviews is null or missing from protection settings"
+  - "A commit appears on main that is not associated with a merged pull request"
+decay_lambda: 0.02
+annotations: []
+
+# confidence_score and last_validated stored in swamp data (confidence-claim-branch-protection-001)
+# Seed values: confidence_score=1.0, last_validated=2026-03-20T00:00:00Z
