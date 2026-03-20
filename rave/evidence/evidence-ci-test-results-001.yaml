@@ -1,0 +1,26 @@
+evidence_id: "evidence-ci-test-results-001"
+type: "ci_log"
+description: "Unit and integration test results for payments-api v2.3.1 deployment"
+reference:
+  uri: "https://github.com/example/repo/actions/runs/latest"
+  format: "application/json"
+  checksum: "sha256:d2a84f4b8b650937ec8f73cd8be2c74add5a911ba64df27458ed8229da804a26"
+  authentication:
+    method: "bearer_token"
+    hint: "GITHUB_TOKEN"
+claim_ids:
+  - "claim-deploy-rollback-001"
+freshness_window: "P7D"
+quality_score: 0.95
+methodology:
+  description: "Run full unit and integration test suite against payments-api, including rollback scenario tests and API contract validation"
+  tooling: "github-actions"
+  frequency: "P1D"
+  coverage: "All API endpoints, rollback paths, and database migration compatibility"
+metadata:
+  source_system: "github-actions"
+  environment: "staging"
+
+# result (outcome, summary, run_id, timestamp, isStale) is runtime state —
+# written to swamp data by the rave/ci-evidence model instance for this entity.
+# Swamp model instance name: evidence-ci-test-results-001

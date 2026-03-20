@@ -1,0 +1,28 @@
+claim_id: "claim-deploy-rollback-001"
+statement: "Production deployments can be rolled back within 5 minutes"
+owner:
+  name: "platform-team"
+  team: "Platform Engineering"
+  contact: "#platform-eng"
+status: "active"
+category: "reliability"
+scope:
+  type: "pipeline"
+  target: "deploy-to-prod"
+assumptions:
+  - "Deployment uses blue-green strategy with warm standby"
+  - "Previous deployment artefact is retained for at least 24 hours"
+  - "Rollback does not require database migration reversal"
+falsification_signals:
+  - "Rollback duration exceeds 5 minutes in any production deployment"
+  - "Previous deployment artefact is unavailable at rollback time"
+decay_lambda: 0.05
+annotations:
+  - text: "Validated during Q1 deployment drill. One edge case identified — rollback with config change took 4m48s."
+    author: "jchen"
+    created_at: "2026-02-14T11:00:00Z"
+
+# confidence_score and last_validated are runtime state — stored in swamp data
+# by the rave/confidence-engine model instance for this claim.
+# Seed values: confidence_score=0.82, last_validated=2026-02-14T10:30:00Z
+# (used once during setup in issue #11)

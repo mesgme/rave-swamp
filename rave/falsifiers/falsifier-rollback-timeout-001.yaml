@@ -1,0 +1,21 @@
+falsifier_id: "falsifier-rollback-timeout-001"
+name: "Rollback Exceeded 5-Minute Threshold"
+description: "Detects when a production deployment rollback takes longer than 5 minutes (300 seconds), directly contradicting the claim that rollbacks complete within 5 minutes."
+condition:
+  type: "threshold"
+  parameters:
+    metric: "$.rollback_duration_seconds"
+    operator: ">"
+    threshold: 300
+    unit: "seconds"
+  evaluation_window: "P7D"
+evidence_ids:
+  - "evidence-ci-test-results-001"
+claim_ids:
+  - "claim-deploy-rollback-001"
+metadata:
+  environment: "production"
+
+# last_evaluated and last_triggered are runtime state —
+# written to swamp data by the rave/falsifier-engine model instance.
+# Swamp model instance name: falsifier-rollback-timeout-001
