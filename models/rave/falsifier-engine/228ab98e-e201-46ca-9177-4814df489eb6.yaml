@@ -1,0 +1,11 @@
+type: rave/falsifier-engine
+typeVersion: 2026.03.21.1
+id: 228ab98e-e201-46ca-9177-4814df489eb6
+name: falsifier-typescript-compile-error-001
+version: 1
+tags: {}
+globalArguments:
+  falsifierId: falsifier-typescript-compile-error-001
+  conditionType: boolean
+  condition: '{"field":"$.conclusion","expected":"success"}'
+methods: {}
