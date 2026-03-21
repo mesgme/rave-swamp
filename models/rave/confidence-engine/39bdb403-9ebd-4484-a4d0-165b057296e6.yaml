@@ -1,0 +1,11 @@
+type: rave/confidence-engine
+typeVersion: 2026.03.21.1
+id: 39bdb403-9ebd-4484-a4d0-165b057296e6
+name: confidence-claim-ci-green-on-main-001
+version: 1
+tags: {}
+globalArguments:
+  claimId: claim-ci-green-on-main-001
+  decayLambda: 0.05
+  confidenceFloor: 0.01
+methods: {}
