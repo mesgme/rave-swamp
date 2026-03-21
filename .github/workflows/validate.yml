@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install swamp
-        run: curl -fsSL https://install.swamp.sh | sh
+        run: curl -fsSL swamp.club/install.sh | sh
 
       - name: Add swamp to PATH
         run: echo "$HOME/.local/bin" >> $GITHUB_PATH
