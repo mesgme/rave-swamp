@@ -1,0 +1,20 @@
+id: 7ffc2c4d-9b41-481f-8e94-4aac697e70e3
+name: gather-all-evidence
+description: Gather all rave-swamp evidence in parallel — one job per evidence model instance
+tags: {}
+jobs:
+  - name: ci-test-results
+    description: Gather CI test results evidence
+    steps:
+      - name: fetch
+        description: Fetch latest validate.yml run result
+        task:
+          type: model_method
+          modelIdOrName: evidence-ci-test-results-001
+          methodName: gather
+          inputs:
+            githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
+        allowFailure: true
+    dependsOn: []
+    weight: 0
+version: 1

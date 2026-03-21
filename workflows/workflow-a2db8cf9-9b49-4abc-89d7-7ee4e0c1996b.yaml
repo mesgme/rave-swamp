@@ -1,0 +1,27 @@
+id: a2db8cf9-9b49-4abc-89d7-7ee4e0c1996b
+name: gather-prometheus-evidence
+description: Execute a PromQL query for a rave/prometheus-evidence model instance and record the result
+tags: {}
+inputs:
+  properties:
+    evidenceModelName:
+      type: string
+      description: Swamp model name for the rave/prometheus-evidence instance to gather
+  required:
+    - evidenceModelName
+jobs:
+  - name: gather
+    description: Run the gather method on the specified prometheus-evidence model
+    steps:
+      - name: fetch
+        description: Execute PromQL query and write result resource
+        task:
+          type: model_method
+          modelIdOrName: ${{ inputs.evidenceModelName }}
+          methodName: gather
+          inputs:
+            prometheusToken: ${{ vault.get(rave-credentials, PROMETHEUS_TOKEN) }}
+        allowFailure: false
+    dependsOn: []
+    weight: 0
+version: 1
