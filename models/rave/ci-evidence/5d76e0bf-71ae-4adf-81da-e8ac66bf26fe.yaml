@@ -1,0 +1,12 @@
+type: rave/ci-evidence
+typeVersion: 2026.03.21.1
+id: 5d76e0bf-71ae-4adf-81da-e8ac66bf26fe
+name: evidence-ci-test-results-001
+version: 1
+tags: {}
+globalArguments:
+  evidenceId: evidence-ci-test-results-001
+  repo: mesgme/rave-swamp
+  workflowName: validate.yml
+  branch: main
+methods: {}
