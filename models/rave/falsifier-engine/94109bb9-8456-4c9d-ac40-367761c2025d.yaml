@@ -1,0 +1,12 @@
+type: rave/falsifier-engine
+typeVersion: 2026.03.21.1
+id: 94109bb9-8456-4c9d-ac40-367761c2025d
+name: falsifier-ci-failure-on-main-001
+version: 1
+tags: {}
+globalArguments:
+  falsifierId: falsifier-ci-failure-on-main-001
+  conditionType: composite
+  condition: >-
+    {"operator":"OR","sub_conditions":[{"type":"regex","parameters":{"field":"$.workflow_runs[*].conclusion","pattern":"^(failure|timed_out)$"}}]}
+methods: {}
