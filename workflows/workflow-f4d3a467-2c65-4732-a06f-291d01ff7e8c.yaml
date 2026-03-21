@@ -1,0 +1,27 @@
+id: f4d3a467-2c65-4732-a06f-291d01ff7e8c
+name: gather-ci-evidence
+description: Fetch the latest GitHub Actions CI run result for a rave/ci-evidence model instance
+tags: {}
+inputs:
+  properties:
+    evidenceModelName:
+      type: string
+      description: Swamp model name for the rave/ci-evidence instance to gather
+  required:
+    - evidenceModelName
+jobs:
+  - name: gather
+    description: Run the gather method on the specified ci-evidence model
+    steps:
+      - name: fetch
+        description: Fetch latest CI run and write result resource
+        task:
+          type: model_method
+          modelIdOrName: ${{ inputs.evidenceModelName }}
+          methodName: gather
+          inputs:
+            githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
+        allowFailure: false
+    dependsOn: []
+    weight: 0
+version: 1
