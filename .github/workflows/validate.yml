@@ -1,0 +1,33 @@
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install swamp
+        run: curl -fsSL https://install.swamp.sh | sh
+
+      - name: Add swamp to PATH
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Validate extension models
+        run: swamp model validate --json
+
+      - name: Validate workflows
+        run: swamp workflow validate --json
+
+      - name: Install Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: TypeScript compile check
+        run: deno check extensions/models/*.ts
