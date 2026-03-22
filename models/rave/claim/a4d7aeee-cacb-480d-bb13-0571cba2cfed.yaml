@@ -1,0 +1,9 @@
+type: rave/claim
+typeVersion: 2026.03.22.1
+id: a4d7aeee-cacb-480d-bb13-0571cba2cfed
+name: claim-extensions-compile-001
+version: 1
+tags: {}
+globalArguments:
+  claimId: claim-extensions-compile-001
+methods: {}

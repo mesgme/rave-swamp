@@ -1,0 +1,249 @@
+# rave-swamp Usage Guide
+
+RAVE claims and evidence are managed through a combination of:
+- **YAML files** in `rave/` — source of truth for entity configuration (versioned in git)
+- **swamp model data** — runtime state (confidence scores, evidence results, evaluation history)
+
+All changes to YAML files must go through a PR (branch protection is enforced).
+
+---
+
+## Claims
+
+### Create a claim
+
+```bash
+# 1. Create the swamp model instance
+swamp model create rave/claim claim-<id> --global-arg claimId=claim-<id>
+
+# 2. Write the claim YAML (creates rave/claims/claim-<id>.yaml)
+swamp model method run claim-<id> create \
+  --input '{
+    "statement": "Your claim statement here",
+    "owner": "your-name",
+    "contact": "#your-slack-channel",
+    "category": "reliability",
+    "scopeType": "repository",
+    "scopeTarget": "mesgme/rave-swamp",
+    "decayLambda": "0.05",
+    "assumptions": ["Assumption one", "Assumption two"],
+    "falsificationSignals": ["Signal that would disprove this"]
+  }'
+
+# 3. Create the confidence engine instance (one per claim)
+swamp model create rave/confidence-engine confidence-<id> \
+  --global-arg claimId=claim-<id> \
+  --global-arg decayLambda=0.05
+
+# 4. Commit via PR (status starts as "draft")
+git checkout -b feature/add-claim-<id>
+git add rave/claims/claim-<id>.yaml models/
+git commit -m "Add claim-<id>"
+git push -u origin feature/add-claim-<id>
+gh pr create
+```
+
+**Category values:** `reliability`, `change_risk`, `security`, `observability`, `compliance`
+
+**Scope types:** `repository`, `pipeline`, `component`
+
+---
+
+### Read a claim
+
+```bash
+# View the claim definition
+cat rave/claims/claim-<id>.yaml
+
+# Check current confidence score and history
+swamp data list confidence-<id>
+
+# Read the latest confidence snapshot (full detail)
+swamp data get confidence-<id> confidence --json
+```
+
+**Example — `claim-branch-protection-001`:**
+
+```bash
+cat rave/claims/claim-branch-protection-001.yaml
+swamp data list confidence-claim-branch-protection-001
+```
+
+---
+
+### Update a claim
+
+**Change metadata (statement, assumptions, decay lambda):**
+
+Edit `rave/claims/<id>.yaml` directly, then commit via PR.
+
+**Formally re-attest confidence** (reset the decay anchor):
+
+```bash
+swamp model method run confidence-<id> revalidate \
+  --input '{"newScore": 0.85, "revalidatedBy": "your-name"}'
+```
+
+**Add an annotation:**
+
+```bash
+swamp model method run claim-<id> annotate \
+  --input '{"text": "Validated in Q1 review. No issues found.", "author": "your-name"}'
+```
+
+The annotation is written directly to the claim YAML — commit the change via PR.
+
+**Activate a draft claim** (once evidence is wired up):
+
+```bash
+swamp model method run claim-<id> activate
+git add rave/claims/claim-<id>.yaml && git commit -m "Activate claim-<id>"
+```
+
+---
+
+### Change claim status
+
+| Target status | Command |
+|---|---|
+| `active` | `swamp model method run claim-<id> activate` |
+| `retired` | `swamp model method run claim-<id> retire --input '{"reason": "..."}'` |
+| `contradicted` | `swamp model method run claim-<id> contradict --input '{"reason": "..."}'` |
+
+Status effects on confidence scoring:
+- `draft` → score = 0.0 (not yet active)
+- `active` → score computed from evidence and decay
+- `retired` → score frozen at last value
+- `contradicted` → score = 0.0
+
+All status changes write to the YAML — commit via PR.
+
+---
+
+### Delete a claim
+
+```bash
+# 1. Remove the YAML
+rm rave/claims/claim-<id>.yaml
+
+# 2. Delete the claim model instance (--force required if data exists)
+swamp model delete claim-<id> --force
+
+# 3. Delete the confidence engine instance
+swamp model delete confidence-<id> --force
+
+# 4. Remove any linked falsifiers
+rm rave/falsifiers/falsifier-*-<id>-*.yaml          # if any exist
+swamp model delete falsifier-*-<id>-* --force        # if any exist
+
+# 5. Commit via PR
+git add -u && git commit -m "Remove claim-<id>"
+```
+
+---
+
+## Evidence
+
+### Gather evidence manually
+
+```bash
+# Gather CI evidence for a specific model
+swamp workflow run gather-ci-evidence \
+  --input '{"evidenceModelName": "evidence-ci-test-results-001"}'
+
+# Gather GitHub API evidence
+swamp model method run evidence-github-branch-protection-001 gather \
+  --input "{\"githubToken\": \"$(gh auth token)\"}"
+
+# Gather all evidence at once (parallel jobs, allowFailure)
+swamp workflow run gather-all-evidence
+```
+
+### Check evidence results
+
+```bash
+swamp data list evidence-ci-test-results-001
+swamp data list evidence-github-branch-protection-001
+swamp data list evidence-github-actions-runs-001
+```
+
+---
+
+## Confidence Scores
+
+### Compute confidence for a claim
+
+```bash
+# Pass current evidence results as inputs
+swamp model method run confidence-claim-branch-protection-001 compute \
+  --input '{
+    "currentScore": 0.82,
+    "lastValidated": "2026-03-20T00:00:00Z",
+    "currentStatus": "active",
+    "evidence": [{
+      "evidenceId": "evidence-github-branch-protection-001",
+      "outcome": "pass",
+      "timestamp": "2026-03-22T08:18:54Z",
+      "freshnessWindow": "PT1H",
+      "qualityScore": 1.0
+    }]
+  }'
+```
+
+### Read confidence history
+
+```bash
+swamp data list confidence-claim-branch-protection-001
+```
+
+---
+
+## Falsifiers
+
+### Evaluate a falsifier
+
+```bash
+# Check whether branch protection has been removed
+swamp model method run falsifier-branch-protection-missing-001 evaluate \
+  --input '{
+    "evidence": [{
+      "evidenceId": "evidence-github-branch-protection-001",
+      "outcome": "pass",
+      "timestamp": "2026-03-22T08:18:54Z",
+      "freshnessWindow": "PT1H",
+      "value": null,
+      "rawData": "<JSON from evidence result>"
+    }]
+  }'
+```
+
+### Check falsifier history
+
+```bash
+swamp data list falsifier-branch-protection-missing-001
+```
+
+---
+
+## Naming Conventions
+
+| Entity | File | Model instance |
+|---|---|---|
+| Claim | `rave/claims/claim-<id>.yaml` | `claim-<id>` (rave/claim) |
+| Confidence engine | — | `confidence-<claim-id>` (rave/confidence-engine) |
+| CI evidence | `rave/evidence/evidence-<id>.yaml` | `evidence-<id>` (rave/ci-evidence) |
+| GitHub API evidence | `rave/evidence/evidence-<id>.yaml` | `evidence-<id>` (rave/github-api-evidence) |
+| Falsifier | `rave/falsifiers/falsifier-<id>.yaml` | `falsifier-<id>` (rave/falsifier-engine) |
+
+---
+
+## All available model types
+
+| Type | Purpose |
+|---|---|
+| `rave/claim` | CRUD operations on claim YAML files |
+| `rave/confidence-engine` | Compute and track confidence scores |
+| `rave/ci-evidence` | Gather evidence from GitHub Actions workflow runs |
+| `rave/github-api-evidence` | Gather evidence from GitHub REST API endpoints |
+| `rave/prometheus-evidence` | Gather evidence from Prometheus/Thanos/VictoriaMetrics |
+| `rave/falsifier-engine` | Evaluate falsifier conditions against evidence |
