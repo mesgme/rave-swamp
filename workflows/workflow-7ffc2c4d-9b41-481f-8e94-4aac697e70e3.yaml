@@ -4,13 +4,83 @@ description: Gather all rave-swamp evidence in parallel — one job per evidence
 tags: {}
 jobs:
   - name: ci-test-results
-    description: Gather CI test results evidence
+    description: Gather CI test results evidence (validate.yml run)
     steps:
       - name: fetch
         description: Fetch latest validate.yml run result
         task:
           type: model_method
           modelIdOrName: evidence-ci-test-results-001
+          methodName: gather
+          inputs:
+            githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
+        allowFailure: true
+    dependsOn: []
+    weight: 0
+  - name: swamp-model-validate
+    description: Gather swamp model validation evidence (validate.yml run)
+    steps:
+      - name: fetch
+        description: Fetch latest validate.yml run result for model validation
+        task:
+          type: model_method
+          modelIdOrName: evidence-swamp-model-validate-001
+          methodName: gather
+          inputs:
+            githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
+        allowFailure: true
+    dependsOn: []
+    weight: 0
+  - name: swamp-workflow-validate
+    description: Gather swamp workflow validation evidence (validate.yml run)
+    steps:
+      - name: fetch
+        description: Fetch latest validate.yml run result for workflow validation
+        task:
+          type: model_method
+          modelIdOrName: evidence-swamp-workflow-validate-001
+          methodName: gather
+          inputs:
+            githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
+        allowFailure: true
+    dependsOn: []
+    weight: 0
+  - name: typescript-compile
+    description: Gather TypeScript compile check evidence (validate.yml run)
+    steps:
+      - name: fetch
+        description: Fetch latest validate.yml run result for TS compile check
+        task:
+          type: model_method
+          modelIdOrName: evidence-typescript-compile-001
+          methodName: gather
+          inputs:
+            githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
+        allowFailure: true
+    dependsOn: []
+    weight: 0
+  - name: branch-protection
+    description: Gather GitHub branch protection policy evidence
+    steps:
+      - name: fetch
+        description: Query GitHub branch protection API
+        task:
+          type: model_method
+          modelIdOrName: evidence-github-branch-protection-001
+          methodName: gather
+          inputs:
+            githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
+        allowFailure: true
+    dependsOn: []
+    weight: 0
+  - name: actions-runs
+    description: Gather GitHub Actions run history evidence
+    steps:
+      - name: fetch
+        description: Query GitHub Actions runs API
+        task:
+          type: model_method
+          modelIdOrName: evidence-github-actions-runs-001
           methodName: gather
           inputs:
             githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}

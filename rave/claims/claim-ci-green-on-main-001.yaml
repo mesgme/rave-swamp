@@ -1,22 +1,18 @@
-claim_id: "claim-ci-green-on-main-001"
-statement: "All GitHub Actions workflow runs on the main branch succeed"
+claim_id: claim-ci-green-on-main-001
+statement: All GitHub Actions workflow runs on the main branch succeed
 owner:
-  name: "mellens"
-  contact: "mesgme/rave-swamp"
-status: "draft"
-category: "reliability"
+  name: mellens
+  contact: mesgme/rave-swamp
+status: active
+category: reliability
 scope:
-  type: "pipeline"
-  target: "mesgme/rave-swamp/main"
+  type: pipeline
+  target: mesgme/rave-swamp/main
 assumptions:
-  - "At least one workflow run has completed on main in the last 7 days"
-  - "GitHub Actions is the sole CI system for this repository"
+  - At least one workflow run has completed on main in the last 7 days
+  - GitHub Actions is the sole CI system for this repository
 falsification_signals:
-  - "Any workflow run on main has conclusion 'failure' or 'timed_out'"
-  - "No workflow runs have occurred on main in the last 7 days"
+  - Any workflow run on main has conclusion 'failure' or 'timed_out'
+  - No workflow runs have occurred on main in the last 7 days
 decay_lambda: 0.05
 annotations: []
-
-# status=draft until a CI workflow exists in the repo.
-# Activate once .github/workflows/ contains at least one workflow.
-# Seed values: confidence_score=0.0 (draft convention)

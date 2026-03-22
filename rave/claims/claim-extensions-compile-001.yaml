@@ -1,22 +1,19 @@
-claim_id: "claim-extensions-compile-001"
-statement: "All extension model TypeScript files in extensions/models/ compile without errors"
+claim_id: claim-extensions-compile-001
+statement: All extension model TypeScript files in extensions/models/ compile without errors
 owner:
-  name: "mellens"
-  contact: "mesgme/rave-swamp"
-status: "draft"
-category: "reliability"
+  name: mellens
+  contact: mesgme/rave-swamp
+status: active
+category: reliability
 scope:
-  type: "component"
-  target: "mesgme/rave-swamp/extensions"
+  type: component
+  target: mesgme/rave-swamp/extensions
 assumptions:
-  - "Node.js and TypeScript are available in the CI environment"
-  - "All npm:* import specifiers in extension models pin explicit versions"
-  - "extensions/models/ contains at least one .ts file"
+  - Node.js and TypeScript are available in the CI environment
+  - All npm:* import specifiers in extension models pin explicit versions
+  - extensions/models/ contains at least one .ts file
 falsification_signals:
-  - "tsc --noEmit exits with a non-zero exit code"
-  - "Any extension model file produces a TypeScript type error"
+  - tsc --noEmit exits with a non-zero exit code
+  - Any extension model file produces a TypeScript type error
 decay_lambda: 0.05
 annotations: []
-
-# status=draft until the first extension model is committed.
-# Activate once extensions/models/ is non-empty and compiles cleanly.
