@@ -1,0 +1,12 @@
+type: rave/github-api-evidence
+typeVersion: 2026.03.22.1
+id: 605c861f-69a3-4a5b-9448-5ae746576f35
+name: evidence-github-branch-protection-001
+version: 1
+tags: {}
+globalArguments:
+  evidenceId: evidence-github-branch-protection-001
+  repo: mesgme/rave-swamp
+  endpoint: /branches/main/protection
+  successField: $.required_pull_request_reviews
+methods: {}
