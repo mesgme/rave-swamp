@@ -1,0 +1,106 @@
+id: 2da6b960-0b08-494b-95b6-6b21ee8f7e25
+name: falsifier-sweep
+description: Evaluate all falsifiers against current evidence. Five jobs run in parallel, one per falsifier. Records triggered/not-triggered state. Incident creation requires a rave/incident extension model (future work).
+tags: {}
+version: 1
+jobs:
+  - name: branch-protection-missing
+    description: Evaluate falsifier-branch-protection-missing-001 against branch protection API evidence
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: evaluate
+        description: Check if branch protection policy is present
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: falsifier-branch-protection-missing-001
+          methodName: evaluate
+          inputs:
+            evidence:
+              - evidenceId: "evidence-github-branch-protection-001"
+                outcome: ${{ data.latest("evidence-github-branch-protection-001", "latest").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-github-branch-protection-001", "latest").attributes.timestamp }}
+                freshnessWindow: "PT1H"
+                value: null
+                rawData: ${{ data.latest("evidence-github-branch-protection-001", "latest").attributes.rawData }}
+  - name: ci-failure-on-main
+    description: Evaluate falsifier-ci-failure-on-main-001 against GitHub Actions run history
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: evaluate
+        description: Check for failure/timeout conclusions in recent workflow runs
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: falsifier-ci-failure-on-main-001
+          methodName: evaluate
+          inputs:
+            evidence:
+              - evidenceId: "evidence-github-actions-runs-001"
+                outcome: ${{ data.latest("evidence-github-actions-runs-001", "latest").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-github-actions-runs-001", "latest").attributes.timestamp }}
+                freshnessWindow: "P1D"
+                value: null
+                rawData: ${{ data.latest("evidence-github-actions-runs-001", "latest").attributes.rawData }}
+  - name: model-validation-fail
+    description: Evaluate falsifier-model-validation-fail-001 against swamp model validation CI evidence
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: evaluate
+        description: Check if swamp model validation passed
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: falsifier-model-validation-fail-001
+          methodName: evaluate
+          inputs:
+            evidence:
+              - evidenceId: "evidence-swamp-model-validate-001"
+                outcome: ${{ data.latest("evidence-swamp-model-validate-001", "latest").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-swamp-model-validate-001", "latest").attributes.timestamp }}
+                freshnessWindow: "P1D"
+                value: null
+                rawData: null
+  - name: workflow-validation-fail
+    description: Evaluate falsifier-workflow-validation-fail-001 against swamp workflow validation CI evidence
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: evaluate
+        description: Check if swamp workflow validation passed
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: falsifier-workflow-validation-fail-001
+          methodName: evaluate
+          inputs:
+            evidence:
+              - evidenceId: "evidence-swamp-workflow-validate-001"
+                outcome: ${{ data.latest("evidence-swamp-workflow-validate-001", "latest").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-swamp-workflow-validate-001", "latest").attributes.timestamp }}
+                freshnessWindow: "P1D"
+                value: null
+                rawData: null
+  - name: typescript-compile-error
+    description: Evaluate falsifier-typescript-compile-error-001 against TypeScript compile CI evidence
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: evaluate
+        description: Check if TypeScript compilation succeeded
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: falsifier-typescript-compile-error-001
+          methodName: evaluate
+          inputs:
+            evidence:
+              - evidenceId: "evidence-typescript-compile-001"
+                outcome: ${{ data.latest("evidence-typescript-compile-001", "latest").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-typescript-compile-001", "latest").attributes.timestamp }}
+                freshnessWindow: "P1D"
+                value: null
+                rawData: null

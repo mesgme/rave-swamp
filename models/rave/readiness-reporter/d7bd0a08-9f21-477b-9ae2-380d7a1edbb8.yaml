@@ -1,0 +1,8 @@
+type: rave/readiness-reporter
+typeVersion: 2026.03.23.1
+id: d7bd0a08-9f21-477b-9ae2-380d7a1edbb8
+name: readiness-reporter-001
+version: 1
+tags: {}
+globalArguments: {}
+methods: {}

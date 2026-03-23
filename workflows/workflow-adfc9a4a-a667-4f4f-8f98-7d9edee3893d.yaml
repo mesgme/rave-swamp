@@ -1,0 +1,42 @@
+id: adfc9a4a-a667-4f4f-8f98-7d9edee3893d
+name: readiness-check
+description: On-demand readiness evaluation. Reads latest confidence scores for all active claims and determines if they meet the threshold. Exits successfully regardless of result — output is informative.
+tags: {}
+version: 1
+inputs:
+  properties:
+    threshold:
+      type: number
+      default: 0.7
+      description: Minimum confidence score required for readiness (0.0-1.0)
+  required: []
+jobs:
+  - name: evaluate
+    description: Read confidence scores and evaluate readiness against threshold
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: report
+        description: Produce readiness report from latest confidence data
+        allowFailure: false
+        task:
+          type: model_method
+          modelIdOrName: readiness-reporter-001
+          methodName: evaluate
+          inputs:
+            threshold: ${{ inputs.threshold }}
+            branchProtectionId: "claim-branch-protection-001"
+            branchProtectionStatus: "active"
+            branchProtectionScore: ${{ data.latest("confidence-claim-branch-protection-001", "current").attributes.confidenceScore }}
+            ciGreenId: "claim-ci-green-on-main-001"
+            ciGreenStatus: "active"
+            ciGreenScore: ${{ data.latest("confidence-claim-ci-green-on-main-001", "current").attributes.confidenceScore }}
+            swampModelsId: "claim-swamp-models-valid-001"
+            swampModelsStatus: "active"
+            swampModelsScore: ${{ data.latest("confidence-claim-swamp-models-valid-001", "current").attributes.confidenceScore }}
+            swampWorkflowsId: "claim-swamp-workflows-valid-001"
+            swampWorkflowsStatus: "active"
+            swampWorkflowsScore: ${{ data.latest("confidence-claim-swamp-workflows-valid-001", "current").attributes.confidenceScore }}
+            extensionsCompileId: "claim-extensions-compile-001"
+            extensionsCompileStatus: "active"
+            extensionsCompileScore: ${{ data.latest("confidence-claim-extensions-compile-001", "current").attributes.confidenceScore }}

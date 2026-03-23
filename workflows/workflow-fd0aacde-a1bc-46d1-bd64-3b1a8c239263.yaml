@@ -1,0 +1,121 @@
+id: fd0aacde-a1bc-46d1-bd64-3b1a8c239263
+name: confidence-decay-sweep
+description: Recompute confidence scores for all active claims using current evidence state. Five jobs run in parallel, one per claim.
+tags: {}
+version: 1
+jobs:
+  - name: branch-protection
+    description: Recompute confidence for claim-branch-protection-001
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: compute
+        description: Apply RAVE decay formula with latest branch-protection evidence
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: confidence-claim-branch-protection-001
+          methodName: compute
+          inputs:
+            currentScore: ${{ data.latest("confidence-claim-branch-protection-001", "current").attributes.confidenceScore }}
+            lastValidated: ${{ data.latest("confidence-claim-branch-protection-001", "current").attributes.computedAt }}
+            currentStatus: "active"
+            evidence:
+              - evidenceId: "evidence-github-branch-protection-001"
+                outcome: ${{ data.latest("evidence-github-branch-protection-001", "latest").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-github-branch-protection-001", "latest").attributes.timestamp }}
+                freshnessWindow: "PT1H"
+                qualityScore: 1.0
+  - name: ci-green
+    description: Recompute confidence for claim-ci-green-on-main-001
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: compute
+        description: Apply RAVE decay formula with latest CI evidence
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: confidence-claim-ci-green-on-main-001
+          methodName: compute
+          inputs:
+            currentScore: ${{ data.latest("confidence-claim-ci-green-on-main-001", "current").attributes.confidenceScore }}
+            lastValidated: ${{ data.latest("confidence-claim-ci-green-on-main-001", "current").attributes.computedAt }}
+            currentStatus: "active"
+            evidence:
+              - evidenceId: "evidence-ci-test-results-001"
+                outcome: ${{ data.latest("evidence-ci-test-results-001", "latest").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-ci-test-results-001", "latest").attributes.timestamp }}
+                freshnessWindow: "P1D"
+                qualityScore: 0.95
+              - evidenceId: "evidence-github-actions-runs-001"
+                outcome: ${{ data.latest("evidence-github-actions-runs-001", "latest").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-github-actions-runs-001", "latest").attributes.timestamp }}
+                freshnessWindow: "P1D"
+                qualityScore: 0.9
+  - name: swamp-models
+    description: Recompute confidence for claim-swamp-models-valid-001
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: compute
+        description: Apply RAVE decay formula with latest swamp model validation evidence
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: confidence-claim-swamp-models-valid-001
+          methodName: compute
+          inputs:
+            currentScore: ${{ data.latest("confidence-claim-swamp-models-valid-001", "current").attributes.confidenceScore }}
+            lastValidated: ${{ data.latest("confidence-claim-swamp-models-valid-001", "current").attributes.computedAt }}
+            currentStatus: "active"
+            evidence:
+              - evidenceId: "evidence-swamp-model-validate-001"
+                outcome: ${{ data.latest("evidence-swamp-model-validate-001", "latest").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-swamp-model-validate-001", "latest").attributes.timestamp }}
+                freshnessWindow: "P1D"
+                qualityScore: 0.98
+  - name: swamp-workflows
+    description: Recompute confidence for claim-swamp-workflows-valid-001
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: compute
+        description: Apply RAVE decay formula with latest swamp workflow validation evidence
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: confidence-claim-swamp-workflows-valid-001
+          methodName: compute
+          inputs:
+            currentScore: ${{ data.latest("confidence-claim-swamp-workflows-valid-001", "current").attributes.confidenceScore }}
+            lastValidated: ${{ data.latest("confidence-claim-swamp-workflows-valid-001", "current").attributes.computedAt }}
+            currentStatus: "active"
+            evidence:
+              - evidenceId: "evidence-swamp-workflow-validate-001"
+                outcome: ${{ data.latest("evidence-swamp-workflow-validate-001", "latest").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-swamp-workflow-validate-001", "latest").attributes.timestamp }}
+                freshnessWindow: "P1D"
+                qualityScore: 0.98
+  - name: extensions-compile
+    description: Recompute confidence for claim-extensions-compile-001
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: compute
+        description: Apply RAVE decay formula with latest TypeScript compile evidence
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: confidence-claim-extensions-compile-001
+          methodName: compute
+          inputs:
+            currentScore: ${{ data.latest("confidence-claim-extensions-compile-001", "current").attributes.confidenceScore }}
+            lastValidated: ${{ data.latest("confidence-claim-extensions-compile-001", "current").attributes.computedAt }}
+            currentStatus: "active"
+            evidence:
+              - evidenceId: "evidence-typescript-compile-001"
+                outcome: ${{ data.latest("evidence-typescript-compile-001", "latest").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-typescript-compile-001", "latest").attributes.timestamp }}
+                freshnessWindow: "P1D"
+                qualityScore: 0.95
