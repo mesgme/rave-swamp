@@ -119,3 +119,69 @@ jobs:
                 timestamp: ${{ data.latest("evidence-typescript-compile-001", "latest").attributes.timestamp }}
                 freshnessWindow: "P1D"
                 qualityScore: 0.95
+  - name: lint-clean
+    description: Recompute confidence for claim-lint-clean-001
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: compute
+        description: Apply RAVE decay formula with latest lint evidence
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: confidence-claim-lint-clean-001
+          methodName: compute
+          inputs:
+            currentScore: ${{ data.latest("confidence-claim-lint-clean-001", "current").attributes.confidenceScore }}
+            lastValidated: ${{ data.latest("confidence-claim-lint-clean-001", "current").attributes.computedAt }}
+            currentStatus: "active"
+            evidence:
+              - evidenceId: "evidence-lint-clean-001"
+                outcome: ${{ data.latest("evidence-lint-clean-001", "latest").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-lint-clean-001", "latest").attributes.timestamp }}
+                freshnessWindow: "P1D"
+                qualityScore: 0.95
+  - name: unit-tests
+    description: Recompute confidence for claim-unit-tests-pass-001
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: compute
+        description: Apply RAVE decay formula with latest unit test evidence
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: confidence-claim-unit-tests-pass-001
+          methodName: compute
+          inputs:
+            currentScore: ${{ data.latest("confidence-claim-unit-tests-pass-001", "current").attributes.confidenceScore }}
+            lastValidated: ${{ data.latest("confidence-claim-unit-tests-pass-001", "current").attributes.computedAt }}
+            currentStatus: "active"
+            evidence:
+              - evidenceId: "evidence-unit-tests-pass-001"
+                outcome: ${{ data.latest("evidence-unit-tests-pass-001", "latest").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-unit-tests-pass-001", "latest").attributes.timestamp }}
+                freshnessWindow: "P1D"
+                qualityScore: 0.95
+  - name: code-coverage
+    description: Recompute confidence for claim-code-coverage-001
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: compute
+        description: Apply RAVE decay formula with latest code coverage evidence
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: confidence-claim-code-coverage-001
+          methodName: compute
+          inputs:
+            currentScore: ${{ data.latest("confidence-claim-code-coverage-001", "current").attributes.confidenceScore }}
+            lastValidated: ${{ data.latest("confidence-claim-code-coverage-001", "current").attributes.computedAt }}
+            currentStatus: "active"
+            evidence:
+              - evidenceId: "evidence-code-coverage-001"
+                outcome: ${{ data.latest("evidence-code-coverage-001", "latest").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-code-coverage-001", "latest").attributes.timestamp }}
+                freshnessWindow: "P1D"
+                qualityScore: 0.9

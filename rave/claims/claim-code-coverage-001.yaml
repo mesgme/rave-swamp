@@ -1,0 +1,18 @@
+claim_id: claim-code-coverage-001
+statement: Extension model unit test coverage meets or exceeds 70%
+owner:
+  name: mellens
+  contact: mesgme/rave-swamp
+status: active
+category: code_quality
+scope:
+  type: component
+  target: mesgme/rave-swamp/extensions
+assumptions:
+  - deno is available in the CI environment
+  - Coverage is measured over pure-function logic extracted into test files
+  - 70% threshold is appropriate for an early-stage project with pure-function tests
+falsification_signals:
+  - deno test exits with a non-zero exit code (tests fail, coverage cannot be measured)
+decay_lambda: 0.03
+annotations: []

@@ -31,3 +31,12 @@ jobs:
 
       - name: TypeScript compile check
         run: deno check extensions/models/*.ts
+
+      - name: Lint extension models
+        run: deno lint extensions/models/*.ts
+
+      - name: Unit tests
+        run: deno test extensions/models/
+
+      - name: Code coverage
+        run: deno test --coverage=cov_profile extensions/models/ && (deno coverage cov_profile --detailed || true)

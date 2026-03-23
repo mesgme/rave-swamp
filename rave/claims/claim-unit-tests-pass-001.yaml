@@ -1,0 +1,19 @@
+claim_id: claim-unit-tests-pass-001
+statement: All unit tests for extension models pass on main
+owner:
+  name: mellens
+  contact: mesgme/rave-swamp
+status: active
+category: reliability
+scope:
+  type: component
+  target: mesgme/rave-swamp/extensions
+assumptions:
+  - deno is available in the CI environment
+  - extensions/models/ contains at least one *.test.ts file
+  - Tests cover pure functions only (no swamp runtime dependency)
+falsification_signals:
+  - deno test exits with a non-zero exit code
+  - Any test assertion fails
+decay_lambda: 0.05
+annotations: []

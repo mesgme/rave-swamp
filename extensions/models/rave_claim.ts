@@ -117,7 +117,7 @@ export const model = {
     get: {
       description: "Read the current claim YAML and record a state snapshot",
       arguments: z.object({}),
-      execute: async (args, context) => {
+      execute: async (_args, context) => {
         const { claimId } = context.globalArgs;
         const path = claimsPath(context.repoDir, claimId);
         const claim = await readClaim(path);
@@ -141,7 +141,7 @@ export const model = {
     activate: {
       description: "Set claim status to 'active' — use once evidence is wired up",
       arguments: z.object({}),
-      execute: async (args, context) => {
+      execute: async (_args, context) => {
         const { claimId } = context.globalArgs;
         const path = claimsPath(context.repoDir, claimId);
         const claim = await readClaim(path);

@@ -1,0 +1,14 @@
+falsifier_id: "falsifier-unit-tests-fail-001"
+name: "Unit Test Failure in Extension Models"
+description: "Detects when deno test exits with a non-zero code, indicating one or more unit tests have failed."
+condition:
+  type: "boolean"
+  parameters:
+    field: "$.conclusion"
+    expected: "success"
+evidence_ids:
+  - "evidence-unit-tests-pass-001"
+claim_ids:
+  - "claim-unit-tests-pass-001"
+metadata:
+  repo: "mesgme/rave-swamp"
