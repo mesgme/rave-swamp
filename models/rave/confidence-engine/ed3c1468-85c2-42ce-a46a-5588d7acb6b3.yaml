@@ -1,0 +1,11 @@
+type: rave/confidence-engine
+typeVersion: 2026.03.21.1
+id: ed3c1468-85c2-42ce-a46a-5588d7acb6b3
+name: confidence-claim-code-coverage-001
+version: 1
+tags: {}
+globalArguments:
+  claimId: claim-code-coverage-001
+  decayLambda: 0.03
+  confidenceFloor: 0.01
+methods: {}

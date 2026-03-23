@@ -87,4 +87,46 @@ jobs:
         allowFailure: true
     dependsOn: []
     weight: 0
+  - name: lint
+    description: Gather lint check evidence (validate.yml run)
+    steps:
+      - name: fetch
+        description: Fetch latest validate.yml run result for lint check
+        task:
+          type: model_method
+          modelIdOrName: evidence-lint-clean-001
+          methodName: gather
+          inputs:
+            githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
+        allowFailure: true
+    dependsOn: []
+    weight: 0
+  - name: unit-tests
+    description: Gather unit test evidence (validate.yml run)
+    steps:
+      - name: fetch
+        description: Fetch latest validate.yml run result for unit tests
+        task:
+          type: model_method
+          modelIdOrName: evidence-unit-tests-pass-001
+          methodName: gather
+          inputs:
+            githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
+        allowFailure: true
+    dependsOn: []
+    weight: 0
+  - name: code-coverage
+    description: Gather code coverage evidence (validate.yml run)
+    steps:
+      - name: fetch
+        description: Fetch latest validate.yml run result for code coverage
+        task:
+          type: model_method
+          modelIdOrName: evidence-code-coverage-001
+          methodName: gather
+          inputs:
+            githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
+        allowFailure: true
+    dependsOn: []
+    weight: 0
 version: 1

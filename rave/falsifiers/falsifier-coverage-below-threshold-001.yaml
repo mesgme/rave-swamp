@@ -1,0 +1,14 @@
+falsifier_id: "falsifier-coverage-below-threshold-001"
+name: "Code Coverage Below Threshold"
+description: "Detects when the validate.yml workflow fails, which includes the coverage test step, indicating coverage has dropped or tests have broken."
+condition:
+  type: "boolean"
+  parameters:
+    field: "$.conclusion"
+    expected: "success"
+evidence_ids:
+  - "evidence-code-coverage-001"
+claim_ids:
+  - "claim-code-coverage-001"
+metadata:
+  repo: "mesgme/rave-swamp"

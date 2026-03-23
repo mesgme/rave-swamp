@@ -104,3 +104,63 @@ jobs:
                 freshnessWindow: "P1D"
                 value: null
                 rawData: null
+  - name: lint-error
+    description: Evaluate falsifier-lint-error-001 against lint CI evidence
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: evaluate
+        description: Check if deno lint passed
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: falsifier-lint-error-001
+          methodName: evaluate
+          inputs:
+            evidence:
+              - evidenceId: "evidence-lint-clean-001"
+                outcome: ${{ data.latest("evidence-lint-clean-001", "latest").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-lint-clean-001", "latest").attributes.timestamp }}
+                freshnessWindow: "P1D"
+                value: null
+                rawData: null
+  - name: unit-tests-fail
+    description: Evaluate falsifier-unit-tests-fail-001 against unit test CI evidence
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: evaluate
+        description: Check if unit tests passed
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: falsifier-unit-tests-fail-001
+          methodName: evaluate
+          inputs:
+            evidence:
+              - evidenceId: "evidence-unit-tests-pass-001"
+                outcome: ${{ data.latest("evidence-unit-tests-pass-001", "latest").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-unit-tests-pass-001", "latest").attributes.timestamp }}
+                freshnessWindow: "P1D"
+                value: null
+                rawData: null
+  - name: coverage-below-threshold
+    description: Evaluate falsifier-coverage-below-threshold-001 against code coverage CI evidence
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: evaluate
+        description: Check if code coverage tests passed
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: falsifier-coverage-below-threshold-001
+          methodName: evaluate
+          inputs:
+            evidence:
+              - evidenceId: "evidence-code-coverage-001"
+                outcome: ${{ data.latest("evidence-code-coverage-001", "latest").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-code-coverage-001", "latest").attributes.timestamp }}
+                freshnessWindow: "P1D"
+                value: null
+                rawData: null

@@ -1,0 +1,14 @@
+falsifier_id: "falsifier-lint-error-001"
+name: "Lint Error in Extension Models"
+description: "Detects when deno lint exits with a non-zero code, indicating a lint error in one or more extension model TypeScript files."
+condition:
+  type: "boolean"
+  parameters:
+    field: "$.conclusion"
+    expected: "success"
+evidence_ids:
+  - "evidence-lint-clean-001"
+claim_ids:
+  - "claim-lint-clean-001"
+metadata:
+  repo: "mesgme/rave-swamp"

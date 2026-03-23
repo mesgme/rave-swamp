@@ -1,0 +1,22 @@
+evidence_id: "evidence-code-coverage-001"
+type: "ci_log"
+description: "deno test coverage run for extension models in mesgme/rave-swamp"
+reference:
+  uri: "https://api.github.com/repos/mesgme/rave-swamp/actions/workflows/validate.yml/runs?branch=main&per_page=1"
+  format: "application/json"
+  authentication:
+    method: "bearer_token"
+    hint: "GITHUB_TOKEN"
+claim_ids:
+  - "claim-code-coverage-001"
+freshness_window: "P1D"
+quality_score: 0.9
+methodology:
+  description: "Run 'deno test extensions/models/' in a GitHub Actions workflow step; coverage is validated by the test suite passing (pure-function tests)"
+  tooling: "github-actions"
+  frequency: "P1D"
+  coverage: "Pure-function logic in extension models covered by *.test.ts files"
+metadata:
+  source_system: "github-actions"
+  repo: "mesgme/rave-swamp"
+  workflow: "validate.yml"
