@@ -59,7 +59,7 @@ cat rave/claims/claim-<id>.yaml
 swamp data list confidence-<id>
 
 # Read the latest confidence snapshot (full detail)
-swamp data get confidence-<id> confidence --json
+swamp data get confidence-<id> current --json
 ```
 
 **Example — `claim-branch-protection-001`:**
@@ -234,6 +234,80 @@ swamp data list falsifier-branch-protection-missing-001
 | CI evidence | `rave/evidence/evidence-<id>.yaml` | `evidence-<id>` (rave/ci-evidence) |
 | GitHub API evidence | `rave/evidence/evidence-<id>.yaml` | `evidence-<id>` (rave/github-api-evidence) |
 | Falsifier | `rave/falsifiers/falsifier-<id>.yaml` | `falsifier-<id>` (rave/falsifier-engine) |
+
+---
+
+## Sweep Workflows
+
+Three workflows run the full RAVE pipeline. Run them in order:
+
+```bash
+# 1. Gather fresh evidence for all claims (9 parallel jobs)
+swamp workflow run gather-all-evidence --json
+
+# 2. Recompute confidence scores with decay (8 parallel jobs)
+swamp workflow run confidence-decay-sweep --json
+
+# 3. Evaluate all falsifiers (8 parallel jobs)
+swamp workflow run falsifier-sweep --json
+```
+
+All jobs use `allowFailure: true` — individual failures are non-fatal so the sweep completes even when a single evidence source is down.
+
+### Bootstrap / recovery
+
+Confidence scores start at 0.0 and must be seeded with `revalidate` before the
+first sweep, and after any confidence collapse (stale evidence drives the score
+to 0 and it stays there until a human re-attests):
+
+```bash
+# Seed initial confidence for one claim
+swamp model method run confidence-claim-<id> revalidate \
+  --input '{"newScore": 0.9, "revalidatedBy": "your-name"}'
+
+# Check if evidence went stale and caused a collapse
+swamp data get confidence-claim-<id> current --json
+# Look for confidenceScore=0 with isStale=true in evidenceSnapshots
+```
+
+**Important:** if `gather-all-evidence` ran with stale evidence and drove a
+score to 0.0, re-gathering fresh evidence is not enough — you must also run
+`revalidate` to reset C₀ before the next sweep can recover the score.
+
+---
+
+## Readiness Check
+
+Check whether all active claims pass the confidence threshold:
+
+```bash
+# Run with default threshold (0.7)
+swamp workflow run readiness-check --json
+
+# Run with custom threshold
+swamp workflow run readiness-check --input '{"threshold": 0.8}' --json
+
+# Read the latest readiness report
+swamp data get readiness-reporter-001 latest --json
+```
+
+**Example output:**
+
+```json
+{
+  "threshold": 0.7,
+  "ready": true,
+  "evaluatedAt": "2026-03-24T11:57:14Z",
+  "claims": [
+    { "claimId": "claim-branch-protection-001", "confidenceScore": 0.8999, "meetsThreshold": true },
+    ...
+  ],
+  "summary": "5 of 5 active claims meet threshold (0.7)."
+}
+```
+
+> **Note:** The readiness reporter currently evaluates 5 hardcoded claims. Issue #32 tracks
+> making this dynamic so new claims are included automatically.
 
 ---
 
