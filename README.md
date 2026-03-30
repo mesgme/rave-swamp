@@ -1,5 +1,8 @@
 # rave-swamp
 
+<img width="1536" height="1024" alt="rave-swamp" src="https://github.com/user-attachments/assets/48841d8e-d234-45d9-b30d-779bc48643e8" />
+
+
 RAVE (Reliability & Validation Engineering) implementation for the `mesgme/rave-swamp` repository, built on [swamp](https://github.com/systeminit/swamp).
 
 ---
