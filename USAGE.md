@@ -1,3 +1,6 @@
+<img width="1536" height="1024" alt="ChatGPT Image Mar 30, 2026, 02_46_43 PM" src="https://github.com/user-attachments/assets/f4cea83c-d17c-4934-95ec-c70203551921" />
+
+
 # rave-swamp Usage Guide
 
 RAVE claims and evidence are managed through a combination of:
