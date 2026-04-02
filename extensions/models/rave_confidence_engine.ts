@@ -47,7 +47,8 @@ const EvidenceInputSchema = z.object({
 
 function parseISO8601Duration(duration: string): number {
   // Matches: P[nY][nM][nW][nD][T[nH][nM][nS]]
-  const re = /^P(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)W)?(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?)?$/;
+  const re =
+    /^P(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)W)?(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?)?$/;
   const m = duration.match(re);
   if (!m) throw new Error(`Invalid ISO 8601 duration: ${duration}`);
 
@@ -70,7 +71,10 @@ function parseISO8601Duration(duration: string): number {
   );
 }
 
-function isStaleCheck(timestamp: string, freshnessWindow: string | null): boolean {
+function isStaleCheck(
+  timestamp: string,
+  freshnessWindow: string | null,
+): boolean {
   if (!freshnessWindow) return false;
   const ageSeconds = (Date.now() - new Date(timestamp).getTime()) / 1000;
   const windowSeconds = parseISO8601Duration(freshnessWindow);
@@ -97,7 +101,7 @@ function computeScore(
 }
 
 export const model = {
-  type: "rave/confidence-engine",
+  type: "@mellens/rave/confidence-engine",
   version: "2026.03.21.1",
   globalArguments: GlobalArgsSchema,
   resources: {
@@ -110,7 +114,8 @@ export const model = {
   },
   methods: {
     compute: {
-      description: "Apply the RAVE decay formula to produce an updated confidence score for this claim",
+      description:
+        "Apply the RAVE decay formula to produce an updated confidence score for this claim",
       arguments: z.object({
         currentScore: z.number(),
         lastValidated: z.string(),
@@ -126,14 +131,20 @@ export const model = {
         let previousScore: number | null = null;
         try {
           const prev = await context.readResource("confidence", "current");
-          previousScore = (prev as { confidenceScore: number }).confidenceScore ?? null;
+          previousScore =
+            (prev as { confidenceScore: number }).confidenceScore ?? null;
         } catch {
           // No previous record — first run
         }
 
         // Skip computation for terminal/inactive statuses
-        if (args.currentStatus === "draft" || args.currentStatus === "contradicted") {
-          context.logger.info(`Claim '${claimId}' is ${args.currentStatus} — returning 0.0`);
+        if (
+          args.currentStatus === "draft" ||
+          args.currentStatus === "contradicted"
+        ) {
+          context.logger.info(
+            `Claim '${claimId}' is ${args.currentStatus} — returning 0.0`,
+          );
           const handle = await context.writeResource("confidence", "current", {
             claimId,
             confidenceScore: 0.0,
@@ -152,7 +163,9 @@ export const model = {
         }
 
         if (args.currentStatus === "retired") {
-          context.logger.info(`Claim '${claimId}' is retired — returning frozen score`);
+          context.logger.info(
+            `Claim '${claimId}' is retired — returning frozen score`,
+          );
           const handle = await context.writeResource("confidence", "current", {
             claimId,
             confidenceScore: args.currentScore,
@@ -170,7 +183,9 @@ export const model = {
 
         // No evidence → score collapses to 0
         if (args.evidence.length === 0) {
-          context.logger.warn(`Claim '${claimId}' has no evidence — score = 0.0`);
+          context.logger.warn(
+            `Claim '${claimId}' has no evidence — score = 0.0`,
+          );
           const handle = await context.writeResource("confidence", "current", {
             claimId,
             confidenceScore: 0.0,
@@ -194,7 +209,9 @@ export const model = {
         for (const ev of args.evidence) {
           const stale = isStaleCheck(ev.timestamp, ev.freshnessWindow);
           // fail outcome or stale → freshness contribution = 0
-          const freshnessContribution = (ev.outcome === "fail" || stale) ? 0.0 : 1.0;
+          const freshnessContribution = (ev.outcome === "fail" || stale)
+            ? 0.0
+            : 1.0;
           const qualityScore = ev.qualityScore ?? 1.0;
 
           fSum += freshnessContribution;
@@ -214,7 +231,8 @@ export const model = {
 
         // Decay: Δt in days
         const deltaDays =
-          (now.getTime() - new Date(args.lastValidated).getTime()) / (1000 * 60 * 60 * 24);
+          (now.getTime() - new Date(args.lastValidated).getTime()) /
+          (1000 * 60 * 60 * 24);
         const decayFactor = Math.exp(-decayLambda * deltaDays);
 
         let score = computeScore(args.currentScore, fAvg, qAvg, decayFactor);
@@ -226,12 +244,17 @@ export const model = {
         score = Math.round(score * 10000) / 10000;
 
         context.logger.info(
-          `Claim '${claimId}': C₀=${args.currentScore} × F_avg=${fAvg.toFixed(3)} × Q_avg=${qAvg.toFixed(3)} × decay=${decayFactor.toFixed(4)} = ${score}`,
+          `Claim '${claimId}': C₀=${args.currentScore} × F_avg=${
+            fAvg.toFixed(3)
+          } × Q_avg=${qAvg.toFixed(3)} × decay=${
+            decayFactor.toFixed(4)
+          } = ${score}`,
         );
 
-        const statusTransition = previousScore !== null && Math.abs(previousScore - score) > 0.001
-          ? `${previousScore.toFixed(3)}→${score.toFixed(3)}`
-          : null;
+        const statusTransition =
+          previousScore !== null && Math.abs(previousScore - score) > 0.001
+            ? `${previousScore.toFixed(3)}→${score.toFixed(3)}`
+            : null;
 
         const handle = await context.writeResource("confidence", "current", {
           claimId,
@@ -251,7 +274,8 @@ export const model = {
     },
 
     revalidate: {
-      description: "Reset the confidence anchor when a claim owner formally re-attests",
+      description:
+        "Reset the confidence anchor when a claim owner formally re-attests",
       arguments: z.object({
         newScore: z.number().min(0).max(1),
         revalidatedBy: z.string(),
@@ -263,7 +287,8 @@ export const model = {
         let previousScore: number | null = null;
         try {
           const prev = await context.readResource("confidence", "current");
-          previousScore = (prev as { confidenceScore: number }).confidenceScore ?? null;
+          previousScore =
+            (prev as { confidenceScore: number }).confidenceScore ?? null;
         } catch {
           // No previous record
         }
@@ -283,7 +308,9 @@ export const model = {
           computedAt: now,
           evidenceSnapshots: [],
           statusTransition: previousScore !== null
-            ? `revalidated: ${previousScore.toFixed(3)}→${args.newScore.toFixed(3)}`
+            ? `revalidated: ${previousScore.toFixed(3)}→${
+              args.newScore.toFixed(3)
+            }`
             : null,
         });
 

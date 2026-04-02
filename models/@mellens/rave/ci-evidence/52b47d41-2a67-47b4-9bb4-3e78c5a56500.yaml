@@ -1,0 +1,12 @@
+type: "@mellens/rave/ci-evidence"
+typeVersion: 2026.03.21.1
+id: 52b47d41-2a67-47b4-9bb4-3e78c5a56500
+name: evidence-swamp-model-validate-001
+version: 1
+tags: {}
+globalArguments:
+  evidenceId: evidence-swamp-model-validate-001
+  repo: mesgme/rave-swamp
+  workflowName: validate.yml
+  branch: main
+methods: {}

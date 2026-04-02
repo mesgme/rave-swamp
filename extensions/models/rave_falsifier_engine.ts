@@ -6,7 +6,14 @@ import { z } from "npm:zod@4";
 
 const GlobalArgsSchema = z.object({
   falsifierId: z.string(),
-  conditionType: z.enum(["threshold", "boolean", "regex", "absence", "staleness", "composite"]),
+  conditionType: z.enum([
+    "threshold",
+    "boolean",
+    "regex",
+    "absence",
+    "staleness",
+    "composite",
+  ]),
   condition: z.string(), // JSON-serialised condition parameters
 });
 
@@ -33,7 +40,8 @@ const EvaluationSchema = z.object({
 // ---------------------------------------------------------------------------
 
 function parseISO8601Duration(duration: string): number {
-  const re = /^P(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)W)?(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?)?$/;
+  const re =
+    /^P(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)W)?(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?)?$/;
   const m = duration.match(re);
   if (!m) throw new Error(`Invalid ISO 8601 duration: ${duration}`);
   return (
@@ -56,7 +64,9 @@ function parseISO8601Duration(duration: string): number {
 // ---------------------------------------------------------------------------
 
 function extractJsonPath(data: unknown, path: string): unknown {
-  if (!path.startsWith("$")) throw new Error(`JSONPath must start with $: ${path}`);
+  if (!path.startsWith("$")) {
+    throw new Error(`JSONPath must start with $: ${path}`);
+  }
 
   // Tokenise: split on . but handle [*] and [n] array segments
   const parts = path
@@ -130,19 +140,38 @@ function evaluateThreshold(
       if (isNaN(num)) continue;
       let hit = false;
       switch (operator) {
-        case ">": hit = num > threshold; break;
-        case ">=": hit = num >= threshold; break;
-        case "<": hit = num < threshold; break;
-        case "<=": hit = num <= threshold; break;
-        case "==": hit = num === threshold; break;
-        case "!=": hit = num !== threshold; break;
+        case ">":
+          hit = num > threshold;
+          break;
+        case ">=":
+          hit = num >= threshold;
+          break;
+        case "<":
+          hit = num < threshold;
+          break;
+        case "<=":
+          hit = num <= threshold;
+          break;
+        case "==":
+          hit = num === threshold;
+          break;
+        case "!=":
+          hit = num !== threshold;
+          break;
       }
       if (hit) {
-        return { triggered: true, detail: `${metric} = ${num} ${operator} ${threshold} (triggered)` };
+        return {
+          triggered: true,
+          detail: `${metric} = ${num} ${operator} ${threshold} (triggered)`,
+        };
       }
     }
   }
-  return { triggered: false, detail: `No threshold violation found for ${metric} ${operator} ${threshold}` };
+  return {
+    triggered: false,
+    detail:
+      `No threshold violation found for ${metric} ${operator} ${threshold}`,
+  };
 }
 
 function evaluateBoolean(
@@ -170,15 +199,23 @@ function evaluateBoolean(
       if (!equal) {
         return {
           triggered: true,
-          detail: `${field} = ${JSON.stringify(v)}, expected ${JSON.stringify(expected)} (triggered)`,
+          detail: `${field} = ${JSON.stringify(v)}, expected ${
+            JSON.stringify(expected)
+          } (triggered)`,
         };
       }
     }
     if (values.length === 0) {
-      return { triggered: true, detail: `${field} not present in evidence (triggered)` };
+      return {
+        triggered: true,
+        detail: `${field} not present in evidence (triggered)`,
+      };
     }
   }
-  return { triggered: false, detail: `${field} matches expected value ${JSON.stringify(expected)}` };
+  return {
+    triggered: false,
+    detail: `${field} matches expected value ${JSON.stringify(expected)}`,
+  };
 }
 
 function evaluateRegex(
@@ -204,12 +241,16 @@ function evaluateRegex(
       if (re.test(String(v))) {
         return {
           triggered: true,
-          detail: `${field} value "${v}" matches /${pattern}/${flags} (triggered)`,
+          detail:
+            `${field} value "${v}" matches /${pattern}/${flags} (triggered)`,
         };
       }
     }
   }
-  return { triggered: false, detail: `No value of ${field} matches /${pattern}/${flags}` };
+  return {
+    triggered: false,
+    detail: `No value of ${field} matches /${pattern}/${flags}`,
+  };
 }
 
 function evaluateAbsence(
@@ -221,16 +262,23 @@ function evaluateAbsence(
   }
   const gracePeriod = params.grace_period as string | undefined;
   if (!gracePeriod) {
-    return { triggered: false, detail: `${evidence.length} evidence item(s) present` };
+    return {
+      triggered: false,
+      detail: `${evidence.length} evidence item(s) present`,
+    };
   }
   const graceSeconds = parseISO8601Duration(gracePeriod);
   const now = Date.now();
-  const mostRecent = Math.max(...evidence.map((ev) => new Date(ev.timestamp).getTime()));
+  const mostRecent = Math.max(
+    ...evidence.map((ev) => new Date(ev.timestamp).getTime()),
+  );
   const ageSeconds = (now - mostRecent) / 1000;
   if (ageSeconds > graceSeconds) {
     return {
       triggered: true,
-      detail: `Most recent evidence is ${Math.round(ageSeconds / 3600)}h old, exceeds grace period (triggered)`,
+      detail: `Most recent evidence is ${
+        Math.round(ageSeconds / 3600)
+      }h old, exceeds grace period (triggered)`,
     };
   }
   return { triggered: false, detail: "Evidence present within grace period" };
@@ -245,7 +293,10 @@ function evaluateStaleness(
   const now = Date.now();
 
   if (evidence.length === 0) {
-    return { triggered: true, detail: "No evidence to evaluate staleness (triggered)" };
+    return {
+      triggered: true,
+      detail: "No evidence to evaluate staleness (triggered)",
+    };
   }
 
   const allStale = evidence.every((ev) => {
@@ -254,8 +305,14 @@ function evaluateStaleness(
   });
 
   return allStale
-    ? { triggered: true, detail: `All evidence older than ${maxAge} (triggered)` }
-    : { triggered: false, detail: `Evidence within staleness window ${maxAge}` };
+    ? {
+      triggered: true,
+      detail: `All evidence older than ${maxAge} (triggered)`,
+    }
+    : {
+      triggered: false,
+      detail: `Evidence within staleness window ${maxAge}`,
+    };
 }
 
 function evaluateComposite(
@@ -263,10 +320,14 @@ function evaluateComposite(
   evidence: EvidenceItem[],
   depth: number,
 ): ConditionResult {
-  if (depth > 5) throw new Error("Composite condition recursion depth exceeded (max 5)");
+  if (depth > 5) {
+    throw new Error("Composite condition recursion depth exceeded (max 5)");
+  }
 
   const operator = (params.operator as string).toUpperCase();
-  const subConditions = params.sub_conditions as Array<{ type: string; parameters: Record<string, unknown> }>;
+  const subConditions = params.sub_conditions as Array<
+    { type: string; parameters: Record<string, unknown> }
+  >;
 
   const results = subConditions.map((sub) =>
     dispatchEvaluator(sub.type, sub.parameters, evidence, depth + 1)
@@ -274,7 +335,12 @@ function evaluateComposite(
 
   if (operator === "AND") {
     const triggered = results.every((r) => r.triggered);
-    return { triggered, detail: `AND[${results.map((r) => r.triggered).join(",")}] = ${triggered}` };
+    return {
+      triggered,
+      detail: `AND[${
+        results.map((r) => r.triggered).join(",")
+      }] = ${triggered}`,
+    };
   }
   if (operator === "OR") {
     const triggered = results.some((r) => r.triggered);
@@ -287,7 +353,9 @@ function evaluateComposite(
     };
   }
   if (operator === "NOT") {
-    if (results.length !== 1) throw new Error("NOT operator requires exactly one sub-condition");
+    if (results.length !== 1) {
+      throw new Error("NOT operator requires exactly one sub-condition");
+    }
     return {
       triggered: !results[0].triggered,
       detail: `NOT(${results[0].triggered}) = ${!results[0].triggered}`,
@@ -303,13 +371,20 @@ function dispatchEvaluator(
   depth: number,
 ): ConditionResult {
   switch (type) {
-    case "threshold": return evaluateThreshold(params, evidence);
-    case "boolean": return evaluateBoolean(params, evidence);
-    case "regex": return evaluateRegex(params, evidence);
-    case "absence": return evaluateAbsence(params, evidence);
-    case "staleness": return evaluateStaleness(params, evidence);
-    case "composite": return evaluateComposite(params, evidence, depth);
-    default: throw new Error(`Unknown condition type: ${type}`);
+    case "threshold":
+      return evaluateThreshold(params, evidence);
+    case "boolean":
+      return evaluateBoolean(params, evidence);
+    case "regex":
+      return evaluateRegex(params, evidence);
+    case "absence":
+      return evaluateAbsence(params, evidence);
+    case "staleness":
+      return evaluateStaleness(params, evidence);
+    case "composite":
+      return evaluateComposite(params, evidence, depth);
+    default:
+      throw new Error(`Unknown condition type: ${type}`);
   }
 }
 
@@ -318,7 +393,7 @@ function dispatchEvaluator(
 // ---------------------------------------------------------------------------
 
 export const model = {
-  type: "rave/falsifier-engine",
+  type: "@mellens/rave/falsifier-engine",
   version: "2026.03.21.1",
   globalArguments: GlobalArgsSchema,
   resources: {
@@ -331,7 +406,8 @@ export const model = {
   },
   methods: {
     evaluate: {
-      description: "Evaluate falsifier conditions against evidence snapshots and record triggered/not-triggered",
+      description:
+        "Evaluate falsifier conditions against evidence snapshots and record triggered/not-triggered",
       arguments: z.object({
         evidence: z.array(EvidenceInputSchema),
       }),
@@ -346,7 +422,8 @@ export const model = {
           if ((prev as { triggered: boolean }).triggered) {
             lastTriggeredAt = (prev as { evaluatedAt: string }).evaluatedAt;
           } else {
-            lastTriggeredAt = (prev as { lastTriggeredAt: string | null }).lastTriggeredAt;
+            lastTriggeredAt =
+              (prev as { lastTriggeredAt: string | null }).lastTriggeredAt;
           }
         } catch {
           // No previous record
@@ -359,13 +436,22 @@ export const model = {
           throw new Error(`Failed to parse condition JSON: ${condition}`);
         }
 
-        const result = dispatchEvaluator(conditionType, params, args.evidence, 0);
+        const result = dispatchEvaluator(
+          conditionType,
+          params,
+          args.evidence,
+          0,
+        );
 
         if (result.triggered) {
           lastTriggeredAt = evaluatedAt;
-          context.logger.warn(`Falsifier '${falsifierId}' TRIGGERED: ${result.detail}`);
+          context.logger.warn(
+            `Falsifier '${falsifierId}' TRIGGERED: ${result.detail}`,
+          );
         } else {
-          context.logger.info(`Falsifier '${falsifierId}' not triggered: ${result.detail}`);
+          context.logger.info(
+            `Falsifier '${falsifierId}' not triggered: ${result.detail}`,
+          );
         }
 
         const handle = await context.writeResource("evaluation", "latest", {

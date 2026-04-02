@@ -1,0 +1,11 @@
+type: "@mellens/rave/falsifier-engine"
+typeVersion: 2026.03.21.1
+id: 8c0d0eca-b681-427d-b4e1-7c561b076d44
+name: falsifier-model-validation-fail-001
+version: 1
+tags: {}
+globalArguments:
+  falsifierId: falsifier-model-validation-fail-001
+  conditionType: boolean
+  condition: '{"field":"$.passed","expected":true}'
+methods: {}

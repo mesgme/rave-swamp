@@ -1,0 +1,12 @@
+type: "@mellens/rave/ci-evidence"
+typeVersion: 2026.03.21.1
+id: 34958b81-c77f-46e9-9fd8-3fc2232487b7
+name: evidence-typescript-compile-001
+version: 1
+tags: {}
+globalArguments:
+  evidenceId: evidence-typescript-compile-001
+  repo: mesgme/rave-swamp
+  workflowName: validate.yml
+  branch: main
+methods: {}

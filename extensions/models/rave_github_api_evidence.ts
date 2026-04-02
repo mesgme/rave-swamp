@@ -6,15 +6,15 @@ import { z } from "npm:zod@4";
 
 const GlobalArgsSchema = z.object({
   evidenceId: z.string(),
-  repo: z.string(),          // e.g. "mesgme/rave-swamp"
-  endpoint: z.string(),      // path after /repos/{repo}, e.g. "/branches/main/protection"
+  repo: z.string(), // e.g. "mesgme/rave-swamp"
+  endpoint: z.string(), // path after /repos/{repo}, e.g. "/branches/main/protection"
   successField: z.string().optional(), // JSONPath to check for truthy value → pass
 });
 
 const ResultSchema = z.object({
   outcome: z.enum(["pass", "fail", "inconclusive"]),
   summary: z.string(),
-  rawData: z.string(),     // JSON-stringified API response (used by falsifier-engine)
+  rawData: z.string(), // JSON-stringified API response (used by falsifier-engine)
   timestamp: z.string(),
   isStale: z.boolean(),
   httpStatus: z.number(),
@@ -26,7 +26,9 @@ const ResultSchema = z.object({
 // ---------------------------------------------------------------------------
 
 function extractJsonPath(data: unknown, path: string): unknown {
-  if (!path.startsWith("$")) throw new Error(`JSONPath must start with $: ${path}`);
+  if (!path.startsWith("$")) {
+    throw new Error(`JSONPath must start with $: ${path}`);
+  }
 
   const parts = path
     .slice(1)
@@ -65,7 +67,7 @@ function isTruthy(value: unknown): boolean {
 // ---------------------------------------------------------------------------
 
 export const model = {
-  type: "rave/github-api-evidence",
+  type: "@mellens/rave/github-api-evidence",
   version: "2026.03.22.1",
   globalArguments: GlobalArgsSchema,
   resources: {
@@ -95,10 +97,15 @@ export const model = {
 
         let res: Response;
         try {
-          res = await fetch(url, { headers, signal: AbortSignal.timeout(15_000) });
+          res = await fetch(url, {
+            headers,
+            signal: AbortSignal.timeout(15_000),
+          });
         } catch (err) {
           const message = err instanceof Error ? err.message : String(err);
-          context.logger.warn(`GitHub API request failed: ${message} — recording inconclusive`);
+          context.logger.warn(
+            `GitHub API request failed: ${message} — recording inconclusive`,
+          );
           const handle = await context.writeResource("result", "latest", {
             outcome: "inconclusive",
             summary: `Request failed: ${message}`,
@@ -114,7 +121,9 @@ export const model = {
         const bodyText = await res.text();
 
         if (httpStatus === 404) {
-          context.logger.warn(`${evidenceId}: endpoint returned 404 — recording inconclusive`);
+          context.logger.warn(
+            `${evidenceId}: endpoint returned 404 — recording inconclusive`,
+          );
           const handle = await context.writeResource("result", "latest", {
             outcome: "inconclusive",
             summary: `Endpoint not found: ${endpoint}`,
@@ -127,7 +136,9 @@ export const model = {
         }
 
         if (httpStatus === 429) {
-          throw new Error("GitHub API rate limit exceeded — retry after cooldown");
+          throw new Error(
+            "GitHub API rate limit exceeded — retry after cooldown",
+          );
         }
 
         if (!res.ok) {
@@ -151,8 +162,14 @@ export const model = {
           const value = extractJsonPath(parsed, successField);
           const passing = isTruthy(value);
           outcome = passing ? "pass" : "fail";
-          summary = `${endpoint}: ${successField} = ${JSON.stringify(value)} → ${outcome}`;
-          context.logger.info(`${evidenceId}: ${successField} = ${JSON.stringify(value)} → ${outcome}`);
+          summary = `${endpoint}: ${successField} = ${
+            JSON.stringify(value)
+          } → ${outcome}`;
+          context.logger.info(
+            `${evidenceId}: ${successField} = ${
+              JSON.stringify(value)
+            } → ${outcome}`,
+          );
         } else {
           outcome = "pass";
           summary = `${endpoint}: HTTP ${httpStatus} → pass`;

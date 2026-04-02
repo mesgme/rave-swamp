@@ -1,0 +1,9 @@
+type: "@mellens/rave/claim"
+typeVersion: 2026.03.22.1
+id: 12805140-43a8-4f2f-8ea1-56b8637dd13a
+name: claim-swamp-models-valid-001
+version: 1
+tags: {}
+globalArguments:
+  claimId: claim-swamp-models-valid-001
+methods: {}

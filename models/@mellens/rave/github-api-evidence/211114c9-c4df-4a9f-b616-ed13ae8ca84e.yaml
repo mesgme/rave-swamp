@@ -1,0 +1,11 @@
+type: "@mellens/rave/github-api-evidence"
+typeVersion: 2026.03.22.1
+id: 211114c9-c4df-4a9f-b616-ed13ae8ca84e
+name: evidence-github-actions-runs-001
+version: 1
+tags: {}
+globalArguments:
+  evidenceId: evidence-github-actions-runs-001
+  repo: mesgme/rave-swamp
+  endpoint: /actions/runs?branch=main&per_page=10
+methods: {}

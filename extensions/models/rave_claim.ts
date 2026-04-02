@@ -30,7 +30,10 @@ async function readClaim(path: string): Promise<Record<string, unknown>> {
   return YAML.parse(text) as Record<string, unknown>;
 }
 
-async function writeClaim(path: string, data: Record<string, unknown>): Promise<void> {
+async function writeClaim(
+  path: string,
+  data: Record<string, unknown>,
+): Promise<void> {
   const text = YAML.stringify(data, { lineWidth: 0 });
   await Deno.writeTextFile(path, text);
 }
@@ -44,12 +47,13 @@ function nowISO(): string {
 // ---------------------------------------------------------------------------
 
 export const model = {
-  type: "rave/claim",
+  type: "@mellens/rave/claim",
   version: "2026.03.22.1",
   globalArguments: GlobalArgsSchema,
   resources: {
     state: {
-      description: "Current claim state snapshot (mirrors key fields from the YAML)",
+      description:
+        "Current claim state snapshot (mirrors key fields from the YAML)",
       schema: ClaimStateSchema,
       lifetime: "infinite",
       garbageCollection: 100,
@@ -57,7 +61,8 @@ export const model = {
   },
   methods: {
     create: {
-      description: "Write a new claim YAML to rave/claims/ and record its initial state",
+      description:
+        "Write a new claim YAML to rave/claims/ and record its initial state",
       arguments: z.object({
         statement: z.string(),
         owner: z.string(),
@@ -77,7 +82,9 @@ export const model = {
         // Refuse to overwrite an existing claim
         try {
           await Deno.stat(path);
-          throw new Error(`Claim '${claimId}' already exists at ${path} — use update methods instead`);
+          throw new Error(
+            `Claim '${claimId}' already exists at ${path} — use update methods instead`,
+          );
         } catch (err) {
           if (!(err instanceof Deno.errors.NotFound)) throw err;
         }
@@ -100,7 +107,9 @@ export const model = {
         };
 
         await writeClaim(path, claim);
-        context.logger.info(`Created claim '${claimId}' at ${path} (status=draft)`);
+        context.logger.info(
+          `Created claim '${claimId}' at ${path} (status=draft)`,
+        );
 
         const handle = await context.writeResource("state", "current", {
           claimId,
@@ -139,7 +148,8 @@ export const model = {
     },
 
     activate: {
-      description: "Set claim status to 'active' — use once evidence is wired up",
+      description:
+        "Set claim status to 'active' — use once evidence is wired up",
       arguments: z.object({}),
       execute: async (_args, context) => {
         const { claimId } = context.globalArgs;
@@ -165,7 +175,8 @@ export const model = {
     },
 
     retire: {
-      description: "Set claim status to 'retired' — freezes the confidence score",
+      description:
+        "Set claim status to 'retired' — freezes the confidence score",
       arguments: z.object({
         reason: z.string().optional(),
       }),
@@ -203,7 +214,8 @@ export const model = {
     },
 
     contradict: {
-      description: "Set claim status to 'contradicted' — collapses confidence to 0",
+      description:
+        "Set claim status to 'contradicted' — collapses confidence to 0",
       arguments: z.object({
         reason: z.string(),
       }),
@@ -224,7 +236,9 @@ export const model = {
         claim.annotations = annotations;
 
         await writeClaim(path, claim);
-        context.logger.warn(`Claim '${claimId}': ${prev} → contradicted — ${args.reason}`);
+        context.logger.warn(
+          `Claim '${claimId}': ${prev} → contradicted — ${args.reason}`,
+        );
 
         const handle = await context.writeResource("state", "current", {
           claimId,
@@ -258,7 +272,9 @@ export const model = {
         claim.annotations = annotations;
 
         await writeClaim(path, claim);
-        context.logger.info(`Claim '${claimId}': annotation added by '${args.author}'`);
+        context.logger.info(
+          `Claim '${claimId}': annotation added by '${args.author}'`,
+        );
 
         const handle = await context.writeResource("state", "current", {
           claimId,
