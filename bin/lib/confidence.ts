@@ -5,7 +5,7 @@ export function parseConfidenceResponse(raw: string): ConfidenceData | null {
   if (!raw || raw.trim() === "") return null;
   try {
     const parsed = JSON.parse(raw);
-    const attrs = parsed?.attributes;
+    const attrs = parsed?.content ?? parsed?.attributes;
     if (!attrs || typeof attrs.confidenceScore !== "number") return null;
     return {
       claimId: attrs.claimId,
@@ -28,7 +28,7 @@ async function fetchOne(claimId: string): Promise<ConfidenceData | null> {
   const modelName = `confidence-${claimId}`;
   try {
     const cmd = new Deno.Command("swamp", {
-      args: ["data", "get", modelName, "confidence", "--json"],
+      args: ["data", "get", modelName, "current", "--json"],
       stdout: "piped",
       stderr: "piped",
     });

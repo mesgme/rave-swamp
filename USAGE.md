@@ -325,6 +325,7 @@ deno task dashboard
 ```
 
 - **↑/↓** — navigate the scope tree
+- **s** — run full sweep (gather evidence → compute confidence → refresh)
 - **r** — refresh confidence data from swamp
 - **q** — quit
 

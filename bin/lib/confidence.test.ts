@@ -3,7 +3,7 @@ import { parseConfidenceResponse } from "./confidence.ts";
 
 Deno.test("parseConfidenceResponse extracts confidence data from swamp JSON", () => {
   const json = JSON.stringify({
-    attributes: {
+    content: {
       claimId: "claim-ci-green-on-main-001",
       confidenceScore: 0.72,
       previousScore: 0.8,
@@ -34,7 +34,7 @@ Deno.test("parseConfidenceResponse returns null for malformed JSON", () => {
 
 Deno.test("parseConfidenceResponse handles null previousScore", () => {
   const json = JSON.stringify({
-    attributes: {
+    content: {
       claimId: "claim-test-001",
       confidenceScore: 0.85,
       previousScore: null,
@@ -50,4 +50,24 @@ Deno.test("parseConfidenceResponse handles null previousScore", () => {
   const data = parseConfidenceResponse(json);
   assertEquals(data?.previousScore, null);
   assertEquals(data?.statusTransition, null);
+});
+
+Deno.test("parseConfidenceResponse falls back to attributes key", () => {
+  const json = JSON.stringify({
+    attributes: {
+      claimId: "claim-legacy-001",
+      confidenceScore: 0.6,
+      previousScore: null,
+      computedAt: "2026-03-30T10:00:00Z",
+      lastValidated: "2026-03-28T10:00:00Z",
+      fAvg: 1.0,
+      qAvg: 1.0,
+      decayFactor: 1.0,
+      statusTransition: null,
+      evidenceSnapshots: [],
+    },
+  });
+  const data = parseConfidenceResponse(json);
+  assertEquals(data?.claimId, "claim-legacy-001");
+  assertEquals(data?.confidenceScore, 0.6);
 });
