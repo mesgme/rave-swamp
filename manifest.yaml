@@ -1,0 +1,20 @@
+manifestVersion: 1
+name: "@mellens/rave"
+version: "2026.04.02.1"
+description: "RAVE (Reliability & Validation Engineering) — confidence scoring with exponential decay, claim lifecycle management, evidence gathering from GitHub and Prometheus, falsification detection, and readiness gating for software reliability claims"
+models:
+  - rave_claim.ts
+  - rave_confidence_engine.ts
+  - rave_ci_evidence.ts
+  - rave_github_api_evidence.ts
+  - rave_prometheus_evidence.ts
+  - rave_falsifier_engine.ts
+  - rave_readiness_reporter.ts
+labels:
+  - rave
+  - reliability
+  - confidence
+  - claims
+  - evidence
+  - falsification
+  - readiness

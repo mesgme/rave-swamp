@@ -1,0 +1,12 @@
+type: "@mellens/rave/ci-evidence"
+typeVersion: 2026.03.21.1
+id: 219157b2-08c1-4662-9804-e458cc8825a7
+name: evidence-lint-clean-001
+version: 1
+tags: {}
+globalArguments:
+  evidenceId: evidence-lint-clean-001
+  repo: mesgme/rave-swamp
+  workflowName: validate.yml
+  branch: main
+methods: {}

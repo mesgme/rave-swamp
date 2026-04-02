@@ -1,0 +1,11 @@
+type: "@mellens/rave/falsifier-engine"
+typeVersion: 2026.03.21.1
+id: f5d24d6d-6a82-4fc6-a248-117805fe2a91
+name: falsifier-lint-error-001
+version: 1
+tags: {}
+globalArguments:
+  falsifierId: falsifier-lint-error-001
+  conditionType: boolean
+  condition: '{"field":"$.conclusion","expected":"success"}'
+methods: {}

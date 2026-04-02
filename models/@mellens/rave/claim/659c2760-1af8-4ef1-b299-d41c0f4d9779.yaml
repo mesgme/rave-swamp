@@ -1,0 +1,9 @@
+type: "@mellens/rave/claim"
+typeVersion: 2026.03.22.1
+id: 659c2760-1af8-4ef1-b299-d41c0f4d9779
+name: claim-swamp-workflows-valid-001
+version: 1
+tags: {}
+globalArguments:
+  claimId: claim-swamp-workflows-valid-001
+methods: {}

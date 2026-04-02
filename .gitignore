@@ -6,3 +6,5 @@
 # Claude Code configuration (managed by swamp)
 .claude/
 # END swamp managed section
+index/
+extensions/models/upstream_extensions.json

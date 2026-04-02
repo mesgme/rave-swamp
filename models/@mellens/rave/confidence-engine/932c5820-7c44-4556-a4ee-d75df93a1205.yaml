@@ -1,0 +1,11 @@
+type: "@mellens/rave/confidence-engine"
+typeVersion: 2026.03.21.1
+id: 932c5820-7c44-4556-a4ee-d75df93a1205
+name: confidence-claim-swamp-models-valid-001
+version: 1
+tags: {}
+globalArguments:
+  claimId: claim-swamp-models-valid-001
+  decayLambda: 0.05
+  confidenceFloor: 0.01
+methods: {}

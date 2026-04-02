@@ -85,7 +85,7 @@ function evaluateClaim(
 // ---------------------------------------------------------------------------
 
 export const model = {
-  type: "rave/readiness-reporter",
+  type: "@mellens/rave/readiness-reporter",
   version: "2026.03.23.1",
   resources: {
     report: {
@@ -105,11 +105,36 @@ export const model = {
         const threshold = args.threshold;
 
         const claims = [
-          evaluateClaim(args.branchProtectionId, args.branchProtectionStatus, args.branchProtectionScore, threshold),
-          evaluateClaim(args.ciGreenId, args.ciGreenStatus, args.ciGreenScore, threshold),
-          evaluateClaim(args.swampModelsId, args.swampModelsStatus, args.swampModelsScore, threshold),
-          evaluateClaim(args.swampWorkflowsId, args.swampWorkflowsStatus, args.swampWorkflowsScore, threshold),
-          evaluateClaim(args.extensionsCompileId, args.extensionsCompileStatus, args.extensionsCompileScore, threshold),
+          evaluateClaim(
+            args.branchProtectionId,
+            args.branchProtectionStatus,
+            args.branchProtectionScore,
+            threshold,
+          ),
+          evaluateClaim(
+            args.ciGreenId,
+            args.ciGreenStatus,
+            args.ciGreenScore,
+            threshold,
+          ),
+          evaluateClaim(
+            args.swampModelsId,
+            args.swampModelsStatus,
+            args.swampModelsScore,
+            threshold,
+          ),
+          evaluateClaim(
+            args.swampWorkflowsId,
+            args.swampWorkflowsStatus,
+            args.swampWorkflowsScore,
+            threshold,
+          ),
+          evaluateClaim(
+            args.extensionsCompileId,
+            args.extensionsCompileStatus,
+            args.extensionsCompileScore,
+            threshold,
+          ),
         ];
 
         const gateClaims = claims.filter(

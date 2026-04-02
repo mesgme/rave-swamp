@@ -1,9 +1,0 @@
-type: rave/claim
-typeVersion: 2026.03.22.1
-id: 2b9894f0-2d8f-4557-bb41-e92871edbb01
-name: claim-ci-green-on-main-001
-version: 1
-tags: {}
-globalArguments:
-  claimId: claim-ci-green-on-main-001
-methods: {}

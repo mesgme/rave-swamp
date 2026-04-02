@@ -46,13 +46,20 @@ function evaluateThreshold(
   threshold: number,
 ): boolean {
   switch (operator) {
-    case ">": return value > threshold;
-    case ">=": return value >= threshold;
-    case "<": return value < threshold;
-    case "<=": return value <= threshold;
-    case "==": return value === threshold;
-    case "!=": return value !== threshold;
-    default: return false;
+    case ">":
+      return value > threshold;
+    case ">=":
+      return value >= threshold;
+    case "<":
+      return value < threshold;
+    case "<=":
+      return value <= threshold;
+    case "==":
+      return value === threshold;
+    case "!=":
+      return value !== threshold;
+    default:
+      return false;
   }
 }
 
@@ -74,7 +81,7 @@ function buildSummary(
 }
 
 export const model = {
-  type: "rave/prometheus-evidence",
+  type: "@mellens/rave/prometheus-evidence",
   version: "2026.03.21.1",
   globalArguments: GlobalArgsSchema,
   resources: {
@@ -87,12 +94,14 @@ export const model = {
   },
   methods: {
     gather: {
-      description: "Execute a PromQL instant query and record the outcome against an optional threshold",
+      description:
+        "Execute a PromQL instant query and record the outcome against an optional threshold",
       arguments: z.object({
         prometheusToken: z.string(),
       }),
       execute: async (args, context) => {
-        const { baseUrl, query, threshold, operator, unit } = context.globalArgs;
+        const { baseUrl, query, threshold, operator, unit } =
+          context.globalArgs;
         const queryExecutedAt = new Date().toISOString();
         const encodedQuery = encodeURIComponent(query);
         const url = `${baseUrl}/api/v1/query?query=${encodedQuery}`;
@@ -106,10 +115,15 @@ export const model = {
 
         let res: Response;
         try {
-          res = await fetch(url, { headers, signal: AbortSignal.timeout(15_000) });
+          res = await fetch(url, {
+            headers,
+            signal: AbortSignal.timeout(15_000),
+          });
         } catch (err) {
           const message = err instanceof Error ? err.message : String(err);
-          context.logger.warn(`Prometheus request failed: ${message} — recording inconclusive`);
+          context.logger.warn(
+            `Prometheus request failed: ${message} — recording inconclusive`,
+          );
           const handle = await context.writeResource("result", "latest", {
             outcome: "inconclusive",
             summary: `Query failed: ${message}`,
@@ -127,7 +141,10 @@ export const model = {
           throw new Error(`Prometheus API error ${res.status}: ${body}`);
         }
 
-        const payload = await res.json() as { status: string; data: Record<string, unknown> };
+        const payload = await res.json() as {
+          status: string;
+          data: Record<string, unknown>;
+        };
 
         if (payload.status !== "success") {
           throw new Error(`Prometheus returned status '${payload.status}'`);
@@ -151,16 +168,27 @@ export const model = {
 
         let outcome: "pass" | "fail" | "inconclusive";
         if (threshold !== undefined && operator !== undefined) {
-          outcome = evaluateThreshold(value, operator, threshold) ? "fail" : "pass";
+          outcome = evaluateThreshold(value, operator, threshold)
+            ? "fail"
+            : "pass";
         } else {
           outcome = "pass";
         }
 
-        context.logger.info(`Query value=${value}${unit ? " " + unit : ""} → ${outcome}`);
+        context.logger.info(
+          `Query value=${value}${unit ? " " + unit : ""} → ${outcome}`,
+        );
 
         const handle = await context.writeResource("result", "latest", {
           outcome,
-          summary: buildSummary(query, value, unit ?? null, outcome, operator, threshold),
+          summary: buildSummary(
+            query,
+            value,
+            unit ?? null,
+            outcome,
+            operator,
+            threshold,
+          ),
           value,
           unit: unit ?? null,
           timestamp: queryExecutedAt,
