@@ -311,6 +311,52 @@ swamp data get readiness-reporter-001 latest --json
 
 ---
 
+## Dashboard
+
+A read-only TUI for viewing confidence levels across all claims, with a nested scope selector.
+
+### Interactive mode
+
+```bash
+deno task dashboard
+```
+
+- **↑/↓** — navigate the scope tree
+- **r** — refresh confidence data from swamp
+- **q** — quit
+
+Selecting a parent scope shows claims from all descendant scopes. Confidence scores are color-coded:
+
+| Color | Range | Level |
+|---|---|---|
+| Green | ≥ 0.80 | High |
+| Yellow | ≥ 0.50 | Medium |
+| Red | ≥ 0.20 | Low |
+| Bright red | < 0.20 | Critical |
+| Gray | — | No data |
+
+### JSON mode (for agents / CI)
+
+```bash
+deno task dashboard:json
+```
+
+Outputs structured JSON to stdout with all scopes, claims, confidence scores, and levels. No interactive UI.
+
+### Permissions
+
+The dashboard needs:
+- `--allow-read` — read claim/scope YAML files from `rave/`
+- `--allow-run=swamp` — invoke `swamp data get` for confidence scores
+
+These are configured in the `deno task` definitions. To run directly:
+
+```bash
+deno run --allow-read --allow-run=swamp bin/rave-dashboard.ts [--json]
+```
+
+---
+
 ## All available model types
 
 | Type | Purpose |
