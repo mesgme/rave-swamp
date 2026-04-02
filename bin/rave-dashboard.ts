@@ -65,6 +65,14 @@ async function main() {
     return;
   }
 
+  // Check if stdin is a terminal (setRaw fails on non-TTY, e.g. piped input)
+  if (!Deno.stdin.isTerminal()) {
+    // Non-interactive: render once and exit
+    const output = renderDashboard(state);
+    console.log(output);
+    return;
+  }
+
   // Interactive TUI
   Deno.stdin.setRaw(true);
   draw(state);
