@@ -198,7 +198,11 @@ function renderReadiness(
 
 // --- Full dashboard ---
 
-export function renderDashboard(state: DashboardState): string {
+export function renderStatusLine(message: string): string {
+  return `  ${YELLOW}${BOLD}⟳ ${message}${RESET}`;
+}
+
+export function renderDashboard(state: DashboardState, statusMessage?: string): string {
   const selectedScope = state.flatScopes[state.selectedScopeIndex];
   const filteredClaims = claimsForScope(state.claims, selectedScope);
   const lines: string[] = [];
@@ -225,9 +229,15 @@ export function renderDashboard(state: DashboardState): string {
   lines.push(`  ${renderReadiness(filteredClaims, state.confidence, state.threshold)}`);
   lines.push("");
 
+  // Status message (shown during sweep)
+  if (statusMessage) {
+    lines.push(renderStatusLine(statusMessage));
+    lines.push("");
+  }
+
   // Footer
   lines.push(
-    `  ${DIM}[↑/↓] Navigate scopes  [r] Refresh  [q] Quit${RESET}`,
+    `  ${DIM}[↑/↓] Navigate scopes  [s] Sweep  [r] Refresh  [q] Quit${RESET}`,
   );
   lines.push("");
 

@@ -4,6 +4,20 @@ import { fetchAllConfidence } from "./lib/confidence.ts";
 import { renderDashboard, confidenceLevel } from "./lib/render.ts";
 import type { DashboardState } from "./lib/types.ts";
 
+async function runWorkflow(name: string): Promise<boolean> {
+  try {
+    const cmd = new Deno.Command("swamp", {
+      args: ["workflow", "run", name, "--json"],
+      stdout: "piped",
+      stderr: "piped",
+    });
+    const output = await cmd.output();
+    return output.success;
+  } catch {
+    return false;
+  }
+}
+
 const CLEAR = "\x1b[2J\x1b[H";
 const SHOW_CURSOR = "\x1b[?25h";
 const HIDE_CURSOR = "\x1b[?25l";
@@ -49,6 +63,11 @@ function outputJson(state: DashboardState) {
 
 function draw(state: DashboardState) {
   const output = renderDashboard(state);
+  Deno.stdout.writeSync(new TextEncoder().encode(CLEAR + HIDE_CURSOR + output));
+}
+
+function drawWithStatus(state: DashboardState, message: string) {
+  const output = renderDashboard(state, message);
   Deno.stdout.writeSync(new TextEncoder().encode(CLEAR + HIDE_CURSOR + output));
 }
 
@@ -101,6 +120,17 @@ async function main() {
         );
       } else if (input === "r") {
         // Refresh confidence data
+        state.confidence = await fetchAllConfidence(
+          state.claims.map((c) => c.claim_id),
+        );
+      } else if (input === "s") {
+        // Run full sweep: gather evidence → compute confidence → refresh
+        drawWithStatus(state, "Running sweep: gathering evidence...");
+        const evidenceOk = await runWorkflow("gather-all-evidence");
+        if (evidenceOk) {
+          drawWithStatus(state, "Running sweep: computing confidence...");
+          await runWorkflow("confidence-decay-sweep");
+        }
         state.confidence = await fetchAllConfidence(
           state.claims.map((c) => c.claim_id),
         );
