@@ -41,6 +41,7 @@ export interface DashboardState {
   claims: Claim[];
   confidence: Map<string, ConfidenceData>;
   selectedScopeIndex: number;
+  selectedClaimId: string | null;
   threshold: number;
 }
 
