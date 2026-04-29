@@ -50,6 +50,7 @@ function outputJson(state: DashboardState) {
       previousScore: conf?.previousScore ?? null,
       computedAt: conf?.computedAt ?? null,
       level: conf ? confidenceLevel(conf.confidenceScore) : "unknown",
+      guidance: conf?.guidance ?? [],
     };
   });
   const scopes = state.flatScopes.map((s) => ({

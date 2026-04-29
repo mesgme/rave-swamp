@@ -17,6 +17,7 @@ export function parseConfidenceResponse(raw: string): ConfidenceData | null {
       qAvg: attrs.qAvg,
       decayFactor: attrs.decayFactor,
       statusTransition: attrs.statusTransition ?? null,
+      guidance: Array.isArray(attrs.guidance) ? attrs.guidance : [],
     };
   } catch {
     return null;
@@ -51,6 +52,7 @@ const ZERO_CONFIDENCE = (claimId: string): ConfidenceData => ({
   qAvg: 0,
   decayFactor: 0,
   statusTransition: null,
+  guidance: [],
 });
 
 /** Fetch confidence data for all claims in parallel. Claims with no data default to score 0. */

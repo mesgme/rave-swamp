@@ -35,6 +35,7 @@ function makeConfidence(overrides: Partial<ConfidenceData> = {}): ConfidenceData
     qAvg: 1.0,
     decayFactor: 1.0,
     statusTransition: null,
+    guidance: [],
     ...overrides,
   };
 }
