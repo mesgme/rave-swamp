@@ -1,0 +1,11 @@
+type: '@mellens/rave/falsifier-engine'
+typeVersion: 2026.03.21.1
+id: 5fc0edf6-4fd8-4a7b-87e3-6ba2c5a6362e
+name: falsifier-lock-file-stale-001
+version: 1
+tags: {}
+globalArguments:
+  falsifierId: falsifier-lock-file-stale-001
+  conditionType: boolean
+  condition: '{"field":"$.conclusion","expected":"success"}'
+methods: {}

@@ -164,3 +164,83 @@ jobs:
                 freshnessWindow: "P1D"
                 value: null
                 rawData: null
+  - name: secrets-detected
+    description: Evaluate falsifier-secrets-detected-001 against secrets scan CI evidence
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: evaluate
+        description: Check if gitleaks scan passed
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: falsifier-secrets-detected-001
+          methodName: evaluate
+          inputs:
+            evidence:
+              - evidenceId: "evidence-no-secrets-committed-001"
+                outcome: ${{ data.latest("evidence-no-secrets-committed-001", "latest").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-no-secrets-committed-001", "latest").attributes.timestamp }}
+                freshnessWindow: "P1D"
+                value: null
+                rawData: null
+  - name: cve-detected
+    description: Evaluate falsifier-cve-detected-001 against CVE scan CI evidence
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: evaluate
+        description: Check if osv-scanner passed
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: falsifier-cve-detected-001
+          methodName: evaluate
+          inputs:
+            evidence:
+              - evidenceId: "evidence-no-known-cves-001"
+                outcome: ${{ data.latest("evidence-no-known-cves-001", "latest").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-no-known-cves-001", "latest").attributes.timestamp }}
+                freshnessWindow: "P1D"
+                value: null
+                rawData: null
+  - name: lock-file-stale
+    description: Evaluate falsifier-lock-file-stale-001 against deno.lock CI evidence
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: evaluate
+        description: Check if deno cache --frozen passed
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: falsifier-lock-file-stale-001
+          methodName: evaluate
+          inputs:
+            evidence:
+              - evidenceId: "evidence-deno-lock-committed-001"
+                outcome: ${{ data.latest("evidence-deno-lock-committed-001", "latest").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-deno-lock-committed-001", "latest").attributes.timestamp }}
+                freshnessWindow: "P1D"
+                value: null
+                rawData: null
+  - name: unpinned-npm-import
+    description: Evaluate falsifier-unpinned-npm-import-001 against npm pin check CI evidence
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: evaluate
+        description: Check if npm pin grep passed
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: falsifier-unpinned-npm-import-001
+          methodName: evaluate
+          inputs:
+            evidence:
+              - evidenceId: "evidence-npm-imports-pinned-001"
+                outcome: ${{ data.latest("evidence-npm-imports-pinned-001", "latest").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-npm-imports-pinned-001", "latest").attributes.timestamp }}
+                freshnessWindow: "P1D"
+                value: null
+                rawData: null

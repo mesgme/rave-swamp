@@ -1,0 +1,11 @@
+type: '@mellens/rave/confidence-engine'
+typeVersion: 2026.03.21.1
+id: 6fa503ae-612d-4a18-aff2-6d56083d8d48
+name: confidence-claim-npm-imports-pinned-001
+version: 1
+tags: {}
+globalArguments:
+  claimId: claim-npm-imports-pinned-001
+  decayLambda: 0.05
+  confidenceFloor: 0.01
+methods: {}

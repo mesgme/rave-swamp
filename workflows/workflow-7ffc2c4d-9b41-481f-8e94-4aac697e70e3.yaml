@@ -129,4 +129,60 @@ jobs:
         allowFailure: true
     dependsOn: []
     weight: 0
+  - name: no-secrets
+    description: Gather secrets scan evidence (validate.yml run)
+    steps:
+      - name: fetch
+        description: Fetch latest validate.yml run result for secrets scan
+        task:
+          type: model_method
+          modelIdOrName: evidence-no-secrets-committed-001
+          methodName: gather
+          inputs:
+            githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
+        allowFailure: true
+    dependsOn: []
+    weight: 0
+  - name: no-known-cves
+    description: Gather CVE scan evidence (validate.yml run)
+    steps:
+      - name: fetch
+        description: Fetch latest validate.yml run result for CVE scan
+        task:
+          type: model_method
+          modelIdOrName: evidence-no-known-cves-001
+          methodName: gather
+          inputs:
+            githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
+        allowFailure: true
+    dependsOn: []
+    weight: 0
+  - name: deno-lock-committed
+    description: Gather deno.lock verification evidence (validate.yml run)
+    steps:
+      - name: fetch
+        description: Fetch latest validate.yml run result for lock file check
+        task:
+          type: model_method
+          modelIdOrName: evidence-deno-lock-committed-001
+          methodName: gather
+          inputs:
+            githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
+        allowFailure: true
+    dependsOn: []
+    weight: 0
+  - name: npm-imports-pinned
+    description: Gather npm version-pin check evidence (validate.yml run)
+    steps:
+      - name: fetch
+        description: Fetch latest validate.yml run result for npm pin check
+        task:
+          type: model_method
+          modelIdOrName: evidence-npm-imports-pinned-001
+          methodName: gather
+          inputs:
+            githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
+        allowFailure: true
+    dependsOn: []
+    weight: 0
 version: 1
