@@ -41,7 +41,19 @@ async function fetchOne(claimId: string): Promise<ConfidenceData | null> {
   }
 }
 
-/** Fetch confidence data for all claims in parallel. */
+const ZERO_CONFIDENCE = (claimId: string): ConfidenceData => ({
+  claimId,
+  confidenceScore: 0,
+  previousScore: null,
+  computedAt: "",
+  lastValidated: "",
+  fAvg: 0,
+  qAvg: 0,
+  decayFactor: 0,
+  statusTransition: null,
+});
+
+/** Fetch confidence data for all claims in parallel. Claims with no data default to score 0. */
 export async function fetchAllConfidence(
   claimIds: string[],
 ): Promise<Map<string, ConfidenceData>> {
@@ -50,8 +62,8 @@ export async function fetchAllConfidence(
   );
   const map = new Map<string, ConfidenceData>();
   for (const result of results) {
-    if (result.status === "fulfilled" && result.value.data) {
-      map.set(result.value.id, result.value.data);
+    if (result.status === "fulfilled") {
+      map.set(result.value.id, result.value.data ?? ZERO_CONFIDENCE(result.value.id));
     }
   }
   return map;

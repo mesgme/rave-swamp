@@ -1,5 +1,5 @@
 import { assertEquals } from "jsr:@std/assert@1";
-import { parseConfidenceResponse } from "./confidence.ts";
+import { parseConfidenceResponse, fetchAllConfidence } from "./confidence.ts";
 
 Deno.test("parseConfidenceResponse extracts confidence data from swamp JSON", () => {
   const json = JSON.stringify({
@@ -50,6 +50,14 @@ Deno.test("parseConfidenceResponse handles null previousScore", () => {
   const data = parseConfidenceResponse(json);
   assertEquals(data?.previousScore, null);
   assertEquals(data?.statusTransition, null);
+});
+
+Deno.test("fetchAllConfidence defaults to score 0 for claims with no data", async () => {
+  // "claim-does-not-exist-001" has no swamp data, so swamp data get returns non-zero exit
+  const map = await fetchAllConfidence(["claim-does-not-exist-001"]);
+  const entry = map.get("claim-does-not-exist-001");
+  assertEquals(entry?.confidenceScore, 0);
+  assertEquals(entry?.previousScore, null);
 });
 
 Deno.test("parseConfidenceResponse falls back to attributes key", () => {
