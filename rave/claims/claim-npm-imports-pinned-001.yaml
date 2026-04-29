@@ -1,5 +1,5 @@
 claim_id: claim-npm-imports-pinned-001
-statement: Every npm: import specifier in extensions/models/ includes an explicit @version
+statement: "Every npm: import specifier in extensions/models/ includes an explicit @version"
 owner:
   name: mellens
   contact: mesgme/rave-swamp

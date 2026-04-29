@@ -1,5 +1,5 @@
-import { assertEquals } from "jsr:@std/assert@1";
-import { parseClaimYaml, claimsForScope } from "./claims.ts";
+import { assertEquals, assertGreater } from "jsr:@std/assert@1";
+import { parseClaimYaml, parseClaimFiles, claimsForScope } from "./claims.ts";
 import type { ScopeNode } from "./types.ts";
 
 const SAMPLE_CLAIM = `
@@ -16,6 +16,17 @@ scope:
 decay_lambda: 0.02
 annotations: []
 `;
+
+// Smoke test: parse all real claim files from disk (catches YAML syntax errors like unquoted colons)
+Deno.test("parseClaimFiles loads all rave/claims/*.yaml without error", async () => {
+  const claims = await parseClaimFiles("rave/claims");
+  assertGreater(claims.length, 0);
+  for (const claim of claims) {
+    assertEquals(typeof claim.claim_id, "string");
+    assertEquals(typeof claim.statement, "string");
+    assertEquals(typeof claim.status, "string");
+  }
+});
 
 Deno.test("parseClaimYaml extracts claim fields", () => {
   const claim = parseClaimYaml(SAMPLE_CLAIM);

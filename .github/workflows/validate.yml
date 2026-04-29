@@ -88,3 +88,6 @@ jobs:
 
       - name: Code coverage
         run: deno test --coverage=cov_profile extensions/models/ && (deno coverage cov_profile --detailed || true)
+
+      - name: Dashboard tests
+        run: deno task dashboard:test
