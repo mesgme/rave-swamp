@@ -187,6 +187,8 @@ jobs:
                 qualityScore: 0.9
   - name: merged-prs-reviewed
     description: Recompute confidence for claim-merged-prs-reviewed-001
+  - name: no-secrets
+    description: Recompute confidence for claim-no-secrets-committed-001
     dependsOn: []
     weight: 0
     steps:
@@ -209,6 +211,24 @@ jobs:
                 qualityScore: 0.85
   - name: main-commits-via-pr
     description: Recompute confidence for claim-main-commits-via-pr-001
+        description: Apply RAVE decay formula with latest secrets scan evidence
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: confidence-claim-no-secrets-committed-001
+          methodName: compute
+          inputs:
+            currentScore: ${{ data.latest("confidence-claim-no-secrets-committed-001", "current").attributes.confidenceScore }}
+            lastValidated: ${{ data.latest("confidence-claim-no-secrets-committed-001", "current").attributes.computedAt }}
+            currentStatus: "active"
+            evidence:
+              - evidenceId: "evidence-no-secrets-committed-001"
+                outcome: ${{ data.latest("evidence-no-secrets-committed-001", "latest").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-no-secrets-committed-001", "latest").attributes.timestamp }}
+                freshnessWindow: "P1D"
+                qualityScore: 0.95
+  - name: no-known-cves
+    description: Recompute confidence for claim-no-known-cves-001
     dependsOn: []
     weight: 0
     steps:
@@ -231,6 +251,24 @@ jobs:
                 qualityScore: 0.80
   - name: no-stale-untriaged-issues
     description: Recompute confidence for claim-no-stale-untriaged-issues-001
+        description: Apply RAVE decay formula with latest CVE scan evidence
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: confidence-claim-no-known-cves-001
+          methodName: compute
+          inputs:
+            currentScore: ${{ data.latest("confidence-claim-no-known-cves-001", "current").attributes.confidenceScore }}
+            lastValidated: ${{ data.latest("confidence-claim-no-known-cves-001", "current").attributes.computedAt }}
+            currentStatus: "active"
+            evidence:
+              - evidenceId: "evidence-no-known-cves-001"
+                outcome: ${{ data.latest("evidence-no-known-cves-001", "latest").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-no-known-cves-001", "latest").attributes.timestamp }}
+                freshnessWindow: "P1D"
+                qualityScore: 0.90
+  - name: deno-lock-committed
+    description: Recompute confidence for claim-deno-lock-committed-001
     dependsOn: []
     weight: 0
     steps:
@@ -251,3 +289,41 @@ jobs:
                 timestamp: ${{ data.latest("evidence-no-stale-untriaged-issues-001", "latest").attributes.timestamp }}
                 freshnessWindow: "P2D"
                 qualityScore: 0.85
+        description: Apply RAVE decay formula with latest lock file evidence
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: confidence-claim-deno-lock-committed-001
+          methodName: compute
+          inputs:
+            currentScore: ${{ data.latest("confidence-claim-deno-lock-committed-001", "current").attributes.confidenceScore }}
+            lastValidated: ${{ data.latest("confidence-claim-deno-lock-committed-001", "current").attributes.computedAt }}
+            currentStatus: "active"
+            evidence:
+              - evidenceId: "evidence-deno-lock-committed-001"
+                outcome: ${{ data.latest("evidence-deno-lock-committed-001", "latest").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-deno-lock-committed-001", "latest").attributes.timestamp }}
+                freshnessWindow: "P1D"
+                qualityScore: 0.95
+  - name: npm-imports-pinned
+    description: Recompute confidence for claim-npm-imports-pinned-001
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: compute
+        description: Apply RAVE decay formula with latest npm-pin check evidence
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: confidence-claim-npm-imports-pinned-001
+          methodName: compute
+          inputs:
+            currentScore: ${{ data.latest("confidence-claim-npm-imports-pinned-001", "current").attributes.confidenceScore }}
+            lastValidated: ${{ data.latest("confidence-claim-npm-imports-pinned-001", "current").attributes.computedAt }}
+            currentStatus: "active"
+            evidence:
+              - evidenceId: "evidence-npm-imports-pinned-001"
+                outcome: ${{ data.latest("evidence-npm-imports-pinned-001", "latest").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-npm-imports-pinned-001", "latest").attributes.timestamp }}
+                freshnessWindow: "P1D"
+                qualityScore: 0.95

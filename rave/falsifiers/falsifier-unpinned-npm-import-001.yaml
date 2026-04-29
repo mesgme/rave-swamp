@@ -1,0 +1,14 @@
+falsifier_id: "falsifier-unpinned-npm-import-001"
+name: "Unpinned npm: Import Detected"
+description: "Detects when the version-pin grep script exits non-zero, indicating at least one npm: import in extension models lacks an explicit @version."
+condition:
+  type: "boolean"
+  parameters:
+    field: "$.conclusion"
+    expected: "success"
+evidence_ids:
+  - "evidence-npm-imports-pinned-001"
+claim_ids:
+  - "claim-npm-imports-pinned-001"
+metadata:
+  repo: "mesgme/rave-swamp"

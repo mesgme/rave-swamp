@@ -1,0 +1,11 @@
+type: '@mellens/rave/falsifier-engine'
+typeVersion: 2026.03.21.1
+id: b7c6b461-bec3-4c17-be74-5068d0472b1b
+name: falsifier-cve-detected-001
+version: 1
+tags: {}
+globalArguments:
+  falsifierId: falsifier-cve-detected-001
+  conditionType: boolean
+  condition: '{"field":"$.conclusion","expected":"success"}'
+methods: {}

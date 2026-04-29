@@ -1,0 +1,14 @@
+falsifier_id: "falsifier-lock-file-stale-001"
+name: "deno.lock Missing or Stale"
+description: "Detects when 'deno cache --frozen' exits with a non-zero code, indicating deno.lock is absent or out of sync with deno.json."
+condition:
+  type: "boolean"
+  parameters:
+    field: "$.conclusion"
+    expected: "success"
+evidence_ids:
+  - "evidence-deno-lock-committed-001"
+claim_ids:
+  - "claim-deno-lock-committed-001"
+metadata:
+  repo: "mesgme/rave-swamp"

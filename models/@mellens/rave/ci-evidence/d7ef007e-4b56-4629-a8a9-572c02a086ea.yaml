@@ -1,0 +1,12 @@
+type: '@mellens/rave/ci-evidence'
+typeVersion: 2026.03.21.1
+id: d7ef007e-4b56-4629-a8a9-572c02a086ea
+name: evidence-no-known-cves-001
+version: 1
+tags: {}
+globalArguments:
+  evidenceId: evidence-no-known-cves-001
+  repo: mesgme/rave-swamp
+  workflowName: validate.yml
+  branch: main
+methods: {}
