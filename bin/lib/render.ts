@@ -93,7 +93,7 @@ function pad(str: string, width: number): string {
 }
 
 function formatScore(conf: ConfidenceData | undefined): string {
-  if (!conf) return colorize("  N/A  ", "unknown");
+  if (!conf || conf.computedAt === "") return `${GRAY}─${RESET}`;
   const score = conf.confidenceScore.toFixed(3);
   const level = confidenceLevel(conf.confidenceScore);
   return colorize(`● ${score}`, level);
@@ -175,7 +175,7 @@ function renderReadiness(
 
   for (const claim of activeClaims) {
     const conf = confidence.get(claim.claim_id);
-    if (!conf) {
+    if (!conf || conf.computedAt === "") {
       noDataCount++;
     } else if (claim.status === "contradicted") {
       contradictedCount++;
