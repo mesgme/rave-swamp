@@ -1,5 +1,5 @@
 import { parseScopeFile, flattenScopes } from "./lib/scopes.ts";
-import { parseClaimFiles } from "./lib/claims.ts";
+import { parseClaimFiles, claimsForScope } from "./lib/claims.ts";
 import { fetchAllConfidence } from "./lib/confidence.ts";
 import { renderDashboard, confidenceLevel } from "./lib/render.ts";
 import type { DashboardState } from "./lib/types.ts";
@@ -34,6 +34,7 @@ async function loadState(repoDir: string, threshold: number): Promise<DashboardS
     claims,
     confidence,
     selectedScopeIndex: 0,
+    selectedClaimId: null,
     threshold,
   };
 }
@@ -121,14 +122,33 @@ async function main() {
       }
 
       if (input === "\x1b[A") {
-        // Up arrow
+        // Up arrow — navigate scopes
         state.selectedScopeIndex = Math.max(0, state.selectedScopeIndex - 1);
+        state.selectedClaimId = null;
       } else if (input === "\x1b[B") {
-        // Down arrow
+        // Down arrow — navigate scopes
         state.selectedScopeIndex = Math.min(
           state.flatScopes.length - 1,
           state.selectedScopeIndex + 1,
         );
+        state.selectedClaimId = null;
+      } else if (input === "j" || input === "k") {
+        // j/k — navigate claims within the selected scope
+        const selectedScope = state.flatScopes[state.selectedScopeIndex];
+        const scopeClaims = claimsForScope(state.claims, selectedScope)
+          .sort((a, b) => a.category.localeCompare(b.category) || a.claim_id.localeCompare(b.claim_id));
+        if (scopeClaims.length > 0) {
+          const currentIdx = state.selectedClaimId
+            ? scopeClaims.findIndex((c) => c.claim_id === state.selectedClaimId)
+            : -1;
+          if (input === "j") {
+            const next = Math.min(scopeClaims.length - 1, currentIdx + 1);
+            state.selectedClaimId = scopeClaims[next].claim_id;
+          } else {
+            const prev = Math.max(0, currentIdx <= 0 ? 0 : currentIdx - 1);
+            state.selectedClaimId = scopeClaims[prev].claim_id;
+          }
+        }
       } else if (input === "r") {
         // Refresh confidence data
         state.confidence = await fetchAllConfidence(
