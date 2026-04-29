@@ -117,8 +117,8 @@ export const model = {
       description:
         "Apply the RAVE decay formula to produce an updated confidence score for this claim",
       arguments: z.object({
-        currentScore: z.number(),
-        lastValidated: z.string(),
+        currentScore: z.number().optional(),
+        lastValidated: z.string().optional(),
         currentStatus: z.string(),
         evidence: z.array(EvidenceInputSchema),
       }),
@@ -127,14 +127,21 @@ export const model = {
         const now = new Date();
         const computedAt = now.toISOString();
 
-        // Read previous score for transition tracking
+        // Read prior record for previousScore tracking and optional arg defaults.
+        // Falls back to first-run defaults when no record exists yet.
         let previousScore: number | null = null;
+        let currentScore = args.currentScore ?? 1.0;
+        let lastValidated = args.lastValidated ?? computedAt;
         try {
-          const prev = await context.readResource("confidence", "current");
-          previousScore =
-            (prev as { confidenceScore: number }).confidenceScore ?? null;
+          const prev = await context.readResource("confidence", "current") as {
+            confidenceScore: number;
+            computedAt: string;
+          };
+          previousScore = prev.confidenceScore ?? null;
+          if (args.currentScore === undefined) currentScore = prev.confidenceScore ?? 1.0;
+          if (args.lastValidated === undefined) lastValidated = prev.computedAt ?? computedAt;
         } catch {
-          // No previous record — first run
+          // No previous record — first run, use defaults
         }
 
         // Skip computation for terminal/inactive statuses
@@ -152,7 +159,7 @@ export const model = {
             fAvg: 0.0,
             qAvg: 0.0,
             decayFactor: 1.0,
-            lastValidated: args.lastValidated,
+            lastValidated,
             computedAt,
             evidenceSnapshots: [],
             statusTransition: previousScore !== null && previousScore > 0
@@ -168,12 +175,12 @@ export const model = {
           );
           const handle = await context.writeResource("confidence", "current", {
             claimId,
-            confidenceScore: args.currentScore,
+            confidenceScore: currentScore,
             previousScore,
             fAvg: 1.0,
             qAvg: 1.0,
             decayFactor: 1.0,
-            lastValidated: args.lastValidated,
+            lastValidated,
             computedAt,
             evidenceSnapshots: [],
             statusTransition: null,
@@ -193,7 +200,7 @@ export const model = {
             fAvg: 0.0,
             qAvg: 0.0,
             decayFactor: 1.0,
-            lastValidated: args.lastValidated,
+            lastValidated,
             computedAt,
             evidenceSnapshots: [],
             statusTransition: null,
@@ -231,11 +238,11 @@ export const model = {
 
         // Decay: Δt in days
         const deltaDays =
-          (now.getTime() - new Date(args.lastValidated).getTime()) /
+          (now.getTime() - new Date(lastValidated).getTime()) /
           (1000 * 60 * 60 * 24);
         const decayFactor = Math.exp(-decayLambda * deltaDays);
 
-        let score = computeScore(args.currentScore, fAvg, qAvg, decayFactor);
+        let score = computeScore(currentScore, fAvg, qAvg, decayFactor);
 
         // Apply floor
         if (score > 0 && score < confidenceFloor) score = 0.0;
@@ -244,7 +251,7 @@ export const model = {
         score = Math.round(score * 10000) / 10000;
 
         context.logger.info(
-          `Claim '${claimId}': C₀=${args.currentScore} × F_avg=${
+          `Claim '${claimId}': C₀=${currentScore} × F_avg=${
             fAvg.toFixed(3)
           } × Q_avg=${qAvg.toFixed(3)} × decay=${
             decayFactor.toFixed(4)
@@ -263,7 +270,7 @@ export const model = {
           fAvg,
           qAvg,
           decayFactor,
-          lastValidated: args.lastValidated,
+          lastValidated,
           computedAt,
           evidenceSnapshots: snapshots,
           statusTransition,
