@@ -145,6 +145,102 @@ Deno.test("compute: previousScore is null on first run (no stored resource)", as
   assertEquals(written[0].data.previousScore, null);
 });
 
+// ---------------------------------------------------------------------------
+// compute execute — guidance aggregation
+// ---------------------------------------------------------------------------
+
+Deno.test("compute: guidance is empty when all evidence passes", async () => {
+  const { context, getWrittenResources } = createModelTestContext({
+    globalArgs: { claimId: "claim-test-001", decayLambda: 0.05, confidenceFloor: 0.01 },
+    methodName: "compute",
+  });
+
+  await model.methods.compute.execute(
+    {
+      currentStatus: "active",
+      evidence: [{
+        ...passEvidence,
+        failureReason: null,
+        remediation: null,
+      }],
+    },
+    context,
+  );
+
+  const written = getWrittenResources();
+  assertEquals(written[0].data.guidance, []);
+});
+
+Deno.test("compute: guidance contains failureReason and remediation when evidence fails", async () => {
+  const { context, getWrittenResources } = createModelTestContext({
+    globalArgs: { claimId: "claim-test-001", decayLambda: 0.05, confidenceFloor: 0.01 },
+    methodName: "compute",
+  });
+
+  await model.methods.compute.execute(
+    {
+      currentStatus: "active",
+      evidence: [{
+        evidenceId: "evidence-fail-001",
+        outcome: "fail" as const,
+        timestamp: new Date().toISOString(),
+        freshnessWindow: "P1D",
+        qualityScore: 1.0,
+        failureReason: "CI run #999 failed on job 'test'",
+        remediation: "Check the Actions log at https://github.com/org/repo/actions/runs/999",
+      }],
+    },
+    context,
+  );
+
+  const written = getWrittenResources();
+  const guidance = written[0].data.guidance as string[];
+  assertEquals(guidance.length > 0, true);
+  assertEquals(guidance.some((g: string) => g.includes("CI run #999 failed")), true);
+  assertEquals(guidance.some((g: string) => g.includes("Check the Actions log")), true);
+});
+
+Deno.test("compute: guidance includes only failed evidence (not pass or inconclusive)", async () => {
+  const { context, getWrittenResources } = createModelTestContext({
+    globalArgs: { claimId: "claim-test-001", decayLambda: 0.05, confidenceFloor: 0.01 },
+    methodName: "compute",
+  });
+
+  await model.methods.compute.execute(
+    {
+      currentStatus: "active",
+      evidence: [
+        { ...passEvidence, evidenceId: "ev-pass", failureReason: null, remediation: null },
+        {
+          evidenceId: "ev-fail",
+          outcome: "fail" as const,
+          timestamp: new Date().toISOString(),
+          freshnessWindow: "P1D",
+          qualityScore: 1.0,
+          failureReason: "something broke",
+          remediation: "fix it",
+        },
+        {
+          evidenceId: "ev-inconclusive",
+          outcome: "inconclusive" as const,
+          timestamp: new Date().toISOString(),
+          freshnessWindow: null,
+          qualityScore: null,
+          failureReason: null,
+          remediation: null,
+        },
+      ],
+    },
+    context,
+  );
+
+  const written = getWrittenResources();
+  const guidance = written[0].data.guidance as string[];
+  assertEquals(guidance.some((g: string) => g.includes("something broke")), true);
+  assertEquals(guidance.some((g: string) => g.includes("fix it")), true);
+  assertEquals(guidance.length, 2); // failureReason + remediation from the one fail
+});
+
 Deno.test("compute: previousScore is populated from stored resource on second run", async () => {
   const priorComputedAt = "2026-04-29T10:00:00.000Z";
   const { context, getWrittenResources } = createModelTestContext({
