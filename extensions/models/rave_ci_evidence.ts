@@ -14,6 +14,8 @@ const ResultSchema = z.object({
   timestamp: z.string(),
   isStale: z.boolean(),
   rawStatus: z.string(),
+  failureReason: z.string().nullable(),
+  remediation: z.string().nullable(),
 });
 
 function conclusionToOutcome(
@@ -68,6 +70,8 @@ export const model = {
             timestamp: new Date().toISOString(),
             isStale: false,
             rawStatus: "not_found",
+            failureReason: null,
+            remediation: null,
           });
           return { dataHandles: [handle] };
         }
@@ -99,6 +103,8 @@ export const model = {
             timestamp: new Date().toISOString(),
             isStale: false,
             rawStatus: "no_runs",
+            failureReason: null,
+            remediation: null,
           });
           return { dataHandles: [handle] };
         }
@@ -118,6 +124,10 @@ export const model = {
           timestamp: run.created_at,
           isStale: false,
           rawStatus: run.conclusion ?? run.status ?? "unknown",
+          failureReason: outcome === "fail" ? summary : null,
+          remediation: outcome === "fail"
+            ? `Check the Actions log for run #${run.id} at https://github.com/${repo}/actions/runs/${run.id}`
+            : null,
         });
 
         return { dataHandles: [handle] };
