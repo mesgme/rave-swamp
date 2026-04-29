@@ -1,0 +1,22 @@
+evidence_id: "evidence-main-commits-via-pr-001"
+type: "ci_log"
+description: "Nightly governance check verifying all recent main commits are PR merge commits"
+reference:
+  uri: "https://api.github.com/repos/mesgme/rave-swamp/actions/workflows/governance-check.yml/runs?branch=main&per_page=1"
+  format: "application/json"
+  authentication:
+    method: "bearer_token"
+    hint: "GITHUB_TOKEN"
+claim_ids:
+  - "claim-main-commits-via-pr-001"
+freshness_window: "P2D"
+quality_score: 0.80
+methodology:
+  description: "Nightly workflow cross-references main commit SHAs against merged PR merge_commit_sha values via GitHub API; exits non-zero on any unmatched SHA"
+  tooling: "github-actions"
+  frequency: "P1D"
+  coverage: "Last 50 commits on main, cross-referenced against last 100 merged PRs"
+metadata:
+  source_system: "github-actions"
+  repo: "mesgme/rave-swamp"
+  workflow: "governance-check.yml"

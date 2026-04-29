@@ -1,0 +1,11 @@
+type: '@mellens/rave/confidence-engine'
+typeVersion: 2026.03.21.1
+id: c3170046-48c0-467e-b8a1-4625ab0305d1
+name: confidence-claim-merged-prs-reviewed-001
+version: 1
+tags: {}
+globalArguments:
+  claimId: claim-merged-prs-reviewed-001
+  decayLambda: 0.05
+  confidenceFloor: 0.01
+methods: {}

@@ -1,0 +1,11 @@
+type: '@mellens/rave/confidence-engine'
+typeVersion: 2026.03.21.1
+id: 5fa21e35-e8c6-4298-ae30-24948fbfc788
+name: confidence-claim-no-stale-untriaged-issues-001
+version: 1
+tags: {}
+globalArguments:
+  claimId: claim-no-stale-untriaged-issues-001
+  decayLambda: 0.05
+  confidenceFloor: 0.01
+methods: {}

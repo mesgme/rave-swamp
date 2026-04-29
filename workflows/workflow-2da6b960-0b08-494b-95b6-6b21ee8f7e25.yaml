@@ -164,12 +164,30 @@ jobs:
                 freshnessWindow: "P1D"
                 value: null
                 rawData: null
+  - name: pr-review-missing
+    description: Evaluate falsifier-pr-review-missing-001 against PR review governance evidence
   - name: secrets-detected
     description: Evaluate falsifier-secrets-detected-001 against secrets scan CI evidence
     dependsOn: []
     weight: 0
     steps:
       - name: evaluate
+        description: Check if nightly PR review governance check passed
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: falsifier-pr-review-missing-001
+          methodName: evaluate
+          inputs:
+            evidence:
+              - evidenceId: "evidence-merged-prs-reviewed-001"
+                outcome: ${{ data.latest("evidence-merged-prs-reviewed-001", "latest").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-merged-prs-reviewed-001", "latest").attributes.timestamp }}
+                freshnessWindow: "P2D"
+                value: null
+                rawData: null
+  - name: direct-push-detected
+    description: Evaluate falsifier-direct-push-detected-001 against commit provenance governance evidence
         description: Check if gitleaks scan passed
         allowFailure: true
         task:
@@ -190,6 +208,22 @@ jobs:
     weight: 0
     steps:
       - name: evaluate
+        description: Check if nightly commit provenance check passed
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: falsifier-direct-push-detected-001
+          methodName: evaluate
+          inputs:
+            evidence:
+              - evidenceId: "evidence-main-commits-via-pr-001"
+                outcome: ${{ data.latest("evidence-main-commits-via-pr-001", "latest").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-main-commits-via-pr-001", "latest").attributes.timestamp }}
+                freshnessWindow: "P2D"
+                value: null
+                rawData: null
+  - name: stale-untriaged-issue
+    description: Evaluate falsifier-stale-untriaged-issue-001 against stale issue governance evidence
         description: Check if osv-scanner passed
         allowFailure: true
         task:
@@ -210,6 +244,18 @@ jobs:
     weight: 0
     steps:
       - name: evaluate
+        description: Check if nightly stale issue check passed
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: falsifier-stale-untriaged-issue-001
+          methodName: evaluate
+          inputs:
+            evidence:
+              - evidenceId: "evidence-no-stale-untriaged-issues-001"
+                outcome: ${{ data.latest("evidence-no-stale-untriaged-issues-001", "latest").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-no-stale-untriaged-issues-001", "latest").attributes.timestamp }}
+                freshnessWindow: "P2D"
         description: Check if deno cache --frozen passed
         allowFailure: true
         task:

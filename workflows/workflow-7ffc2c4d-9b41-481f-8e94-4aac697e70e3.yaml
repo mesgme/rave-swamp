@@ -129,6 +129,14 @@ jobs:
         allowFailure: true
     dependsOn: []
     weight: 0
+  - name: merged-prs-reviewed
+    description: Gather PR review governance evidence (governance-check.yml run)
+    steps:
+      - name: fetch
+        description: Fetch latest governance-check.yml run result for PR review check
+        task:
+          type: model_method
+          modelIdOrName: evidence-merged-prs-reviewed-001
   - name: no-secrets
     description: Gather secrets scan evidence (validate.yml run)
     steps:
@@ -143,6 +151,14 @@ jobs:
         allowFailure: true
     dependsOn: []
     weight: 0
+  - name: main-commits-via-pr
+    description: Gather commit provenance governance evidence (governance-check.yml run)
+    steps:
+      - name: fetch
+        description: Fetch latest governance-check.yml run result for commit provenance check
+        task:
+          type: model_method
+          modelIdOrName: evidence-main-commits-via-pr-001
   - name: no-known-cves
     description: Gather CVE scan evidence (validate.yml run)
     steps:
@@ -157,6 +173,14 @@ jobs:
         allowFailure: true
     dependsOn: []
     weight: 0
+  - name: no-stale-untriaged-issues
+    description: Gather stale issue triage governance evidence (governance-check.yml run)
+    steps:
+      - name: fetch
+        description: Fetch latest governance-check.yml run result for stale issue check
+        task:
+          type: model_method
+          modelIdOrName: evidence-no-stale-untriaged-issues-001
   - name: deno-lock-committed
     description: Gather deno.lock verification evidence (validate.yml run)
     steps:

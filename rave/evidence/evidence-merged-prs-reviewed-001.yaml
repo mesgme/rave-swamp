@@ -1,0 +1,22 @@
+evidence_id: "evidence-merged-prs-reviewed-001"
+type: "ci_log"
+description: "Nightly governance check verifying all recent merged PRs had at least one approving review"
+reference:
+  uri: "https://api.github.com/repos/mesgme/rave-swamp/actions/workflows/governance-check.yml/runs?branch=main&per_page=1"
+  format: "application/json"
+  authentication:
+    method: "bearer_token"
+    hint: "GITHUB_TOKEN"
+claim_ids:
+  - "claim-merged-prs-reviewed-001"
+freshness_window: "P2D"
+quality_score: 0.85
+methodology:
+  description: "Nightly GitHub Actions workflow queries merged PRs via GitHub API and exits non-zero if any merged PR lacks an APPROVED review"
+  tooling: "github-actions"
+  frequency: "P1D"
+  coverage: "All non-bot PRs merged to main in the last 30 days"
+metadata:
+  source_system: "github-actions"
+  repo: "mesgme/rave-swamp"
+  workflow: "governance-check.yml"

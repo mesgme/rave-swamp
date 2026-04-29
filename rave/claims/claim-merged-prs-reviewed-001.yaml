@@ -1,0 +1,19 @@
+claim_id: claim-merged-prs-reviewed-001
+statement: Every PR merged to main in the last 30 days had at least one approving review before merge
+owner:
+  name: mellens
+  contact: mesgme/rave-swamp
+status: active
+category: change_risk
+scope:
+  type: pipeline
+  target: mesgme/rave-swamp/main
+assumptions:
+  - The GitHub API pulls endpoint is authoritative for review state
+  - PRs merged by bots (renovate, dependabot, github-actions) are excluded
+  - A single APPROVED review from any collaborator satisfies the claim
+falsification_signals:
+  - Any merged PR in the last 30 days has zero APPROVED reviews
+  - A merge commit appears on main from a PR with only COMMENTED or CHANGES_REQUESTED reviews
+decay_lambda: 0.03
+annotations: []

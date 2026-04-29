@@ -185,12 +185,32 @@ jobs:
                 timestamp: ${{ data.latest("evidence-code-coverage-001", "latest").attributes.timestamp }}
                 freshnessWindow: "P1D"
                 qualityScore: 0.9
+  - name: merged-prs-reviewed
+    description: Recompute confidence for claim-merged-prs-reviewed-001
   - name: no-secrets
     description: Recompute confidence for claim-no-secrets-committed-001
     dependsOn: []
     weight: 0
     steps:
       - name: compute
+        description: Apply RAVE decay formula with latest PR review evidence
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: confidence-claim-merged-prs-reviewed-001
+          methodName: compute
+          inputs:
+            currentScore: ${{ data.latest("confidence-claim-merged-prs-reviewed-001", "current").attributes.confidenceScore }}
+            lastValidated: ${{ data.latest("confidence-claim-merged-prs-reviewed-001", "current").attributes.computedAt }}
+            currentStatus: "active"
+            evidence:
+              - evidenceId: "evidence-merged-prs-reviewed-001"
+                outcome: ${{ data.latest("evidence-merged-prs-reviewed-001", "latest").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-merged-prs-reviewed-001", "latest").attributes.timestamp }}
+                freshnessWindow: "P2D"
+                qualityScore: 0.85
+  - name: main-commits-via-pr
+    description: Recompute confidence for claim-main-commits-via-pr-001
         description: Apply RAVE decay formula with latest secrets scan evidence
         allowFailure: true
         task:
@@ -213,6 +233,24 @@ jobs:
     weight: 0
     steps:
       - name: compute
+        description: Apply RAVE decay formula with latest commit provenance evidence
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: confidence-claim-main-commits-via-pr-001
+          methodName: compute
+          inputs:
+            currentScore: ${{ data.latest("confidence-claim-main-commits-via-pr-001", "current").attributes.confidenceScore }}
+            lastValidated: ${{ data.latest("confidence-claim-main-commits-via-pr-001", "current").attributes.computedAt }}
+            currentStatus: "active"
+            evidence:
+              - evidenceId: "evidence-main-commits-via-pr-001"
+                outcome: ${{ data.latest("evidence-main-commits-via-pr-001", "latest").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-main-commits-via-pr-001", "latest").attributes.timestamp }}
+                freshnessWindow: "P2D"
+                qualityScore: 0.80
+  - name: no-stale-untriaged-issues
+    description: Recompute confidence for claim-no-stale-untriaged-issues-001
         description: Apply RAVE decay formula with latest CVE scan evidence
         allowFailure: true
         task:
@@ -235,6 +273,22 @@ jobs:
     weight: 0
     steps:
       - name: compute
+        description: Apply RAVE decay formula with latest stale issue evidence
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: confidence-claim-no-stale-untriaged-issues-001
+          methodName: compute
+          inputs:
+            currentScore: ${{ data.latest("confidence-claim-no-stale-untriaged-issues-001", "current").attributes.confidenceScore }}
+            lastValidated: ${{ data.latest("confidence-claim-no-stale-untriaged-issues-001", "current").attributes.computedAt }}
+            currentStatus: "active"
+            evidence:
+              - evidenceId: "evidence-no-stale-untriaged-issues-001"
+                outcome: ${{ data.latest("evidence-no-stale-untriaged-issues-001", "latest").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-no-stale-untriaged-issues-001", "latest").attributes.timestamp }}
+                freshnessWindow: "P2D"
+                qualityScore: 0.85
         description: Apply RAVE decay formula with latest lock file evidence
         allowFailure: true
         task:

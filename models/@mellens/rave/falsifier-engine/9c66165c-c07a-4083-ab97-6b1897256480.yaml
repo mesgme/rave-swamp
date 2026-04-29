@@ -1,0 +1,11 @@
+type: '@mellens/rave/falsifier-engine'
+typeVersion: 2026.03.21.1
+id: 9c66165c-c07a-4083-ab97-6b1897256480
+name: falsifier-pr-review-missing-001
+version: 1
+tags: {}
+globalArguments:
+  falsifierId: falsifier-pr-review-missing-001
+  conditionType: boolean
+  condition: '{"field":"$.conclusion","expected":"success"}'
+methods: {}
