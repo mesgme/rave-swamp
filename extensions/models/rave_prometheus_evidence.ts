@@ -124,7 +124,7 @@ export const model = {
           context.logger.warn(
             `Prometheus request failed: ${message} — recording inconclusive`,
           );
-          const handle = await context.writeResource("result", "latest", {
+          const handle = await context.writeResource("result", "current", {
             outcome: "inconclusive",
             summary: `Query failed: ${message}`,
             value: null,
@@ -154,7 +154,7 @@ export const model = {
 
         if (value === null) {
           context.logger.warn(`No data returned for query: ${query}`);
-          const handle = await context.writeResource("result", "latest", {
+          const handle = await context.writeResource("result", "current", {
             outcome: "inconclusive",
             summary: buildSummary(query, null, unit ?? null, "inconclusive"),
             value: null,
@@ -179,7 +179,7 @@ export const model = {
           `Query value=${value}${unit ? " " + unit : ""} → ${outcome}`,
         );
 
-        const handle = await context.writeResource("result", "latest", {
+        const handle = await context.writeResource("result", "current", {
           outcome,
           summary: buildSummary(
             query,

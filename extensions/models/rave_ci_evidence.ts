@@ -61,7 +61,7 @@ export const model = {
           context.logger.warn(
             `Workflow '${workflowName}' not found in ${repo} — recording inconclusive`,
           );
-          const handle = await context.writeResource("result", "latest", {
+          const handle = await context.writeResource("result", "current", {
             outcome: "inconclusive",
             summary: `Workflow '${workflowName}' not found in ${repo}`,
             runId: "none",
@@ -91,7 +91,7 @@ export const model = {
           context.logger.warn(
             `No runs found for workflow '${workflowName}' on branch '${branch}'`,
           );
-          const handle = await context.writeResource("result", "latest", {
+          const handle = await context.writeResource("result", "current", {
             outcome: "inconclusive",
             summary:
               `No runs found for '${workflowName}' on branch '${branch}'`,
@@ -111,7 +111,7 @@ export const model = {
           `Run #${run.id}: status=${run.status} conclusion=${run.conclusion} → ${outcome}`,
         );
 
-        const handle = await context.writeResource("result", "latest", {
+        const handle = await context.writeResource("result", "current", {
           outcome,
           summary,
           runId: String(run.id),

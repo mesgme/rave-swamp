@@ -89,6 +89,9 @@ function pad(str: string, width: number): string {
   // deno-lint-ignore no-control-regex
   const visible = str.replace(/\x1b\[[0-9;]*m/g, "");
   const diff = width - visible.length;
+  if (diff < 0 && visible.length === str.length) {
+    return str.slice(0, width - 1) + "…";
+  }
   return diff > 0 ? str + " ".repeat(diff) : str;
 }
 

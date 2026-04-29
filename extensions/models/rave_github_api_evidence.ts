@@ -106,7 +106,7 @@ export const model = {
           context.logger.warn(
             `GitHub API request failed: ${message} — recording inconclusive`,
           );
-          const handle = await context.writeResource("result", "latest", {
+          const handle = await context.writeResource("result", "current", {
             outcome: "inconclusive",
             summary: `Request failed: ${message}`,
             rawData: "{}",
@@ -124,7 +124,7 @@ export const model = {
           context.logger.warn(
             `${evidenceId}: endpoint returned 404 — recording inconclusive`,
           );
-          const handle = await context.writeResource("result", "latest", {
+          const handle = await context.writeResource("result", "current", {
             outcome: "inconclusive",
             summary: `Endpoint not found: ${endpoint}`,
             rawData: bodyText,
@@ -176,7 +176,7 @@ export const model = {
           context.logger.info(`${evidenceId}: HTTP ${httpStatus} → pass`);
         }
 
-        const handle = await context.writeResource("result", "latest", {
+        const handle = await context.writeResource("result", "current", {
           outcome,
           summary,
           rawData,

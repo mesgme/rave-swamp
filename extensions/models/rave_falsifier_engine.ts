@@ -418,7 +418,7 @@ export const model = {
         // Read previous evaluation to preserve lastTriggeredAt
         let lastTriggeredAt: string | null = null;
         try {
-          const prev = await context.readResource("evaluation", "latest");
+          const prev = await context.readResource("evaluation", "current");
           if ((prev as { triggered: boolean }).triggered) {
             lastTriggeredAt = (prev as { evaluatedAt: string }).evaluatedAt;
           } else {
@@ -454,7 +454,7 @@ export const model = {
           );
         }
 
-        const handle = await context.writeResource("evaluation", "latest", {
+        const handle = await context.writeResource("evaluation", "current", {
           falsifierId,
           triggered: result.triggered,
           evaluatedAt,
