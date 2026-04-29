@@ -187,8 +187,6 @@ jobs:
                 qualityScore: 0.9
   - name: merged-prs-reviewed
     description: Recompute confidence for claim-merged-prs-reviewed-001
-  - name: no-secrets
-    description: Recompute confidence for claim-no-secrets-committed-001
     dependsOn: []
     weight: 0
     steps:
@@ -209,8 +207,12 @@ jobs:
                 timestamp: ${{ data.latest("evidence-merged-prs-reviewed-001", "latest").attributes.timestamp }}
                 freshnessWindow: "P2D"
                 qualityScore: 0.85
-  - name: main-commits-via-pr
-    description: Recompute confidence for claim-main-commits-via-pr-001
+  - name: no-secrets
+    description: Recompute confidence for claim-no-secrets-committed-001
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: compute
         description: Apply RAVE decay formula with latest secrets scan evidence
         allowFailure: true
         task:
@@ -227,8 +229,8 @@ jobs:
                 timestamp: ${{ data.latest("evidence-no-secrets-committed-001", "latest").attributes.timestamp }}
                 freshnessWindow: "P1D"
                 qualityScore: 0.95
-  - name: no-known-cves
-    description: Recompute confidence for claim-no-known-cves-001
+  - name: main-commits-via-pr
+    description: Recompute confidence for claim-main-commits-via-pr-001
     dependsOn: []
     weight: 0
     steps:
@@ -249,8 +251,12 @@ jobs:
                 timestamp: ${{ data.latest("evidence-main-commits-via-pr-001", "latest").attributes.timestamp }}
                 freshnessWindow: "P2D"
                 qualityScore: 0.80
-  - name: no-stale-untriaged-issues
-    description: Recompute confidence for claim-no-stale-untriaged-issues-001
+  - name: no-known-cves
+    description: Recompute confidence for claim-no-known-cves-001
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: compute
         description: Apply RAVE decay formula with latest CVE scan evidence
         allowFailure: true
         task:
@@ -267,8 +273,8 @@ jobs:
                 timestamp: ${{ data.latest("evidence-no-known-cves-001", "latest").attributes.timestamp }}
                 freshnessWindow: "P1D"
                 qualityScore: 0.90
-  - name: deno-lock-committed
-    description: Recompute confidence for claim-deno-lock-committed-001
+  - name: no-stale-untriaged-issues
+    description: Recompute confidence for claim-no-stale-untriaged-issues-001
     dependsOn: []
     weight: 0
     steps:
@@ -289,6 +295,12 @@ jobs:
                 timestamp: ${{ data.latest("evidence-no-stale-untriaged-issues-001", "latest").attributes.timestamp }}
                 freshnessWindow: "P2D"
                 qualityScore: 0.85
+  - name: deno-lock-committed
+    description: Recompute confidence for claim-deno-lock-committed-001
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: compute
         description: Apply RAVE decay formula with latest lock file evidence
         allowFailure: true
         task:
