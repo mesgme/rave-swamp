@@ -1,0 +1,11 @@
+type: '@mellens/rave/confidence-engine'
+typeVersion: 2026.03.21.1
+id: 6805b551-af86-4360-b75a-1260a3a3818f
+name: confidence-claim-main-commits-via-pr-001
+version: 1
+tags: {}
+globalArguments:
+  claimId: claim-main-commits-via-pr-001
+  decayLambda: 0.05
+  confidenceFloor: 0.01
+methods: {}

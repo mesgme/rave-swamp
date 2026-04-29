@@ -1,0 +1,11 @@
+type: '@mellens/rave/falsifier-engine'
+typeVersion: 2026.03.21.1
+id: bf3a5ab1-e708-498c-88f5-9284573ac5df
+name: falsifier-stale-untriaged-issue-001
+version: 1
+tags: {}
+globalArguments:
+  falsifierId: falsifier-stale-untriaged-issue-001
+  conditionType: boolean
+  condition: '{"field":"$.conclusion","expected":"success"}'
+methods: {}

@@ -1,0 +1,19 @@
+claim_id: claim-no-stale-untriaged-issues-001
+statement: No open issue is older than 30 days without at least one label
+owner:
+  name: mellens
+  contact: mesgme/rave-swamp
+status: active
+category: process
+scope:
+  type: pipeline
+  target: mesgme/rave-swamp/main
+assumptions:
+  - All issues are filed in mesgme/rave-swamp
+  - The presence of any label is sufficient evidence of triage
+  - Issues created by bots are subject to the same 30-day rule
+falsification_signals:
+  - Any open issue older than 30 days has no labels attached
+  - A burst of unlabelled issues remains unreviewed after the 30-day window
+decay_lambda: 0.10
+annotations: []

@@ -1,0 +1,12 @@
+type: '@mellens/rave/ci-evidence'
+typeVersion: 2026.03.21.1
+id: ebeb91f5-6937-4eb5-9574-b48e5e5b5782
+name: evidence-no-stale-untriaged-issues-001
+version: 1
+tags: {}
+globalArguments:
+  evidenceId: evidence-no-stale-untriaged-issues-001
+  repo: mesgme/rave-swamp
+  workflowName: governance-check.yml
+  branch: main
+methods: {}

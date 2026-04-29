@@ -1,0 +1,14 @@
+falsifier_id: "falsifier-pr-review-missing-001"
+name: "Merged PR Without Approving Review"
+description: "Detects when the nightly PR review check exits non-zero, indicating at least one PR was merged to main without an APPROVED review."
+condition:
+  type: "boolean"
+  parameters:
+    field: "$.conclusion"
+    expected: "success"
+evidence_ids:
+  - "evidence-merged-prs-reviewed-001"
+claim_ids:
+  - "claim-merged-prs-reviewed-001"
+metadata:
+  repo: "mesgme/rave-swamp"

@@ -1,0 +1,86 @@
+name: governance-check
+
+on:
+  schedule:
+    - cron: '0 6 * * *'   # 06:00 UTC nightly
+  workflow_dispatch:
+
+jobs:
+  pr-reviews:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check merged PRs have at least one approving review
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SINCE=$(date -d '30 days ago' --utc +%Y-%m-%dT%H:%M:%SZ 2>/dev/null \
+            || date -v-30d -u +%Y-%m-%dT%H:%M:%SZ)
+          FAILURES=0
+          for PR in $(gh api "repos/mesgme/rave-swamp/pulls?state=closed&base=main&per_page=50" \
+              --jq '.[] | select(.merged_at != null and .merged_at > "'"$SINCE"'") | .number'); do
+            USER=$(gh api "repos/mesgme/rave-swamp/pulls/$PR" --jq '.user.login')
+            case "$USER" in renovate*|dependabot*|github-actions*) continue ;; esac
+            APPROVED=$(gh api "repos/mesgme/rave-swamp/pulls/$PR/reviews" \
+              --jq '[.[] | select(.state == "APPROVED")] | length')
+            if [ "$APPROVED" -eq 0 ]; then
+              echo "PR #$PR merged to main without an approving review" >&2
+              FAILURES=$((FAILURES+1))
+            fi
+          done
+          exit $FAILURES
+
+  commits-via-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 200
+
+      - name: Check main commits arrived via merged PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          MERGE_SHAS=$(gh api \
+            "repos/mesgme/rave-swamp/pulls?state=closed&base=main&per_page=100" \
+            --jq '[.[] | select(.merged_at != null) | .merge_commit_sha] | .[]')
+
+          FAILURES=0
+          while read SHA; do
+            PARENT_COUNT=$(git cat-file -p "$SHA" | grep -c '^parent ' || echo 0)
+            if [ "$PARENT_COUNT" -eq 0 ]; then
+              continue
+            fi
+            if ! echo "$MERGE_SHAS" | grep -qx "$SHA"; then
+              echo "Commit $SHA on main is not a known PR merge commit" >&2
+              FAILURES=$((FAILURES+1))
+            fi
+          done < <(git log --format='%H' origin/main -50)
+
+          exit $FAILURES
+
+  stale-untriaged-issues:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for stale untriaged open issues
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          CUTOFF=$(date -d '30 days ago' --utc +%Y-%m-%d 2>/dev/null \
+            || date -v-30d -u +%Y-%m-%d)
+
+          STALE=$(gh issue list \
+            --repo mesgme/rave-swamp \
+            --search "is:open no:label created:<${CUTOFF}" \
+            --json number,title,createdAt \
+            --jq 'length')
+
+          if [ "$STALE" -gt 0 ]; then
+            echo "Found $STALE open issue(s) older than 30 days with no label:" >&2
+            gh issue list \
+              --repo mesgme/rave-swamp \
+              --search "is:open no:label created:<${CUTOFF}" \
+              --json number,title,createdAt \
+              --jq '.[] | "#\(.number) \(.title) (created \(.createdAt))"' >&2
+            exit 1
+          fi
+          echo "No stale untriaged issues found."

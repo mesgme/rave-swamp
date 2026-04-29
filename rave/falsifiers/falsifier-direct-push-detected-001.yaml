@@ -1,0 +1,14 @@
+falsifier_id: "falsifier-direct-push-detected-001"
+name: "Direct Push to Main Detected"
+description: "Detects when the nightly commit provenance check exits non-zero, indicating at least one commit on main is not associated with a merged PR."
+condition:
+  type: "boolean"
+  parameters:
+    field: "$.conclusion"
+    expected: "success"
+evidence_ids:
+  - "evidence-main-commits-via-pr-001"
+claim_ids:
+  - "claim-main-commits-via-pr-001"
+metadata:
+  repo: "mesgme/rave-swamp"

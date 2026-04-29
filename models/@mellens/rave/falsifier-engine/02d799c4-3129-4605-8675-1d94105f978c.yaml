@@ -1,0 +1,11 @@
+type: '@mellens/rave/falsifier-engine'
+typeVersion: 2026.03.21.1
+id: 02d799c4-3129-4605-8675-1d94105f978c
+name: falsifier-direct-push-detected-001
+version: 1
+tags: {}
+globalArguments:
+  falsifierId: falsifier-direct-push-detected-001
+  conditionType: boolean
+  condition: '{"field":"$.conclusion","expected":"success"}'
+methods: {}
