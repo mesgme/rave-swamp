@@ -184,6 +184,34 @@ Deno.test("renderClaimsTable shows no arrow for tiny trend diff (< 0.001)", () =
   assertEquals(output.includes("↓"), false);
 });
 
+// --- renderClaimsTable: sort order ---
+
+Deno.test("renderClaimsTable sorts rows by category alphabetically", () => {
+  const claims = [
+    makeClaim({ claim_id: "claim-z-001", category: "security" }),
+    makeClaim({ claim_id: "claim-a-001", category: "reliability" }),
+    makeClaim({ claim_id: "claim-m-001", category: "code_quality" }),
+  ];
+  const output = stripAnsi(renderClaimsTable(claims, new Map()));
+  const reliabilityPos = output.indexOf("reliability");
+  const codeQualityPos = output.indexOf("code_quality");
+  const securityPos = output.indexOf("security");
+  // code_quality < reliability < security alphabetically
+  assertEquals(codeQualityPos < reliabilityPos, true);
+  assertEquals(reliabilityPos < securityPos, true);
+});
+
+Deno.test("renderClaimsTable stable-sorts by claim_id within same category", () => {
+  const claims = [
+    makeClaim({ claim_id: "claim-b-001", category: "reliability" }),
+    makeClaim({ claim_id: "claim-a-001", category: "reliability" }),
+  ];
+  const output = stripAnsi(renderClaimsTable(claims, new Map()));
+  const posA = output.indexOf("claim-a-001");
+  const posB = output.indexOf("claim-b-001");
+  assertEquals(posA < posB, true);
+});
+
 // --- renderClaimsTable: column layout ---
 
 Deno.test("renderClaimsTable truncates claim IDs that exceed column width", () => {

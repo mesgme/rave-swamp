@@ -148,7 +148,10 @@ export function renderClaimsTable(
   if (claims.length === 0) {
     lines.push(`│ ${GRAY}${pad("No claims in this scope", W - 2)}${RESET}│`);
   } else {
-    for (const claim of claims) {
+    const sorted = [...claims].sort((a, b) =>
+      a.category.localeCompare(b.category) || a.claim_id.localeCompare(b.claim_id)
+    );
+    for (const claim of sorted) {
       const conf = confidence.get(claim.claim_id);
       const sc = statusColor(claim.status);
       const row = ` ${pad(claim.claim_id, COL.id)}${sc}${
