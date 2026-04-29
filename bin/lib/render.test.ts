@@ -62,7 +62,7 @@ Deno.test("renderScopeTree renders children with connectors", () => {
 
 // --- renderClaimsTable ---
 
-Deno.test("renderClaimsTable shows N/A for missing confidence", () => {
+Deno.test("renderClaimsTable shows ─ for missing confidence", () => {
   const claims: Claim[] = [{
     claim_id: "claim-test-001",
     statement: "test",
@@ -74,7 +74,7 @@ Deno.test("renderClaimsTable shows N/A for missing confidence", () => {
   }];
   const confidence = new Map<string, ConfidenceData>();
   const output = renderClaimsTable(claims, confidence);
-  assertEquals(output.includes("N/A"), true);
+  assertEquals(output.includes("─"), true);
 });
 
 Deno.test("renderClaimsTable shows score for known confidence", () => {

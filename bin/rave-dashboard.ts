@@ -96,6 +96,16 @@ async function main() {
   Deno.stdin.setRaw(true);
   draw(state);
 
+  // Auto-sweep on startup
+  drawWithStatus(state, "Running sweep: gathering evidence...");
+  const startupEvidenceOk = await runWorkflow("gather-all-evidence");
+  if (startupEvidenceOk) {
+    drawWithStatus(state, "Running sweep: computing confidence...");
+    await runWorkflow("confidence-decay-sweep");
+  }
+  state.confidence = await fetchAllConfidence(state.claims.map((c) => c.claim_id));
+  draw(state);
+
   const buf = new Uint8Array(8);
   try {
     while (true) {
