@@ -11,5 +11,8 @@
     "dashboard": "deno run --allow-read --allow-run=swamp bin/rave-dashboard.ts",
     "dashboard:json": "deno run --allow-read --allow-run=swamp bin/rave-dashboard.ts --json",
     "dashboard:test": "deno test --allow-read bin/"
+  },
+  "imports": {
+    "@systeminit/swamp-testing": "jsr:@systeminit/swamp-testing@^0.20260424.9"
   }
 }

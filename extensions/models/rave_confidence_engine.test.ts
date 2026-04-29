@@ -1,4 +1,6 @@
 import { assertEquals, assertThrows, assertAlmostEquals } from "jsr:@std/assert@1";
+import { createModelTestContext } from "@systeminit/swamp-testing";
+import { model } from "./rave_confidence_engine.ts";
 
 // ---------------------------------------------------------------------------
 // Re-implement the pure functions under test so we can test them without
@@ -113,4 +115,63 @@ Deno.test("computeScore: fail evidence → fAvg=0 → score=0", () => {
 Deno.test("computeScore: partial freshness (50% pass, 50% fail)", () => {
   // fAvg = 0.5 (one pass, one fail), qAvg=0.9, decay=1.0, C₀=0.8
   assertAlmostEquals(computeScore(0.8, 0.5, 0.9, 1.0), 0.36, 1e-9);
+});
+
+// ---------------------------------------------------------------------------
+// compute execute — previousScore propagation (regression)
+// ---------------------------------------------------------------------------
+
+const passEvidence = {
+  evidenceId: "evidence-test-001",
+  outcome: "pass" as const,
+  timestamp: new Date().toISOString(),
+  freshnessWindow: "P1D",
+  qualityScore: 1.0,
+};
+
+Deno.test("compute: previousScore is null on first run (no stored resource)", async () => {
+  const { context, getWrittenResources } = createModelTestContext({
+    globalArgs: { claimId: "claim-test-001", decayLambda: 0.05, confidenceFloor: 0.01 },
+    methodName: "compute",
+  });
+
+  await model.methods.compute.execute(
+    { currentStatus: "active", evidence: [passEvidence] },
+    context,
+  );
+
+  const written = getWrittenResources();
+  assertEquals(written.length, 1);
+  assertEquals(written[0].data.previousScore, null);
+});
+
+Deno.test("compute: previousScore is populated from stored resource on second run", async () => {
+  const priorComputedAt = "2026-04-29T10:00:00.000Z";
+  const { context, getWrittenResources } = createModelTestContext({
+    globalArgs: { claimId: "claim-test-001", decayLambda: 0.05, confidenceFloor: 0.01 },
+    methodName: "compute",
+    storedResources: {
+      current: {
+        claimId: "claim-test-001",
+        confidenceScore: 0.85,
+        previousScore: null,
+        fAvg: 1.0,
+        qAvg: 1.0,
+        decayFactor: 1.0,
+        lastValidated: priorComputedAt,
+        computedAt: priorComputedAt,
+        evidenceSnapshots: [],
+        statusTransition: null,
+      },
+    },
+  });
+
+  await model.methods.compute.execute(
+    { currentStatus: "active", evidence: [passEvidence] },
+    context,
+  );
+
+  const written = getWrittenResources();
+  assertEquals(written.length, 1);
+  assertEquals(written[0].data.previousScore, 0.85);
 });

@@ -133,13 +133,17 @@ export const model = {
         let currentScore = args.currentScore ?? 1.0;
         let lastValidated = args.lastValidated ?? computedAt;
         try {
-          const prev = await context.readResource("confidence", "current") as {
+          const prev = await context.readResource("current") as {
             confidenceScore: number;
             computedAt: string;
           };
           previousScore = prev.confidenceScore ?? null;
-          if (args.currentScore === undefined) currentScore = prev.confidenceScore ?? 1.0;
-          if (args.lastValidated === undefined) lastValidated = prev.computedAt ?? computedAt;
+          if (args.currentScore === undefined) {
+            currentScore = prev.confidenceScore ?? 1.0;
+          }
+          if (args.lastValidated === undefined) {
+            lastValidated = prev.computedAt ?? computedAt;
+          }
         } catch {
           // No previous record — first run, use defaults
         }
@@ -237,8 +241,7 @@ export const model = {
         const qAvg = qSum / args.evidence.length;
 
         // Decay: Δt in days
-        const deltaDays =
-          (now.getTime() - new Date(lastValidated).getTime()) /
+        const deltaDays = (now.getTime() - new Date(lastValidated).getTime()) /
           (1000 * 60 * 60 * 24);
         const decayFactor = Math.exp(-decayLambda * deltaDays);
 
@@ -293,7 +296,7 @@ export const model = {
 
         let previousScore: number | null = null;
         try {
-          const prev = await context.readResource("confidence", "current");
+          const prev = await context.readResource("current");
           previousScore =
             (prev as { confidenceScore: number }).confidenceScore ?? null;
         } catch {

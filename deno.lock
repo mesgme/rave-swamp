@@ -2,10 +2,13 @@
   "version": "5",
   "specifiers": {
     "jsr:@std/assert@1": "1.0.19",
+    "jsr:@std/assert@1.0.19": "1.0.19",
     "jsr:@std/internal@^1.0.12": "1.0.12",
     "jsr:@std/yaml@1": "1.0.12",
+    "jsr:@systeminit/swamp-testing@~0.20260424.9": "0.20260424.9",
     "npm:yaml@2": "2.8.3",
-    "npm:zod@4": "4.3.6"
+    "npm:zod@4": "4.3.6",
+    "npm:zod@^4.3.6": "4.3.6"
   },
   "jsr": {
     "@std/assert@1.0.19": {
@@ -19,14 +22,27 @@
     },
     "@std/yaml@1.0.12": {
       "integrity": "7deabca4545bcedd07c5f69ea53acea71b8b4c67562f224e17b90d75944cb20c"
+    },
+    "@systeminit/swamp-testing@0.20260424.9": {
+      "integrity": "c2364e542bbb5f03cda94aaba070be8710c9533423bbb36c91bd12ce2a45bbc5",
+      "dependencies": [
+        "jsr:@std/assert@1.0.19",
+        "npm:zod@^4.3.6"
+      ]
     }
   },
   "npm": {
     "yaml@2.8.3": {
-      "integrity": "sha512-AvbaCLOO2Otw/lW5bmh9d/WEdcDFdQp2Z2ZUH3pX9U2ihyUY0nvLv7J6TrWowklRGPYbB/IuIMfYgxaCPg5Bpg=="
+      "integrity": "sha512-AvbaCLOO2Otw/lW5bmh9d/WEdcDFdQp2Z2ZUH3pX9U2ihyUY0nvLv7J6TrWowklRGPYbB/IuIMfYgxaCPg5Bpg==",
+      "bin": true
     },
     "zod@4.3.6": {
       "integrity": "sha512-rftlrkhHZOcjDwkGlnUtZZkvaPHCsDATp4pGpuOOMDaTdDDXF91wuVDJoWoPsKX/3YPQ5fHuF3STjcYyKr+Qhg=="
     }
+  },
+  "workspace": {
+    "dependencies": [
+      "jsr:@systeminit/swamp-testing@~0.20260424.9"
+    ]
   }
 }
