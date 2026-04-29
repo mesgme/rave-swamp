@@ -166,8 +166,6 @@ jobs:
                 rawData: null
   - name: pr-review-missing
     description: Evaluate falsifier-pr-review-missing-001 against PR review governance evidence
-  - name: secrets-detected
-    description: Evaluate falsifier-secrets-detected-001 against secrets scan CI evidence
     dependsOn: []
     weight: 0
     steps:
@@ -186,8 +184,12 @@ jobs:
                 freshnessWindow: "P2D"
                 value: null
                 rawData: null
-  - name: direct-push-detected
-    description: Evaluate falsifier-direct-push-detected-001 against commit provenance governance evidence
+  - name: secrets-detected
+    description: Evaluate falsifier-secrets-detected-001 against secrets scan CI evidence
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: evaluate
         description: Check if gitleaks scan passed
         allowFailure: true
         task:
@@ -202,8 +204,8 @@ jobs:
                 freshnessWindow: "P1D"
                 value: null
                 rawData: null
-  - name: cve-detected
-    description: Evaluate falsifier-cve-detected-001 against CVE scan CI evidence
+  - name: direct-push-detected
+    description: Evaluate falsifier-direct-push-detected-001 against commit provenance governance evidence
     dependsOn: []
     weight: 0
     steps:
@@ -222,8 +224,12 @@ jobs:
                 freshnessWindow: "P2D"
                 value: null
                 rawData: null
-  - name: stale-untriaged-issue
-    description: Evaluate falsifier-stale-untriaged-issue-001 against stale issue governance evidence
+  - name: cve-detected
+    description: Evaluate falsifier-cve-detected-001 against CVE scan CI evidence
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: evaluate
         description: Check if osv-scanner passed
         allowFailure: true
         task:
@@ -238,8 +244,8 @@ jobs:
                 freshnessWindow: "P1D"
                 value: null
                 rawData: null
-  - name: lock-file-stale
-    description: Evaluate falsifier-lock-file-stale-001 against deno.lock CI evidence
+  - name: stale-untriaged-issue
+    description: Evaluate falsifier-stale-untriaged-issue-001 against stale issue governance evidence
     dependsOn: []
     weight: 0
     steps:
@@ -256,6 +262,14 @@ jobs:
                 outcome: ${{ data.latest("evidence-no-stale-untriaged-issues-001", "latest").attributes.outcome }}
                 timestamp: ${{ data.latest("evidence-no-stale-untriaged-issues-001", "latest").attributes.timestamp }}
                 freshnessWindow: "P2D"
+                value: null
+                rawData: null
+  - name: lock-file-stale
+    description: Evaluate falsifier-lock-file-stale-001 against deno.lock CI evidence
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: evaluate
         description: Check if deno cache --frozen passed
         allowFailure: true
         task:

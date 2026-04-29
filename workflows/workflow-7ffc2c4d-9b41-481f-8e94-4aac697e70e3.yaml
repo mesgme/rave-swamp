@@ -137,6 +137,12 @@ jobs:
         task:
           type: model_method
           modelIdOrName: evidence-merged-prs-reviewed-001
+          methodName: gather
+          inputs:
+            githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
+        allowFailure: true
+    dependsOn: []
+    weight: 0
   - name: no-secrets
     description: Gather secrets scan evidence (validate.yml run)
     steps:
@@ -159,6 +165,12 @@ jobs:
         task:
           type: model_method
           modelIdOrName: evidence-main-commits-via-pr-001
+          methodName: gather
+          inputs:
+            githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
+        allowFailure: true
+    dependsOn: []
+    weight: 0
   - name: no-known-cves
     description: Gather CVE scan evidence (validate.yml run)
     steps:
@@ -181,6 +193,12 @@ jobs:
         task:
           type: model_method
           modelIdOrName: evidence-no-stale-untriaged-issues-001
+          methodName: gather
+          inputs:
+            githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
+        allowFailure: true
+    dependsOn: []
+    weight: 0
   - name: deno-lock-committed
     description: Gather deno.lock verification evidence (validate.yml run)
     steps:
