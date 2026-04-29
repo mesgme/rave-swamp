@@ -162,7 +162,7 @@ export const model = {
           }
         }
 
-        const handle = await context.writeResource("report", "latest", {
+        const handle = await context.writeResource("report", "current", {
           threshold,
           ready,
           evaluatedAt,

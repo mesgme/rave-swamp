@@ -19,11 +19,11 @@ jobs:
           inputs:
             evidence:
               - evidenceId: "evidence-github-branch-protection-001"
-                outcome: ${{ data.latest("evidence-github-branch-protection-001", "latest").attributes.outcome }}
-                timestamp: ${{ data.latest("evidence-github-branch-protection-001", "latest").attributes.timestamp }}
+                outcome: ${{ data.latest("evidence-github-branch-protection-001", "current").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-github-branch-protection-001", "current").attributes.timestamp }}
                 freshnessWindow: "PT1H"
                 value: null
-                rawData: ${{ data.latest("evidence-github-branch-protection-001", "latest").attributes.rawData }}
+                rawData: ${{ data.latest("evidence-github-branch-protection-001", "current").attributes.rawData }}
   - name: ci-failure-on-main
     description: Evaluate falsifier-ci-failure-on-main-001 against GitHub Actions run history
     dependsOn: []
@@ -39,11 +39,11 @@ jobs:
           inputs:
             evidence:
               - evidenceId: "evidence-github-actions-runs-001"
-                outcome: ${{ data.latest("evidence-github-actions-runs-001", "latest").attributes.outcome }}
-                timestamp: ${{ data.latest("evidence-github-actions-runs-001", "latest").attributes.timestamp }}
+                outcome: ${{ data.latest("evidence-github-actions-runs-001", "current").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-github-actions-runs-001", "current").attributes.timestamp }}
                 freshnessWindow: "P1D"
                 value: null
-                rawData: ${{ data.latest("evidence-github-actions-runs-001", "latest").attributes.rawData }}
+                rawData: ${{ data.latest("evidence-github-actions-runs-001", "current").attributes.rawData }}
   - name: model-validation-fail
     description: Evaluate falsifier-model-validation-fail-001 against swamp model validation CI evidence
     dependsOn: []
@@ -59,8 +59,8 @@ jobs:
           inputs:
             evidence:
               - evidenceId: "evidence-swamp-model-validate-001"
-                outcome: ${{ data.latest("evidence-swamp-model-validate-001", "latest").attributes.outcome }}
-                timestamp: ${{ data.latest("evidence-swamp-model-validate-001", "latest").attributes.timestamp }}
+                outcome: ${{ data.latest("evidence-swamp-model-validate-001", "current").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-swamp-model-validate-001", "current").attributes.timestamp }}
                 freshnessWindow: "P1D"
                 value: null
                 rawData: null
@@ -79,8 +79,8 @@ jobs:
           inputs:
             evidence:
               - evidenceId: "evidence-swamp-workflow-validate-001"
-                outcome: ${{ data.latest("evidence-swamp-workflow-validate-001", "latest").attributes.outcome }}
-                timestamp: ${{ data.latest("evidence-swamp-workflow-validate-001", "latest").attributes.timestamp }}
+                outcome: ${{ data.latest("evidence-swamp-workflow-validate-001", "current").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-swamp-workflow-validate-001", "current").attributes.timestamp }}
                 freshnessWindow: "P1D"
                 value: null
                 rawData: null
@@ -99,8 +99,8 @@ jobs:
           inputs:
             evidence:
               - evidenceId: "evidence-typescript-compile-001"
-                outcome: ${{ data.latest("evidence-typescript-compile-001", "latest").attributes.outcome }}
-                timestamp: ${{ data.latest("evidence-typescript-compile-001", "latest").attributes.timestamp }}
+                outcome: ${{ data.latest("evidence-typescript-compile-001", "current").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-typescript-compile-001", "current").attributes.timestamp }}
                 freshnessWindow: "P1D"
                 value: null
                 rawData: null
@@ -119,8 +119,8 @@ jobs:
           inputs:
             evidence:
               - evidenceId: "evidence-lint-clean-001"
-                outcome: ${{ data.latest("evidence-lint-clean-001", "latest").attributes.outcome }}
-                timestamp: ${{ data.latest("evidence-lint-clean-001", "latest").attributes.timestamp }}
+                outcome: ${{ data.latest("evidence-lint-clean-001", "current").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-lint-clean-001", "current").attributes.timestamp }}
                 freshnessWindow: "P1D"
                 value: null
                 rawData: null
@@ -139,8 +139,8 @@ jobs:
           inputs:
             evidence:
               - evidenceId: "evidence-unit-tests-pass-001"
-                outcome: ${{ data.latest("evidence-unit-tests-pass-001", "latest").attributes.outcome }}
-                timestamp: ${{ data.latest("evidence-unit-tests-pass-001", "latest").attributes.timestamp }}
+                outcome: ${{ data.latest("evidence-unit-tests-pass-001", "current").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-unit-tests-pass-001", "current").attributes.timestamp }}
                 freshnessWindow: "P1D"
                 value: null
                 rawData: null
@@ -159,8 +159,8 @@ jobs:
           inputs:
             evidence:
               - evidenceId: "evidence-code-coverage-001"
-                outcome: ${{ data.latest("evidence-code-coverage-001", "latest").attributes.outcome }}
-                timestamp: ${{ data.latest("evidence-code-coverage-001", "latest").attributes.timestamp }}
+                outcome: ${{ data.latest("evidence-code-coverage-001", "current").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-code-coverage-001", "current").attributes.timestamp }}
                 freshnessWindow: "P1D"
                 value: null
                 rawData: null
@@ -179,8 +179,8 @@ jobs:
           inputs:
             evidence:
               - evidenceId: "evidence-merged-prs-reviewed-001"
-                outcome: ${{ data.latest("evidence-merged-prs-reviewed-001", "latest").attributes.outcome }}
-                timestamp: ${{ data.latest("evidence-merged-prs-reviewed-001", "latest").attributes.timestamp }}
+                outcome: ${{ data.latest("evidence-merged-prs-reviewed-001", "current").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-merged-prs-reviewed-001", "current").attributes.timestamp }}
                 freshnessWindow: "P2D"
                 value: null
                 rawData: null
@@ -199,8 +199,8 @@ jobs:
           inputs:
             evidence:
               - evidenceId: "evidence-no-secrets-committed-001"
-                outcome: ${{ data.latest("evidence-no-secrets-committed-001", "latest").attributes.outcome }}
-                timestamp: ${{ data.latest("evidence-no-secrets-committed-001", "latest").attributes.timestamp }}
+                outcome: ${{ data.latest("evidence-no-secrets-committed-001", "current").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-no-secrets-committed-001", "current").attributes.timestamp }}
                 freshnessWindow: "P1D"
                 value: null
                 rawData: null
@@ -219,8 +219,8 @@ jobs:
           inputs:
             evidence:
               - evidenceId: "evidence-main-commits-via-pr-001"
-                outcome: ${{ data.latest("evidence-main-commits-via-pr-001", "latest").attributes.outcome }}
-                timestamp: ${{ data.latest("evidence-main-commits-via-pr-001", "latest").attributes.timestamp }}
+                outcome: ${{ data.latest("evidence-main-commits-via-pr-001", "current").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-main-commits-via-pr-001", "current").attributes.timestamp }}
                 freshnessWindow: "P2D"
                 value: null
                 rawData: null
@@ -239,8 +239,8 @@ jobs:
           inputs:
             evidence:
               - evidenceId: "evidence-no-known-cves-001"
-                outcome: ${{ data.latest("evidence-no-known-cves-001", "latest").attributes.outcome }}
-                timestamp: ${{ data.latest("evidence-no-known-cves-001", "latest").attributes.timestamp }}
+                outcome: ${{ data.latest("evidence-no-known-cves-001", "current").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-no-known-cves-001", "current").attributes.timestamp }}
                 freshnessWindow: "P1D"
                 value: null
                 rawData: null
@@ -259,8 +259,8 @@ jobs:
           inputs:
             evidence:
               - evidenceId: "evidence-no-stale-untriaged-issues-001"
-                outcome: ${{ data.latest("evidence-no-stale-untriaged-issues-001", "latest").attributes.outcome }}
-                timestamp: ${{ data.latest("evidence-no-stale-untriaged-issues-001", "latest").attributes.timestamp }}
+                outcome: ${{ data.latest("evidence-no-stale-untriaged-issues-001", "current").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-no-stale-untriaged-issues-001", "current").attributes.timestamp }}
                 freshnessWindow: "P2D"
                 value: null
                 rawData: null
@@ -279,8 +279,8 @@ jobs:
           inputs:
             evidence:
               - evidenceId: "evidence-deno-lock-committed-001"
-                outcome: ${{ data.latest("evidence-deno-lock-committed-001", "latest").attributes.outcome }}
-                timestamp: ${{ data.latest("evidence-deno-lock-committed-001", "latest").attributes.timestamp }}
+                outcome: ${{ data.latest("evidence-deno-lock-committed-001", "current").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-deno-lock-committed-001", "current").attributes.timestamp }}
                 freshnessWindow: "P1D"
                 value: null
                 rawData: null
@@ -299,8 +299,8 @@ jobs:
           inputs:
             evidence:
               - evidenceId: "evidence-npm-imports-pinned-001"
-                outcome: ${{ data.latest("evidence-npm-imports-pinned-001", "latest").attributes.outcome }}
-                timestamp: ${{ data.latest("evidence-npm-imports-pinned-001", "latest").attributes.timestamp }}
+                outcome: ${{ data.latest("evidence-npm-imports-pinned-001", "current").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-npm-imports-pinned-001", "current").attributes.timestamp }}
                 freshnessWindow: "P1D"
                 value: null
                 rawData: null
