@@ -341,3 +341,25 @@ jobs:
                 qualityScore: 0.95
                 failureReason: ${{ data.latest("evidence-npm-imports-pinned-001", "current").attributes.failureReason }}
                 remediation: ${{ data.latest("evidence-npm-imports-pinned-001", "current").attributes.remediation }}
+  - name: rave-spec-untampered
+    description: Recompute confidence for claim-rave-spec-untampered-001
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: compute
+        description: Apply RAVE decay formula with latest diff tamper evidence
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: confidence-claim-rave-spec-untampered-001
+          methodName: compute
+          inputs:
+            currentStatus: "active"
+            evidence:
+              - evidenceId: "evidence-rave-spec-untampered-001"
+                outcome: ${{ data.latest("evidence-rave-spec-untampered-001", "current").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-rave-spec-untampered-001", "current").attributes.timestamp }}
+                freshnessWindow: "P1D"
+                qualityScore: 0.95
+                failureReason: ${{ data.latest("evidence-rave-spec-untampered-001", "current").attributes.failureReason }}
+                remediation: ${{ data.latest("evidence-rave-spec-untampered-001", "current").attributes.remediation }}

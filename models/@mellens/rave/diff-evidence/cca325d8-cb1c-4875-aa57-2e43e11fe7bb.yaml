@@ -1,0 +1,11 @@
+type: '@mellens/rave/diff-evidence'
+typeVersion: 2026.04.29.1
+id: cca325d8-cb1c-4875-aa57-2e43e11fe7bb
+name: evidence-rave-spec-untampered-001
+version: 1
+tags: {}
+globalArguments:
+  evidenceId: evidence-rave-spec-untampered-001
+  guardedGlobs: >-
+    rave/claims/**,rave/scopes/**,workflows/workflow-*.yaml,extensions/models/rave_*.ts
+methods: {}

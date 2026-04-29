@@ -227,4 +227,17 @@ jobs:
         allowFailure: true
     dependsOn: []
     weight: 0
+  - name: rave-spec-untampered
+    description: Gather diff-based tamper detection evidence for the rave spec
+    steps:
+      - name: fetch
+        description: Run git diff to classify guarded vs non-guarded file changes
+        task:
+          type: model_method
+          modelIdOrName: evidence-rave-spec-untampered-001
+          methodName: gather
+          inputs: {}
+        allowFailure: true
+    dependsOn: []
+    weight: 0
 version: 1
