@@ -31,6 +31,7 @@ export interface ConfidenceData {
   qAvg: number;
   decayFactor: number;
   statusTransition: string | null;
+  guidance: string[];
 }
 
 /** Full dashboard state. */
