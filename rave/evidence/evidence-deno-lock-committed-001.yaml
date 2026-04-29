@@ -1,0 +1,22 @@
+evidence_id: "evidence-deno-lock-committed-001"
+type: "ci_log"
+description: "deno cache --frozen check verifying deno.lock is committed and current in mesgme/rave-swamp"
+reference:
+  uri: "https://api.github.com/repos/mesgme/rave-swamp/actions/workflows/validate.yml/runs?branch=main&per_page=1"
+  format: "application/json"
+  authentication:
+    method: "bearer_token"
+    hint: "GITHUB_TOKEN"
+claim_ids:
+  - "claim-deno-lock-committed-001"
+freshness_window: "P1D"
+quality_score: 0.95
+methodology:
+  description: "Run 'deno cache --frozen deno.json' in GitHub Actions; pass if exit code is 0"
+  tooling: "github-actions"
+  frequency: "P1D"
+  coverage: "All imports declared in deno.json"
+metadata:
+  source_system: "github-actions"
+  repo: "mesgme/rave-swamp"
+  workflow: "validate.yml"

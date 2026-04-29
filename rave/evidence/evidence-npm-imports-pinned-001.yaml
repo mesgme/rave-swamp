@@ -1,0 +1,22 @@
+evidence_id: "evidence-npm-imports-pinned-001"
+type: "ci_log"
+description: "grep check verifying all npm: imports in extension models carry an explicit @version in mesgme/rave-swamp"
+reference:
+  uri: "https://api.github.com/repos/mesgme/rave-swamp/actions/workflows/validate.yml/runs?branch=main&per_page=1"
+  format: "application/json"
+  authentication:
+    method: "bearer_token"
+    hint: "GITHUB_TOKEN"
+claim_ids:
+  - "claim-npm-imports-pinned-001"
+freshness_window: "P1D"
+quality_score: 0.95
+methodology:
+  description: "Run a grep script in GitHub Actions that fails if any npm: import in extensions/models/*.ts lacks @version"
+  tooling: "github-actions"
+  frequency: "P1D"
+  coverage: "All .ts files in extensions/models/"
+metadata:
+  source_system: "github-actions"
+  repo: "mesgme/rave-swamp"
+  workflow: "validate.yml"

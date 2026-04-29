@@ -1,0 +1,11 @@
+type: '@mellens/rave/confidence-engine'
+typeVersion: 2026.03.21.1
+id: d0dfb442-6c68-4603-aa8c-b5221f025ad7
+name: confidence-claim-deno-lock-committed-001
+version: 1
+tags: {}
+globalArguments:
+  claimId: claim-deno-lock-committed-001
+  decayLambda: 0.05
+  confidenceFloor: 0.01
+methods: {}

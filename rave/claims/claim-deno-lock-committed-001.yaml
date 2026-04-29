@@ -1,0 +1,20 @@
+claim_id: claim-deno-lock-committed-001
+statement: deno.lock is committed and matches the current import configuration
+owner:
+  name: mellens
+  contact: mesgme/rave-swamp
+status: active
+category: code_quality
+scope:
+  type: component
+  target: mesgme/rave-swamp/extensions
+assumptions:
+  - deno.json is the canonical import map and config file
+  - deno cache --frozen is a reliable test for lock-file staleness
+  - The Deno version in CI matches the version used locally
+falsification_signals:
+  - deno.lock is absent from the repo root
+  - deno cache --frozen exits non-zero indicating the lock file is stale
+  - deno.lock appears in .gitignore
+decay_lambda: 0.05
+annotations: []

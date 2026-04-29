@@ -1,0 +1,11 @@
+type: '@mellens/rave/falsifier-engine'
+typeVersion: 2026.03.21.1
+id: a34b8275-f689-412b-9862-21cea00420cf
+name: falsifier-secrets-detected-001
+version: 1
+tags: {}
+globalArguments:
+  falsifierId: falsifier-secrets-detected-001
+  conditionType: boolean
+  condition: '{"field":"$.conclusion","expected":"success"}'
+methods: {}

@@ -24,10 +24,33 @@ jobs:
       - name: Validate workflows
         run: swamp workflow validate --json
 
+      - name: Scan for secrets
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+
       - name: Install Deno
         uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
+
+      - name: Verify lock file is current
+        run: deno cache --frozen deno.json
+
+      - name: Check npm imports are version-pinned
+        run: |
+          if grep -rP 'from\s+"npm:(?!zod@)[^@"]+(?<![0-9])"' extensions/models/*.ts; then
+            echo "ERROR: found unpinned npm: import — add @<version> to each npm: specifier" >&2
+            exit 1
+          fi
+          echo "All npm: imports are version-pinned."
+
+      - name: Scan dependencies for CVEs
+        uses: google/osv-scanner-action@v1
+        with:
+          scan-args: |-
+            --lockfile=deno.lock
 
       - name: TypeScript compile check
         run: deno check extensions/models/*.ts

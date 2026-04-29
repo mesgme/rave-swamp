@@ -1,0 +1,19 @@
+claim_id: claim-npm-imports-pinned-001
+statement: Every npm: import specifier in extensions/models/ includes an explicit @version
+owner:
+  name: mellens
+  contact: mesgme/rave-swamp
+status: active
+category: code_quality
+scope:
+  type: component
+  target: mesgme/rave-swamp/extensions
+assumptions:
+  - All npm dependencies are expressed as inline npm: specifiers (no package.json)
+  - zod is excluded from the check (provided by the swamp runtime, not bundled)
+  - The grep pattern reliably identifies specifiers missing @version
+falsification_signals:
+  - Any npm: import in extensions/models/*.ts lacks an @version suffix
+  - A new extension model is added with an unpinned npm: specifier
+decay_lambda: 0.05
+annotations: []

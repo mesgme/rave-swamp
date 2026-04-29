@@ -1,0 +1,11 @@
+type: '@mellens/rave/falsifier-engine'
+typeVersion: 2026.03.21.1
+id: 748a33be-de37-4d5d-849e-b9e03d545651
+name: falsifier-unpinned-npm-import-001
+version: 1
+tags: {}
+globalArguments:
+  falsifierId: falsifier-unpinned-npm-import-001
+  conditionType: boolean
+  condition: '{"field":"$.conclusion","expected":"success"}'
+methods: {}
