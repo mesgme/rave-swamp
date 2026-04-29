@@ -18,6 +18,8 @@ const ResultSchema = z.object({
   timestamp: z.string(),
   isStale: z.boolean(),
   httpStatus: z.number(),
+  failureReason: z.string().nullable(),
+  remediation: z.string().nullable(),
 });
 
 // ---------------------------------------------------------------------------
@@ -113,6 +115,8 @@ export const model = {
             timestamp,
             isStale: false,
             httpStatus: 0,
+            failureReason: null,
+            remediation: null,
           });
           return { dataHandles: [handle] };
         }
@@ -131,6 +135,8 @@ export const model = {
             timestamp,
             isStale: false,
             httpStatus,
+            failureReason: null,
+            remediation: null,
           });
           return { dataHandles: [handle] };
         }
@@ -183,6 +189,12 @@ export const model = {
           timestamp,
           isStale: false,
           httpStatus,
+          failureReason: outcome === "fail" ? summary : null,
+          remediation: outcome === "fail"
+            ? `Check the API response for ${repo}${endpoint} and ensure ${
+              successField ?? "the endpoint"
+            } returns the expected value`
+            : null,
         });
 
         return { dataHandles: [handle] };
