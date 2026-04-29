@@ -12,7 +12,6 @@ const BASE_GLOBAL_ARGS = {
 function mockFetch(
   status: number,
   body: unknown,
-  ok?: boolean,
 ): () => Promise<Response> {
   return () =>
     Promise.resolve(
