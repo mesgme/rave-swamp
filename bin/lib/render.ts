@@ -166,7 +166,7 @@ export function renderClaimsTable(
 
 // --- Readiness summary ---
 
-function renderReadiness(
+export function renderReadiness(
   claims: Claim[],
   confidence: Map<string, ConfidenceData>,
   threshold: number,
