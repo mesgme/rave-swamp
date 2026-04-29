@@ -36,7 +36,13 @@ jobs:
           deno-version: v2.x
 
       - name: Verify lock file is current
-        run: deno cache --frozen deno.json
+        run: |
+          deno cache extensions/models/*.ts
+          if [ -n "$(git status --porcelain deno.lock)" ]; then
+            echo "ERROR: deno.lock is missing or stale. Run: deno cache extensions/models/*.ts && git add deno.lock && git commit" >&2
+            exit 1
+          fi
+          echo "deno.lock is committed and current."
 
       - name: Check npm imports are version-pinned
         run: |
@@ -47,10 +53,27 @@ jobs:
           echo "All npm: imports are version-pinned."
 
       - name: Scan dependencies for CVEs
-        uses: google/osv-scanner-action@v1
-        with:
-          scan-args: |-
-            --lockfile=deno.lock
+        run: |
+          # Build a custom osv-scanner manifest from the npm entries in deno.lock
+          python3 - <<'PYEOF'
+          import json
+          with open('deno.lock') as f:
+            lock = json.load(f)
+          pkgs = []
+          for key in lock.get('npm', {}):
+            at = key.rfind('@')
+            name, version = key[:at], key[at + 1:]
+            pkgs.append({'package': {'name': name, 'version': version, 'ecosystem': 'npm'}})
+          manifest = {'results': [{'packages': pkgs}]}
+          with open('/tmp/osv-scan.json', 'w') as f:
+            json.dump(manifest, f)
+          print('Scanning npm packages:', [p['package']['name'] + '@' + p['package']['version'] for p in pkgs])
+          PYEOF
+
+          curl -fsSL https://github.com/google/osv-scanner/releases/download/v2.3.5/osv-scanner_linux_amd64 \
+            -o /usr/local/bin/osv-scanner
+          chmod +x /usr/local/bin/osv-scanner
+          osv-scanner scan -L osv-scanner:/tmp/osv-scan.json
 
       - name: TypeScript compile check
         run: deno check extensions/models/*.ts
