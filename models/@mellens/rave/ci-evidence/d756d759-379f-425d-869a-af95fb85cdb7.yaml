@@ -1,5 +1,5 @@
 type: '@mellens/rave/ci-evidence'
-typeVersion: 2026.03.21.1
+typeVersion: 2026.04.30.1
 id: d756d759-379f-425d-869a-af95fb85cdb7
 name: evidence-merged-prs-reviewed-001
 version: 1
@@ -9,4 +9,5 @@ globalArguments:
   repo: mesgme/rave-swamp
   workflowName: governance-check.yml
   branch: main
+  jobName: pr-reviews
 methods: {}
