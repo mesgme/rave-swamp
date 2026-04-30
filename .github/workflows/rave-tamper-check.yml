@@ -1,0 +1,48 @@
+name: rave tamper check
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  tamper-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for rave:spec-change override label
+        id: label-check
+        run: |
+          LABELS=$(gh pr view ${{ github.event.pull_request.number }} --json labels -q '.labels[].name')
+          if echo "$LABELS" | grep -q "rave:spec-change"; then
+            echo "override=true" >> "$GITHUB_OUTPUT"
+            echo "rave:spec-change label present — skipping tamper gate"
+          else
+            echo "override=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check for mixed spec/app changes
+        if: steps.label-check.outputs.override != 'true'
+        run: |
+          CHANGED=$(git diff --name-only origin/main...HEAD)
+          GUARDED=$(echo "$CHANGED" | grep -E '^(rave/claims/|rave/scopes/|workflows/workflow-.*\.yaml|extensions/models/rave_.*\.ts)' || true)
+          NON_GUARDED=$(echo "$CHANGED" | grep -Ev '^(rave/claims/|rave/scopes/|workflows/workflow-.*\.yaml|extensions/models/rave_.*\.ts)' || true)
+
+          if [ -n "$GUARDED" ] && [ -n "$NON_GUARDED" ]; then
+            echo "Mixed PR detected: spec files and application files changed together."
+            echo ""
+            echo "Guarded files changed:"
+            echo "$GUARDED"
+            echo ""
+            echo "Non-guarded files changed:"
+            echo "$NON_GUARDED"
+            echo ""
+            echo "Split into two PRs, or add the 'rave:spec-change' label if intentional."
+            exit 1
+          else
+            echo "Tamper check passed."
+          fi
