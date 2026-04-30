@@ -83,3 +83,25 @@ git push origin --delete feature/<feature-name>
 ## Specification
 
 The RAVE spec lives in `spec/rave-spec-v0.1.md`. Placeholder sections map to GitHub issues #2–#9.
+
+## Rave Spec Change Policy
+
+The following files are **guarded** — they define the rave spec and must not be
+edited as a side effect of unrelated work:
+
+- `rave/claims/**`
+- `rave/scopes/**`
+- `workflows/workflow-*.yaml`
+- `extensions/models/rave_*.ts`
+
+**If you need to edit guarded files as part of a legitimate spec change:**
+
+1. Do it in a dedicated PR that touches only guarded files.
+2. Apply the `rave:spec-change` label to the PR:
+   ```bash
+   gh pr edit <number> --add-label "rave:spec-change"
+   ```
+3. The `rave tamper check` CI gate will skip the rave-check step when this label is present.
+
+**Never mix guarded spec changes with application code changes in a single PR.**
+The `claim-rave-spec-untampered-001` claim will detect and flag this pattern.
