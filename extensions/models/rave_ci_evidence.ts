@@ -135,6 +135,10 @@ export const model = {
             timestamp: run.created_at,
             isStale: false,
             rawStatus: run.conclusion ?? run.status ?? "unknown",
+            failureReason: outcome === "fail" ? summary : null,
+            remediation: outcome === "fail"
+              ? `Check the Actions log for run #${run.id} at https://github.com/${repo}/actions/runs/${run.id}`
+              : null,
           });
 
           return { dataHandles: [handle] };
@@ -142,11 +146,11 @@ export const model = {
 
         // With jobName: fetch per-job conclusions for this run
         return await gatherJobOutcome(
-          args.githubToken,
           baseUrl,
           headers,
           run,
           jobName,
+          repo,
           context,
         );
       },
@@ -155,11 +159,11 @@ export const model = {
 };
 
 async function gatherJobOutcome(
-  _token: string,
   baseUrl: string,
   headers: Record<string, string>,
   run: Record<string, unknown>,
   jobName: string,
+  repo: string,
   context: {
     logger: { info: (s: string) => void; warn: (s: string) => void };
     writeResource: (
@@ -216,6 +220,8 @@ async function gatherJobOutcome(
       timestamp: run.created_at ?? new Date().toISOString(),
       isStale: false,
       rawStatus: "job_not_found",
+      failureReason: null,
+      remediation: null,
     });
     return { dataHandles: [handle] };
   }
@@ -227,15 +233,20 @@ async function gatherJobOutcome(
     `Run #${runId} job '${jobName}': conclusion=${conclusion} → ${outcome}`,
   );
 
+  const jobSummary = `${jobName} on ${branch}@${sha}: ${
+    conclusion ?? job.status ?? "unknown"
+  }`;
   const handle = await context.writeResource("result", "current", {
     outcome,
-    summary: `${jobName} on ${branch}@${sha}: ${
-      conclusion ?? job.status ?? "unknown"
-    }`,
+    summary: jobSummary,
     runId: String(runId),
     timestamp: (job.completed_at ?? run.created_at) as string,
     isStale: false,
     rawStatus: conclusion ?? (job.status as string) ?? "unknown",
+    failureReason: outcome === "fail" ? jobSummary : null,
+    remediation: outcome === "fail"
+      ? `Check the '${jobName}' job log at https://github.com/${repo}/actions/runs/${runId}`
+      : null,
   });
 
   return { dataHandles: [handle] };

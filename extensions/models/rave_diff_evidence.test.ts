@@ -24,7 +24,10 @@ Deno.test("classifyPaths: only non-guarded changes → pass", () => {
 
 Deno.test("classifyPaths: only guarded changes → inconclusive", () => {
   const result = classifyPaths(
-    ["rave/claims/claim-test-001.yaml", "extensions/models/rave_ci_evidence.ts"],
+    [
+      "rave/claims/claim-test-001.yaml",
+      "extensions/models/rave_ci_evidence.ts",
+    ],
     GUARDED_GLOBS,
   );
   assertEquals(result.outcome, "inconclusive");

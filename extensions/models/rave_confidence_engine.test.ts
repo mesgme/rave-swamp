@@ -177,7 +177,11 @@ Deno.test("compute: previousScore is null on first run (no stored resource)", as
 
 Deno.test("compute: guidance is empty when all evidence passes", async () => {
   const { context, getWrittenResources } = createModelTestContext({
-    globalArgs: { claimId: "claim-test-001", decayLambda: 0.05, confidenceFloor: 0.01 },
+    globalArgs: {
+      claimId: "claim-test-001",
+      decayLambda: 0.05,
+      confidenceFloor: 0.01,
+    },
     methodName: "compute",
   });
 
@@ -199,7 +203,11 @@ Deno.test("compute: guidance is empty when all evidence passes", async () => {
 
 Deno.test("compute: guidance contains failureReason and remediation when evidence fails", async () => {
   const { context, getWrittenResources } = createModelTestContext({
-    globalArgs: { claimId: "claim-test-001", decayLambda: 0.05, confidenceFloor: 0.01 },
+    globalArgs: {
+      claimId: "claim-test-001",
+      decayLambda: 0.05,
+      confidenceFloor: 0.01,
+    },
     methodName: "compute",
   });
 
@@ -213,7 +221,8 @@ Deno.test("compute: guidance contains failureReason and remediation when evidenc
         freshnessWindow: "P1D",
         qualityScore: 1.0,
         failureReason: "CI run #999 failed on job 'test'",
-        remediation: "Check the Actions log at https://github.com/org/repo/actions/runs/999",
+        remediation:
+          "Check the Actions log at https://github.com/org/repo/actions/runs/999",
       }],
     },
     context,
@@ -222,13 +231,23 @@ Deno.test("compute: guidance contains failureReason and remediation when evidenc
   const written = getWrittenResources();
   const guidance = written[0].data.guidance as string[];
   assertEquals(guidance.length > 0, true);
-  assertEquals(guidance.some((g: string) => g.includes("CI run #999 failed")), true);
-  assertEquals(guidance.some((g: string) => g.includes("Check the Actions log")), true);
+  assertEquals(
+    guidance.some((g: string) => g.includes("CI run #999 failed")),
+    true,
+  );
+  assertEquals(
+    guidance.some((g: string) => g.includes("Check the Actions log")),
+    true,
+  );
 });
 
 Deno.test("compute: guidance includes only failed evidence (not pass or inconclusive)", async () => {
   const { context, getWrittenResources } = createModelTestContext({
-    globalArgs: { claimId: "claim-test-001", decayLambda: 0.05, confidenceFloor: 0.01 },
+    globalArgs: {
+      claimId: "claim-test-001",
+      decayLambda: 0.05,
+      confidenceFloor: 0.01,
+    },
     methodName: "compute",
   });
 
@@ -236,7 +255,12 @@ Deno.test("compute: guidance includes only failed evidence (not pass or inconclu
     {
       currentStatus: "active",
       evidence: [
-        { ...passEvidence, evidenceId: "ev-pass", failureReason: null, remediation: null },
+        {
+          ...passEvidence,
+          evidenceId: "ev-pass",
+          failureReason: null,
+          remediation: null,
+        },
         {
           evidenceId: "ev-fail",
           outcome: "fail" as const,
@@ -262,7 +286,10 @@ Deno.test("compute: guidance includes only failed evidence (not pass or inconclu
 
   const written = getWrittenResources();
   const guidance = written[0].data.guidance as string[];
-  assertEquals(guidance.some((g: string) => g.includes("something broke")), true);
+  assertEquals(
+    guidance.some((g: string) => g.includes("something broke")),
+    true,
+  );
   assertEquals(guidance.some((g: string) => g.includes("fix it")), true);
   assertEquals(guidance.length, 2); // failureReason + remediation from the one fail
 });
