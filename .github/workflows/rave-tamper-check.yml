@@ -46,3 +46,29 @@ jobs:
           else
             echo "Tamper check passed."
           fi
+
+      - name: Install swamp
+        run: curl -fsSL swamp.club/install.sh | sh
+
+      - name: Add swamp to PATH
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Gather evidence
+        continue-on-error: true
+        run: swamp workflow run gather-all-evidence
+        env:
+          SWAMP_VAULT_RAVE_CREDENTIALS_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute confidence
+        continue-on-error: true
+        run: swamp workflow run confidence-decay-sweep
+
+      - name: Post rave health report to PR
+        continue-on-error: true
+        run: deno run --allow-read --allow-run=deno,swamp,gh --allow-env --allow-net bin/rave-report.ts ${{ github.event.pull_request.number }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
