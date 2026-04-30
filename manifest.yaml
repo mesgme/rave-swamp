@@ -10,6 +10,7 @@ models:
   - rave_prometheus_evidence.ts
   - rave_falsifier_engine.ts
   - rave_readiness_reporter.ts
+  - rave_diff_evidence.ts
 labels:
   - rave
   - reliability

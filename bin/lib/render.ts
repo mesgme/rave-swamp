@@ -202,6 +202,18 @@ export function renderReadiness(
   return `${RED}${BOLD}Readiness: ✗ NOT READY${RESET} ${DIM}(${parts.join(", ")})${RESET}`;
 }
 
+// --- Guidance panel ---
+
+export function renderGuidancePanel(guidance: string[]): string {
+  if (guidance.length === 0) return "";
+  const lines: string[] = [];
+  lines.push(`  ${BOLD}${YELLOW}Guidance:${RESET}`);
+  for (const item of guidance) {
+    lines.push(`  ${DIM}•${RESET} ${item}`);
+  }
+  return lines.join("\n");
+}
+
 // --- Full dashboard ---
 
 export function renderStatusLine(message: string): string {
@@ -231,6 +243,16 @@ export function renderDashboard(state: DashboardState, statusMessage?: string): 
   lines.push(renderClaimsTable(filteredClaims, state.confidence));
   lines.push("");
 
+  // Guidance panel for selected claim
+  if (state.selectedClaimId !== null) {
+    const selectedConf = state.confidence.get(state.selectedClaimId);
+    const panel = renderGuidancePanel(selectedConf?.guidance ?? []);
+    if (panel) {
+      lines.push(panel);
+      lines.push("");
+    }
+  }
+
   // Readiness
   lines.push(`  ${renderReadiness(filteredClaims, state.confidence, state.threshold)}`);
   lines.push("");
@@ -243,7 +265,7 @@ export function renderDashboard(state: DashboardState, statusMessage?: string): 
 
   // Footer
   lines.push(
-    `  ${DIM}[↑/↓] Navigate scopes  [s] Sweep  [r] Refresh  [q] Quit${RESET}`,
+    `  ${DIM}[↑/↓] Navigate scopes  [j/k] Navigate claims  [s] Sweep  [r] Refresh  [q] Quit${RESET}`,
   );
   lines.push("");
 

@@ -31,6 +31,7 @@ export interface ConfidenceData {
   qAvg: number;
   decayFactor: number;
   statusTransition: string | null;
+  guidance: string[];
 }
 
 /** Full dashboard state. */
@@ -40,6 +41,7 @@ export interface DashboardState {
   claims: Claim[];
   confidence: Map<string, ConfidenceData>;
   selectedScopeIndex: number;
+  selectedClaimId: string | null;
   threshold: number;
 }
 

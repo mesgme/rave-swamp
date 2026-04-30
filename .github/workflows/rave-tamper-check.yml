@@ -1,0 +1,85 @@
+name: rave tamper check
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  tamper-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for rave:spec-change override label
+        id: label-check
+        run: |
+          LABELS=$(gh pr view ${{ github.event.pull_request.number }} --json labels -q '.labels[].name')
+          if echo "$LABELS" | grep -q "rave:spec-change"; then
+            echo "override=true" >> "$GITHUB_OUTPUT"
+            echo "rave:spec-change label present — skipping tamper gate"
+          else
+            echo "override=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Read tamper-guard config
+        id: config
+        run: |
+          if [ -f rave/config.yaml ]; then
+            ENABLED=$(yq -r '.tamper_guard.enabled // true' rave/config.yaml)
+          else
+            ENABLED=true
+          fi
+          echo "enabled=$ENABLED" >> "$GITHUB_OUTPUT"
+          echo "tamper_guard.enabled = $ENABLED"
+
+      - name: Check for mixed spec/app changes
+        if: steps.config.outputs.enabled == 'true' && steps.label-check.outputs.override != 'true'
+        run: |
+          CHANGED=$(git diff --name-only origin/main...HEAD)
+          GUARDED=$(echo "$CHANGED" | grep -E '^(rave/claims/|rave/scopes/|workflows/workflow-.*\.yaml|extensions/models/rave_.*\.ts)' || true)
+          NON_GUARDED=$(echo "$CHANGED" | grep -Ev '^(rave/claims/|rave/scopes/|workflows/workflow-.*\.yaml|extensions/models/rave_.*\.ts)' || true)
+
+          if [ -n "$GUARDED" ] && [ -n "$NON_GUARDED" ]; then
+            echo "Mixed PR detected: spec files and application files changed together."
+            echo ""
+            echo "Guarded files changed:"
+            echo "$GUARDED"
+            echo ""
+            echo "Non-guarded files changed:"
+            echo "$NON_GUARDED"
+            echo ""
+            echo "Split into two PRs, or add the 'rave:spec-change' label if intentional."
+            exit 1
+          else
+            echo "Tamper check passed."
+          fi
+
+      - name: Install swamp
+        run: curl -fsSL swamp.club/install.sh | sh
+
+      - name: Add swamp to PATH
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Gather evidence
+        continue-on-error: true
+        run: swamp workflow run gather-all-evidence
+        env:
+          SWAMP_VAULT_RAVE_CREDENTIALS_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute confidence
+        continue-on-error: true
+        run: swamp workflow run confidence-decay-sweep
+
+      - name: Post rave health report to PR
+        continue-on-error: true
+        run: deno run --allow-read --allow-run=deno,swamp,gh --allow-env --allow-net bin/rave-report.ts ${{ github.event.pull_request.number }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

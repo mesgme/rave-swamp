@@ -16,6 +16,8 @@ const EvidenceSnapshotSchema = z.object({
   isStale: z.boolean(),
   qualityScore: z.number(),
   freshnessContribution: z.number(),
+  failureReason: z.string().nullable(),
+  remediation: z.string().nullable(),
 });
 
 const ConfidenceSchema = z.object({
@@ -29,6 +31,7 @@ const ConfidenceSchema = z.object({
   computedAt: z.string(),
   evidenceSnapshots: z.array(EvidenceSnapshotSchema),
   statusTransition: z.string().nullable(),
+  guidance: z.array(z.string()),
 });
 
 const EvidenceInputSchema = z.object({
@@ -37,6 +40,8 @@ const EvidenceInputSchema = z.object({
   timestamp: z.string(),
   freshnessWindow: z.string().nullable(),
   qualityScore: z.number().nullable(),
+  failureReason: z.string().nullable().optional(),
+  remediation: z.string().nullable().optional(),
 });
 
 // ---------------------------------------------------------------------------
@@ -169,6 +174,7 @@ export const model = {
             statusTransition: previousScore !== null && previousScore > 0
               ? `${args.currentStatus}→0.0`
               : null,
+            guidance: [],
           });
           return { dataHandles: [handle] };
         }
@@ -188,6 +194,7 @@ export const model = {
             computedAt,
             evidenceSnapshots: [],
             statusTransition: null,
+            guidance: [],
           });
           return { dataHandles: [handle] };
         }
@@ -208,6 +215,7 @@ export const model = {
             computedAt,
             evidenceSnapshots: [],
             statusTransition: null,
+            guidance: [],
           });
           return { dataHandles: [handle] };
         }
@@ -234,6 +242,8 @@ export const model = {
             isStale: stale,
             qualityScore,
             freshnessContribution,
+            failureReason: ev.failureReason ?? null,
+            remediation: ev.remediation ?? null,
           });
         }
 
@@ -266,6 +276,12 @@ export const model = {
             ? `${previousScore.toFixed(3)}→${score.toFixed(3)}`
             : null;
 
+        const guidance: string[] = [];
+        for (const snap of snapshots) {
+          if (snap.failureReason) guidance.push(snap.failureReason);
+          if (snap.remediation) guidance.push(snap.remediation);
+        }
+
         const handle = await context.writeResource("confidence", "current", {
           claimId,
           confidenceScore: score,
@@ -277,6 +293,7 @@ export const model = {
           computedAt,
           evidenceSnapshots: snapshots,
           statusTransition,
+          guidance,
         });
 
         return { dataHandles: [handle] };
@@ -322,6 +339,7 @@ export const model = {
               args.newScore.toFixed(3)
             }`
             : null,
+          guidance: [],
         });
 
         return { dataHandles: [handle] };

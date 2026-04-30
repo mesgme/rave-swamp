@@ -79,3 +79,42 @@ Deno.test("parseConfidenceResponse falls back to attributes key", () => {
   assertEquals(data?.claimId, "claim-legacy-001");
   assertEquals(data?.confidenceScore, 0.6);
 });
+
+Deno.test("parseConfidenceResponse extracts guidance array", () => {
+  const json = JSON.stringify({
+    content: {
+      claimId: "claim-test-001",
+      confidenceScore: 0.5,
+      previousScore: null,
+      computedAt: "2026-04-29T10:00:00Z",
+      lastValidated: "2026-04-29T10:00:00Z",
+      fAvg: 0.0,
+      qAvg: 1.0,
+      decayFactor: 1.0,
+      statusTransition: null,
+      guidance: ["CI run failed on job test", "Check the Actions log"],
+      evidenceSnapshots: [],
+    },
+  });
+  const data = parseConfidenceResponse(json);
+  assertEquals(data?.guidance, ["CI run failed on job test", "Check the Actions log"]);
+});
+
+Deno.test("parseConfidenceResponse defaults guidance to empty array when absent", () => {
+  const json = JSON.stringify({
+    content: {
+      claimId: "claim-test-001",
+      confidenceScore: 0.85,
+      previousScore: null,
+      computedAt: "2026-04-29T10:00:00Z",
+      lastValidated: "2026-04-29T10:00:00Z",
+      fAvg: 1.0,
+      qAvg: 1.0,
+      decayFactor: 1.0,
+      statusTransition: null,
+      evidenceSnapshots: [],
+    },
+  });
+  const data = parseConfidenceResponse(json);
+  assertEquals(data?.guidance, []);
+});

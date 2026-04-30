@@ -24,6 +24,8 @@ jobs:
                 timestamp: ${{ data.latest("evidence-github-branch-protection-001", "current").attributes.timestamp }}
                 freshnessWindow: "PT1H"
                 qualityScore: 1.0
+                failureReason: ${{ data.latest("evidence-github-branch-protection-001", "current").attributes.failureReason }}
+                remediation: ${{ data.latest("evidence-github-branch-protection-001", "current").attributes.remediation }}
   - name: ci-green
     description: Recompute confidence for claim-ci-green-on-main-001
     dependsOn: []
@@ -44,11 +46,15 @@ jobs:
                 timestamp: ${{ data.latest("evidence-ci-test-results-001", "current").attributes.timestamp }}
                 freshnessWindow: "P1D"
                 qualityScore: 0.95
+                failureReason: ${{ data.latest("evidence-ci-test-results-001", "current").attributes.failureReason }}
+                remediation: ${{ data.latest("evidence-ci-test-results-001", "current").attributes.remediation }}
               - evidenceId: "evidence-github-actions-runs-001"
                 outcome: ${{ data.latest("evidence-github-actions-runs-001", "current").attributes.outcome }}
                 timestamp: ${{ data.latest("evidence-github-actions-runs-001", "current").attributes.timestamp }}
                 freshnessWindow: "P1D"
                 qualityScore: 0.9
+                failureReason: ${{ data.latest("evidence-github-actions-runs-001", "current").attributes.failureReason }}
+                remediation: ${{ data.latest("evidence-github-actions-runs-001", "current").attributes.remediation }}
   - name: swamp-models
     description: Recompute confidence for claim-swamp-models-valid-001
     dependsOn: []
@@ -69,6 +75,8 @@ jobs:
                 timestamp: ${{ data.latest("evidence-swamp-model-validate-001", "current").attributes.timestamp }}
                 freshnessWindow: "P1D"
                 qualityScore: 0.98
+                failureReason: ${{ data.latest("evidence-swamp-model-validate-001", "current").attributes.failureReason }}
+                remediation: ${{ data.latest("evidence-swamp-model-validate-001", "current").attributes.remediation }}
   - name: swamp-workflows
     description: Recompute confidence for claim-swamp-workflows-valid-001
     dependsOn: []
@@ -89,6 +97,8 @@ jobs:
                 timestamp: ${{ data.latest("evidence-swamp-workflow-validate-001", "current").attributes.timestamp }}
                 freshnessWindow: "P1D"
                 qualityScore: 0.98
+                failureReason: ${{ data.latest("evidence-swamp-workflow-validate-001", "current").attributes.failureReason }}
+                remediation: ${{ data.latest("evidence-swamp-workflow-validate-001", "current").attributes.remediation }}
   - name: extensions-compile
     description: Recompute confidence for claim-extensions-compile-001
     dependsOn: []
@@ -109,6 +119,8 @@ jobs:
                 timestamp: ${{ data.latest("evidence-typescript-compile-001", "current").attributes.timestamp }}
                 freshnessWindow: "P1D"
                 qualityScore: 0.95
+                failureReason: ${{ data.latest("evidence-typescript-compile-001", "current").attributes.failureReason }}
+                remediation: ${{ data.latest("evidence-typescript-compile-001", "current").attributes.remediation }}
   - name: lint-clean
     description: Recompute confidence for claim-lint-clean-001
     dependsOn: []
@@ -129,6 +141,8 @@ jobs:
                 timestamp: ${{ data.latest("evidence-lint-clean-001", "current").attributes.timestamp }}
                 freshnessWindow: "P1D"
                 qualityScore: 0.95
+                failureReason: ${{ data.latest("evidence-lint-clean-001", "current").attributes.failureReason }}
+                remediation: ${{ data.latest("evidence-lint-clean-001", "current").attributes.remediation }}
   - name: unit-tests
     description: Recompute confidence for claim-unit-tests-pass-001
     dependsOn: []
@@ -149,6 +163,8 @@ jobs:
                 timestamp: ${{ data.latest("evidence-unit-tests-pass-001", "current").attributes.timestamp }}
                 freshnessWindow: "P1D"
                 qualityScore: 0.95
+                failureReason: ${{ data.latest("evidence-unit-tests-pass-001", "current").attributes.failureReason }}
+                remediation: ${{ data.latest("evidence-unit-tests-pass-001", "current").attributes.remediation }}
   - name: code-coverage
     description: Recompute confidence for claim-code-coverage-001
     dependsOn: []
@@ -169,6 +185,8 @@ jobs:
                 timestamp: ${{ data.latest("evidence-code-coverage-001", "current").attributes.timestamp }}
                 freshnessWindow: "P1D"
                 qualityScore: 0.9
+                failureReason: ${{ data.latest("evidence-code-coverage-001", "current").attributes.failureReason }}
+                remediation: ${{ data.latest("evidence-code-coverage-001", "current").attributes.remediation }}
   - name: merged-prs-reviewed
     description: Recompute confidence for claim-merged-prs-reviewed-001
     dependsOn: []
@@ -189,6 +207,8 @@ jobs:
                 timestamp: ${{ data.latest("evidence-merged-prs-reviewed-001", "current").attributes.timestamp }}
                 freshnessWindow: "P2D"
                 qualityScore: 0.85
+                failureReason: ${{ data.latest("evidence-merged-prs-reviewed-001", "current").attributes.failureReason }}
+                remediation: ${{ data.latest("evidence-merged-prs-reviewed-001", "current").attributes.remediation }}
   - name: no-secrets
     description: Recompute confidence for claim-no-secrets-committed-001
     dependsOn: []
@@ -209,6 +229,8 @@ jobs:
                 timestamp: ${{ data.latest("evidence-no-secrets-committed-001", "current").attributes.timestamp }}
                 freshnessWindow: "P1D"
                 qualityScore: 0.95
+                failureReason: ${{ data.latest("evidence-no-secrets-committed-001", "current").attributes.failureReason }}
+                remediation: ${{ data.latest("evidence-no-secrets-committed-001", "current").attributes.remediation }}
   - name: main-commits-via-pr
     description: Recompute confidence for claim-main-commits-via-pr-001
     dependsOn: []
@@ -229,6 +251,8 @@ jobs:
                 timestamp: ${{ data.latest("evidence-main-commits-via-pr-001", "current").attributes.timestamp }}
                 freshnessWindow: "P2D"
                 qualityScore: 0.80
+                failureReason: ${{ data.latest("evidence-main-commits-via-pr-001", "current").attributes.failureReason }}
+                remediation: ${{ data.latest("evidence-main-commits-via-pr-001", "current").attributes.remediation }}
   - name: no-known-cves
     description: Recompute confidence for claim-no-known-cves-001
     dependsOn: []
@@ -249,6 +273,8 @@ jobs:
                 timestamp: ${{ data.latest("evidence-no-known-cves-001", "current").attributes.timestamp }}
                 freshnessWindow: "P1D"
                 qualityScore: 0.90
+                failureReason: ${{ data.latest("evidence-no-known-cves-001", "current").attributes.failureReason }}
+                remediation: ${{ data.latest("evidence-no-known-cves-001", "current").attributes.remediation }}
   - name: no-stale-untriaged-issues
     description: Recompute confidence for claim-no-stale-untriaged-issues-001
     dependsOn: []
@@ -269,6 +295,8 @@ jobs:
                 timestamp: ${{ data.latest("evidence-no-stale-untriaged-issues-001", "current").attributes.timestamp }}
                 freshnessWindow: "P2D"
                 qualityScore: 0.85
+                failureReason: ${{ data.latest("evidence-no-stale-untriaged-issues-001", "current").attributes.failureReason }}
+                remediation: ${{ data.latest("evidence-no-stale-untriaged-issues-001", "current").attributes.remediation }}
   - name: deno-lock-committed
     description: Recompute confidence for claim-deno-lock-committed-001
     dependsOn: []
@@ -289,6 +317,8 @@ jobs:
                 timestamp: ${{ data.latest("evidence-deno-lock-committed-001", "current").attributes.timestamp }}
                 freshnessWindow: "P1D"
                 qualityScore: 0.95
+                failureReason: ${{ data.latest("evidence-deno-lock-committed-001", "current").attributes.failureReason }}
+                remediation: ${{ data.latest("evidence-deno-lock-committed-001", "current").attributes.remediation }}
   - name: npm-imports-pinned
     description: Recompute confidence for claim-npm-imports-pinned-001
     dependsOn: []
@@ -309,3 +339,27 @@ jobs:
                 timestamp: ${{ data.latest("evidence-npm-imports-pinned-001", "current").attributes.timestamp }}
                 freshnessWindow: "P1D"
                 qualityScore: 0.95
+                failureReason: ${{ data.latest("evidence-npm-imports-pinned-001", "current").attributes.failureReason }}
+                remediation: ${{ data.latest("evidence-npm-imports-pinned-001", "current").attributes.remediation }}
+  - name: rave-spec-untampered
+    description: Recompute confidence for claim-rave-spec-untampered-001
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: compute
+        description: Apply RAVE decay formula with latest diff tamper evidence
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: confidence-claim-rave-spec-untampered-001
+          methodName: compute
+          inputs:
+            currentStatus: "active"
+            evidence:
+              - evidenceId: "evidence-rave-spec-untampered-001"
+                outcome: ${{ data.latest("evidence-rave-spec-untampered-001", "current").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-rave-spec-untampered-001", "current").attributes.timestamp }}
+                freshnessWindow: "P1D"
+                qualityScore: 0.95
+                failureReason: ${{ data.latest("evidence-rave-spec-untampered-001", "current").attributes.failureReason }}
+                remediation: ${{ data.latest("evidence-rave-spec-untampered-001", "current").attributes.remediation }}

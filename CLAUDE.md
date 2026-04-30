@@ -83,3 +83,43 @@ git push origin --delete feature/<feature-name>
 ## Specification
 
 The RAVE spec lives in `spec/rave-spec-v0.1.md`. Placeholder sections map to GitHub issues #2–#9.
+
+## Rave Spec Change Policy
+
+The following files are **guarded** — in downstream repos they define an imported rave spec and must not be edited as a side effect of unrelated work:
+
+- `rave/claims/**`
+- `rave/scopes/**`
+- `workflows/workflow-*.yaml`
+- `extensions/models/rave_*.ts`
+
+**This repo has `tamper_guard.enabled: false` in `rave/config.yaml`.** The tamper-check CI gate is disabled here because these files are application code in the source repo — modifying them is normal development. The guard is meaningful in downstream repos that *adopt* rave-swamp without building it.
+
+**If you are an adopter and need to edit guarded files:**
+
+1. Do it in a dedicated PR that touches only guarded files.
+2. Apply the `rave:spec-change` label to the PR:
+   ```bash
+   gh pr edit <number> --add-label "rave:spec-change"
+   ```
+3. The `rave tamper check` CI gate will skip the diff check when this label is present.
+
+**To enable the tamper guard in a downstream repo:** copy `rave-tamper-check.yml` into `.github/workflows/` and either omit `rave/config.yaml` entirely (defaults to `enabled: true`) or set `tamper_guard.enabled: true`.
+
+## rave back-pressure
+
+Before declaring any task complete, run:
+
+```bash
+deno task check
+```
+
+If the exit code is non-zero:
+1. Show the user the `claims[].guidance` text for each failing claim.
+2. Do not mark the task complete until the failing claims are resolved or the user explicitly accepts the current state.
+
+If your changes touched any of the guarded paths listed in **Rave Spec Change Policy** above, apply the `rave:spec-change` label to the PR before it is merged:
+
+```bash
+gh pr edit <number> --add-label "rave:spec-change"
+```

@@ -3,6 +3,7 @@ import {
   confidenceLevel,
   renderClaimsTable,
   renderDashboard,
+  renderGuidancePanel,
   renderReadiness,
   renderScopeTree,
   renderStatusLine,
@@ -35,6 +36,7 @@ function makeConfidence(overrides: Partial<ConfidenceData> = {}): ConfidenceData
     qAvg: 1.0,
     decayFactor: 1.0,
     statusTransition: null,
+    guidance: [],
     ...overrides,
   };
 }
@@ -345,6 +347,7 @@ function makeState(overrides: Partial<DashboardState> = {}): DashboardState {
     claims: [makeClaim({ scopeKey: "repository:org/repo" })],
     confidence: new Map(),
     selectedScopeIndex: 0,
+    selectedClaimId: null,
     threshold: 0.7,
     ...overrides,
   };
@@ -400,4 +403,68 @@ Deno.test("renderDashboard shows ─ for all uncomputed claims (regression)", ()
   const output = stripAnsi(renderDashboard(state));
   assertEquals(output.includes("0.000"), false);
   assertStringIncludes(output, "2 with no data");
+});
+
+// --- renderGuidancePanel ---
+
+Deno.test("renderGuidancePanel shows guidance lines", () => {
+  const output = renderGuidancePanel(["CI run failed", "Check the Actions log"]);
+  assertStringIncludes(stripAnsi(output), "CI run failed");
+  assertStringIncludes(stripAnsi(output), "Check the Actions log");
+});
+
+Deno.test("renderGuidancePanel returns empty string for empty guidance", () => {
+  const output = renderGuidancePanel([]);
+  assertEquals(output, "");
+});
+
+Deno.test("renderGuidancePanel includes a Guidance heading", () => {
+  const output = renderGuidancePanel(["some issue"]);
+  assertStringIncludes(stripAnsi(output), "Guidance");
+});
+
+// --- renderDashboard: guidance panel integration ---
+
+Deno.test("renderDashboard shows guidance panel when selected claim has guidance", () => {
+  const state = makeState({
+    claims: [makeClaim({ claim_id: "c1", scopeKey: "repository:org/repo" })],
+    confidence: new Map([
+      ["c1", makeConfidence({
+        claimId: "c1",
+        guidance: ["branch protection is disabled", "Enable required status checks"],
+      })],
+    ]),
+    selectedClaimId: "c1",
+  });
+  const output = stripAnsi(renderDashboard(state));
+  assertStringIncludes(output, "branch protection is disabled");
+  assertStringIncludes(output, "Enable required status checks");
+});
+
+Deno.test("renderDashboard omits guidance panel when selected claim has no guidance", () => {
+  const state = makeState({
+    claims: [makeClaim({ claim_id: "c1", scopeKey: "repository:org/repo" })],
+    confidence: new Map([
+      ["c1", makeConfidence({ claimId: "c1", guidance: [] })],
+    ]),
+    selectedClaimId: "c1",
+  });
+  const output = stripAnsi(renderDashboard(state));
+  assertStringIncludes(output, "RAVE Dashboard");
+  assertEquals(output.includes("Guidance"), false);
+});
+
+Deno.test("renderDashboard omits guidance panel when no claim is selected", () => {
+  const state = makeState({
+    claims: [makeClaim({ claim_id: "c1", scopeKey: "repository:org/repo" })],
+    confidence: new Map([
+      ["c1", makeConfidence({
+        claimId: "c1",
+        guidance: ["something failed"],
+      })],
+    ]),
+    selectedClaimId: null,
+  });
+  const output = stripAnsi(renderDashboard(state));
+  assertEquals(output.includes("Guidance"), false);
 });

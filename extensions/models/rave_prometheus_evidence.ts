@@ -17,6 +17,8 @@ const ResultSchema = z.object({
   timestamp: z.string(),
   isStale: z.boolean(),
   queryExecutedAt: z.string(),
+  failureReason: z.string().nullable(),
+  remediation: z.string().nullable(),
 });
 
 function extractValue(data: Record<string, unknown>): number | null {
@@ -132,6 +134,8 @@ export const model = {
             timestamp: queryExecutedAt,
             isStale: false,
             queryExecutedAt,
+            failureReason: null,
+            remediation: null,
           });
           return { dataHandles: [handle] };
         }
@@ -162,6 +166,8 @@ export const model = {
             timestamp: queryExecutedAt,
             isStale: false,
             queryExecutedAt,
+            failureReason: null,
+            remediation: null,
           });
           return { dataHandles: [handle] };
         }
@@ -179,21 +185,28 @@ export const model = {
           `Query value=${value}${unit ? " " + unit : ""} → ${outcome}`,
         );
 
+        const summary = buildSummary(
+          query,
+          value,
+          unit ?? null,
+          outcome,
+          operator,
+          threshold,
+        );
         const handle = await context.writeResource("result", "current", {
           outcome,
-          summary: buildSummary(
-            query,
-            value,
-            unit ?? null,
-            outcome,
-            operator,
-            threshold,
-          ),
+          summary,
           value,
           unit: unit ?? null,
           timestamp: queryExecutedAt,
           isStale: false,
           queryExecutedAt,
+          failureReason: outcome === "fail" ? summary : null,
+          remediation: outcome === "fail"
+            ? `Query returned ${value}${
+              unit ? " " + unit : ""
+            }; expected ${operator} ${threshold}. Investigate the metric source or adjust the alert threshold.`
+            : null,
         });
 
         return { dataHandles: [handle] };
