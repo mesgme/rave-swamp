@@ -24,7 +24,9 @@ function mockFetch(
 
 Deno.test("github-api-evidence: pass outcome → failureReason and remediation are null", async () => {
   const original = globalThis.fetch;
-  globalThis.fetch = mockFetch(200, { required_status_checks: { strict: true } });
+  globalThis.fetch = mockFetch(200, {
+    required_status_checks: { strict: true },
+  });
   try {
     const { context, getWrittenResources } = createModelTestContext({
       globalArgs: BASE_GLOBAL_ARGS,
@@ -42,7 +44,9 @@ Deno.test("github-api-evidence: pass outcome → failureReason and remediation a
 
 Deno.test("github-api-evidence: fail outcome → failureReason and remediation are non-null strings", async () => {
   const original = globalThis.fetch;
-  globalThis.fetch = mockFetch(200, { required_status_checks: { strict: false } });
+  globalThis.fetch = mockFetch(200, {
+    required_status_checks: { strict: false },
+  });
   try {
     const { context, getWrittenResources } = createModelTestContext({
       globalArgs: BASE_GLOBAL_ARGS,

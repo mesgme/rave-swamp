@@ -7,56 +7,28 @@ on:
     branches: [main]
 
 jobs:
-  validate:
+  secrets:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Install swamp
-        run: curl -fsSL swamp.club/install.sh | sh
-
-      - name: Add swamp to PATH
-        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-      - name: Validate extension models
-        run: swamp model validate --json
-
-      - name: Validate workflows
-        run: swamp workflow validate --json
-
       - name: Scan for secrets
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
 
+  cve-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
       - name: Install Deno
         uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
-
-      - name: Verify lock file is current
-        run: |
-          deno cache extensions/models/*.ts
-          if [ -n "$(git status --porcelain deno.lock)" ]; then
-            echo "ERROR: deno.lock is missing or stale. Run: deno cache extensions/models/*.ts && git add deno.lock && git commit" >&2
-            exit 1
-          fi
-          echo "deno.lock is committed and current."
-
-      - name: Check npm imports are version-pinned
-        run: |
-          if grep -rP 'from\s+"npm:(?!zod@)[^@"]+(?<![0-9])"' extensions/models/*.ts; then
-            echo "ERROR: found unpinned npm: import — add @<version> to each npm: specifier" >&2
-            exit 1
-          fi
-          echo "All npm: imports are version-pinned."
-
       - name: Scan dependencies for CVEs
         run: |
-          # Build a custom osv-scanner manifest from the npm entries in deno.lock
           python3 - <<'PYEOF'
           import json
           with open('deno.lock') as f:
@@ -77,17 +49,108 @@ jobs:
           chmod +x /usr/local/bin/osv-scanner
           osv-scanner scan -L osv-scanner:/tmp/osv-scan.json
 
+  swamp-models:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install swamp
+        run: curl -fsSL swamp.club/install.sh | sh
+      - name: Add swamp to PATH
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+      - name: Validate extension models
+        run: swamp model validate --json
+
+  swamp-workflows:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install swamp
+        run: curl -fsSL swamp.club/install.sh | sh
+      - name: Add swamp to PATH
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+      - name: Validate workflows
+        run: swamp workflow validate --json
+
+  lock-file:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Verify lock file is current
+        run: |
+          deno cache extensions/models/*.ts
+          if [ -n "$(git status --porcelain deno.lock)" ]; then
+            echo "ERROR: deno.lock is missing or stale. Run: deno cache extensions/models/*.ts && git add deno.lock && git commit" >&2
+            exit 1
+          fi
+          echo "deno.lock is committed and current."
+
+  npm-pins:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check npm imports are version-pinned
+        run: |
+          if grep -rP 'from\s+"npm:(?!zod@)[^@"]+(?<![0-9])"' extensions/models/*.ts; then
+            echo "ERROR: found unpinned npm: import — add @<version> to each npm: specifier" >&2
+            exit 1
+          fi
+          echo "All npm: imports are version-pinned."
+
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
       - name: TypeScript compile check
         run: deno check extensions/models/*.ts
 
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
       - name: Lint extension models
         run: deno lint extensions/models/*.ts
 
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
       - name: Unit tests
         run: deno test extensions/models/
 
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
       - name: Code coverage
         run: deno test --coverage=cov_profile extensions/models/ && (deno coverage cov_profile --detailed || true)
 
+  dashboard-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
       - name: Dashboard tests
         run: deno task dashboard:test

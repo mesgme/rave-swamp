@@ -1,4 +1,8 @@
-import { assertEquals, assertThrows, assertAlmostEquals } from "jsr:@std/assert@1";
+import {
+  assertAlmostEquals,
+  assertEquals,
+  assertThrows,
+} from "jsr:@std/assert@1";
 import { createModelTestContext } from "@systeminit/swamp-testing";
 import { model } from "./rave_confidence_engine.ts";
 
@@ -9,7 +13,8 @@ import { model } from "./rave_confidence_engine.ts";
 // ---------------------------------------------------------------------------
 
 function parseISO8601Duration(duration: string): number {
-  const re = /^P(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)W)?(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?)?$/;
+  const re =
+    /^P(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)W)?(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?)?$/;
   const m = duration.match(re);
   if (!m) throw new Error(`Invalid ISO 8601 duration: ${duration}`);
   return (
@@ -23,7 +28,12 @@ function parseISO8601Duration(duration: string): number {
   );
 }
 
-function computeScore(c0: number, fAvg: number, qAvg: number, decayFactor: number): number {
+function computeScore(
+  c0: number,
+  fAvg: number,
+  qAvg: number,
+  decayFactor: number,
+): number {
   return c0 * fAvg * qAvg * decayFactor;
 }
 
@@ -68,9 +78,21 @@ Deno.test("parseISO8601Duration: PT0S = 0", () => {
 });
 
 Deno.test("parseISO8601Duration: invalid string throws", () => {
-  assertThrows(() => parseISO8601Duration("1D"), Error, "Invalid ISO 8601 duration");
-  assertThrows(() => parseISO8601Duration(""), Error, "Invalid ISO 8601 duration");
-  assertThrows(() => parseISO8601Duration("1 day"), Error, "Invalid ISO 8601 duration");
+  assertThrows(
+    () => parseISO8601Duration("1D"),
+    Error,
+    "Invalid ISO 8601 duration",
+  );
+  assertThrows(
+    () => parseISO8601Duration(""),
+    Error,
+    "Invalid ISO 8601 duration",
+  );
+  assertThrows(
+    () => parseISO8601Duration("1 day"),
+    Error,
+    "Invalid ISO 8601 duration",
+  );
 });
 
 // ---------------------------------------------------------------------------
@@ -131,7 +153,11 @@ const passEvidence = {
 
 Deno.test("compute: previousScore is null on first run (no stored resource)", async () => {
   const { context, getWrittenResources } = createModelTestContext({
-    globalArgs: { claimId: "claim-test-001", decayLambda: 0.05, confidenceFloor: 0.01 },
+    globalArgs: {
+      claimId: "claim-test-001",
+      decayLambda: 0.05,
+      confidenceFloor: 0.01,
+    },
     methodName: "compute",
   });
 
@@ -151,7 +177,11 @@ Deno.test("compute: previousScore is null on first run (no stored resource)", as
 
 Deno.test("compute: guidance is empty when all evidence passes", async () => {
   const { context, getWrittenResources } = createModelTestContext({
-    globalArgs: { claimId: "claim-test-001", decayLambda: 0.05, confidenceFloor: 0.01 },
+    globalArgs: {
+      claimId: "claim-test-001",
+      decayLambda: 0.05,
+      confidenceFloor: 0.01,
+    },
     methodName: "compute",
   });
 
@@ -173,7 +203,11 @@ Deno.test("compute: guidance is empty when all evidence passes", async () => {
 
 Deno.test("compute: guidance contains failureReason and remediation when evidence fails", async () => {
   const { context, getWrittenResources } = createModelTestContext({
-    globalArgs: { claimId: "claim-test-001", decayLambda: 0.05, confidenceFloor: 0.01 },
+    globalArgs: {
+      claimId: "claim-test-001",
+      decayLambda: 0.05,
+      confidenceFloor: 0.01,
+    },
     methodName: "compute",
   });
 
@@ -187,7 +221,8 @@ Deno.test("compute: guidance contains failureReason and remediation when evidenc
         freshnessWindow: "P1D",
         qualityScore: 1.0,
         failureReason: "CI run #999 failed on job 'test'",
-        remediation: "Check the Actions log at https://github.com/org/repo/actions/runs/999",
+        remediation:
+          "Check the Actions log at https://github.com/org/repo/actions/runs/999",
       }],
     },
     context,
@@ -196,13 +231,23 @@ Deno.test("compute: guidance contains failureReason and remediation when evidenc
   const written = getWrittenResources();
   const guidance = written[0].data.guidance as string[];
   assertEquals(guidance.length > 0, true);
-  assertEquals(guidance.some((g: string) => g.includes("CI run #999 failed")), true);
-  assertEquals(guidance.some((g: string) => g.includes("Check the Actions log")), true);
+  assertEquals(
+    guidance.some((g: string) => g.includes("CI run #999 failed")),
+    true,
+  );
+  assertEquals(
+    guidance.some((g: string) => g.includes("Check the Actions log")),
+    true,
+  );
 });
 
 Deno.test("compute: guidance includes only failed evidence (not pass or inconclusive)", async () => {
   const { context, getWrittenResources } = createModelTestContext({
-    globalArgs: { claimId: "claim-test-001", decayLambda: 0.05, confidenceFloor: 0.01 },
+    globalArgs: {
+      claimId: "claim-test-001",
+      decayLambda: 0.05,
+      confidenceFloor: 0.01,
+    },
     methodName: "compute",
   });
 
@@ -210,7 +255,12 @@ Deno.test("compute: guidance includes only failed evidence (not pass or inconclu
     {
       currentStatus: "active",
       evidence: [
-        { ...passEvidence, evidenceId: "ev-pass", failureReason: null, remediation: null },
+        {
+          ...passEvidence,
+          evidenceId: "ev-pass",
+          failureReason: null,
+          remediation: null,
+        },
         {
           evidenceId: "ev-fail",
           outcome: "fail" as const,
@@ -236,7 +286,10 @@ Deno.test("compute: guidance includes only failed evidence (not pass or inconclu
 
   const written = getWrittenResources();
   const guidance = written[0].data.guidance as string[];
-  assertEquals(guidance.some((g: string) => g.includes("something broke")), true);
+  assertEquals(
+    guidance.some((g: string) => g.includes("something broke")),
+    true,
+  );
   assertEquals(guidance.some((g: string) => g.includes("fix it")), true);
   assertEquals(guidance.length, 2); // failureReason + remediation from the one fail
 });
@@ -244,7 +297,11 @@ Deno.test("compute: guidance includes only failed evidence (not pass or inconclu
 Deno.test("compute: previousScore is populated from stored resource on second run", async () => {
   const priorComputedAt = "2026-04-29T10:00:00.000Z";
   const { context, getWrittenResources } = createModelTestContext({
-    globalArgs: { claimId: "claim-test-001", decayLambda: 0.05, confidenceFloor: 0.01 },
+    globalArgs: {
+      claimId: "claim-test-001",
+      decayLambda: 0.05,
+      confidenceFloor: 0.01,
+    },
     methodName: "compute",
     storedResources: {
       current: {

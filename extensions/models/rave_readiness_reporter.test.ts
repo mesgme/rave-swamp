@@ -19,10 +19,22 @@ function evaluateClaim(
   threshold: number,
 ): ClaimReadiness {
   if (status === "draft" || status === "retired") {
-    return { claimId, status, confidenceScore, meetsThreshold: true, reason: `${status} — excluded from readiness gate` };
+    return {
+      claimId,
+      status,
+      confidenceScore,
+      meetsThreshold: true,
+      reason: `${status} — excluded from readiness gate`,
+    };
   }
   if (status === "contradicted") {
-    return { claimId, status, confidenceScore, meetsThreshold: false, reason: "contradicted — fails readiness gate" };
+    return {
+      claimId,
+      status,
+      confidenceScore,
+      meetsThreshold: false,
+      reason: "contradicted — fails readiness gate",
+    };
   }
   const meetsThreshold = confidenceScore >= threshold;
   return {
@@ -30,7 +42,9 @@ function evaluateClaim(
     status,
     confidenceScore,
     meetsThreshold,
-    reason: meetsThreshold ? null : `score ${confidenceScore.toFixed(3)} below threshold ${threshold}`,
+    reason: meetsThreshold
+      ? null
+      : `score ${confidenceScore.toFixed(3)} below threshold ${threshold}`,
   };
 }
 
