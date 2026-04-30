@@ -105,3 +105,21 @@ edited as a side effect of unrelated work:
 
 **Never mix guarded spec changes with application code changes in a single PR.**
 The `claim-rave-spec-untampered-001` claim will detect and flag this pattern.
+
+## rave back-pressure
+
+Before declaring any task complete, run:
+
+```bash
+deno task check
+```
+
+If the exit code is non-zero:
+1. Show the user the `claims[].guidance` text for each failing claim.
+2. Do not mark the task complete until the failing claims are resolved or the user explicitly accepts the current state.
+
+If your changes touched any of the guarded paths listed in **Rave Spec Change Policy** above, apply the `rave:spec-change` label to the PR before it is merged:
+
+```bash
+gh pr edit <number> --add-label "rave:spec-change"
+```
