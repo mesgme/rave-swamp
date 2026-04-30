@@ -25,29 +25,24 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install swamp
+      - name: Check for mixed spec/app changes
         if: steps.label-check.outputs.override != 'true'
-        run: curl -fsSL swamp.club/install.sh | sh
+        run: |
+          CHANGED=$(git diff --name-only origin/main...HEAD)
+          GUARDED=$(echo "$CHANGED" | grep -E '^(rave/claims/|rave/scopes/|workflows/workflow-.*\.yaml|extensions/models/rave_.*\.ts)' || true)
+          NON_GUARDED=$(echo "$CHANGED" | grep -Ev '^(rave/claims/|rave/scopes/|workflows/workflow-.*\.yaml|extensions/models/rave_.*\.ts)' || true)
 
-      - name: Add swamp to PATH
-        if: steps.label-check.outputs.override != 'true'
-        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-      - uses: denoland/setup-deno@v2
-        if: steps.label-check.outputs.override != 'true'
-        with:
-          deno-version: v2.x
-
-      - name: Gather evidence
-        if: steps.label-check.outputs.override != 'true'
-        run: swamp workflow run gather-all-evidence
-        env:
-          SWAMP_VAULT_RAVE_CREDENTIALS_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Compute confidence
-        if: steps.label-check.outputs.override != 'true'
-        run: swamp workflow run confidence-decay-sweep
-
-      - name: rave-check (fail if tamper claim is violated)
-        if: steps.label-check.outputs.override != 'true'
-        run: deno run --allow-read --allow-run=swamp bin/rave-check.ts .
+          if [ -n "$GUARDED" ] && [ -n "$NON_GUARDED" ]; then
+            echo "Mixed PR detected: spec files and application files changed together."
+            echo ""
+            echo "Guarded files changed:"
+            echo "$GUARDED"
+            echo ""
+            echo "Non-guarded files changed:"
+            echo "$NON_GUARDED"
+            echo ""
+            echo "Split into two PRs, or add the 'rave:spec-change' label if intentional."
+            exit 1
+          else
+            echo "Tamper check passed."
+          fi
