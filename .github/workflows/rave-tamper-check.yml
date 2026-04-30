@@ -28,10 +28,12 @@ jobs:
       - name: Read tamper-guard config
         id: config
         run: |
+          ENABLED=true
           if [ -f rave/config.yaml ]; then
-            ENABLED=$(yq -r '.tamper_guard.enabled // true' rave/config.yaml)
-          else
-            ENABLED=true
+            RAW=$(yq -r '.tamper_guard.enabled' rave/config.yaml)
+            if [ "$RAW" = "false" ]; then
+              ENABLED=false
+            fi
           fi
           echo "enabled=$ENABLED" >> "$GITHUB_OUTPUT"
           echo "tamper_guard.enabled = $ENABLED"
