@@ -1,0 +1,13 @@
+# rave/config.yaml — repo-level rave configuration
+#
+# tamper_guard.enabled controls whether the rave-tamper-check CI gate
+# enforces the "no mixed spec+app changes in a single PR" rule.
+#
+# Default (field absent or file missing): true — strict enforcement.
+# Set to false in the rave-swamp source repo itself, where spec files
+# are application code and modifying them alongside app code is normal.
+#
+# Downstream repos that adopt rave-swamp should omit this file entirely
+# (or keep enabled: true) to get the full protection.
+tamper_guard:
+  enabled: false
