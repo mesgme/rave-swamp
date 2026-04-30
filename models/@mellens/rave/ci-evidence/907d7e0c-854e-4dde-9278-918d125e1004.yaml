@@ -1,5 +1,5 @@
 type: '@mellens/rave/ci-evidence'
-typeVersion: 2026.03.21.1
+typeVersion: 2026.04.30.1
 id: 907d7e0c-854e-4dde-9278-918d125e1004
 name: evidence-deno-lock-committed-001
 version: 1
@@ -9,4 +9,5 @@ globalArguments:
   repo: mesgme/rave-swamp
   workflowName: validate.yml
   branch: main
+  jobName: lock-file
 methods: {}

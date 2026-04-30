@@ -1,5 +1,5 @@
 type: "@mellens/rave/ci-evidence"
-typeVersion: 2026.03.21.1
+typeVersion: 2026.04.30.1
 id: 7e44a26d-2b2e-46a4-8277-46b5f3ac8814
 name: evidence-code-coverage-001
 version: 1
@@ -9,4 +9,5 @@ globalArguments:
   repo: mesgme/rave-swamp
   workflowName: validate.yml
   branch: main
+  jobName: coverage
 methods: {}

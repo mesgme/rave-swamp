@@ -1,5 +1,5 @@
 type: '@mellens/rave/ci-evidence'
-typeVersion: 2026.03.21.1
+typeVersion: 2026.04.30.1
 id: 5d666c84-3a3d-45be-8148-6ed0df3b921f
 name: evidence-main-commits-via-pr-001
 version: 1
@@ -9,4 +9,5 @@ globalArguments:
   repo: mesgme/rave-swamp
   workflowName: governance-check.yml
   branch: main
+  jobName: commits-via-pr
 methods: {}
