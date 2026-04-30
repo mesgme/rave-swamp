@@ -1,4 +1,8 @@
-import { assertEquals, assertThrows, assertAlmostEquals } from "jsr:@std/assert@1";
+import {
+  assertAlmostEquals,
+  assertEquals,
+  assertThrows,
+} from "jsr:@std/assert@1";
 import { createModelTestContext } from "@systeminit/swamp-testing";
 import { model } from "./rave_confidence_engine.ts";
 
@@ -9,7 +13,8 @@ import { model } from "./rave_confidence_engine.ts";
 // ---------------------------------------------------------------------------
 
 function parseISO8601Duration(duration: string): number {
-  const re = /^P(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)W)?(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?)?$/;
+  const re =
+    /^P(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)W)?(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?)?$/;
   const m = duration.match(re);
   if (!m) throw new Error(`Invalid ISO 8601 duration: ${duration}`);
   return (
@@ -23,7 +28,12 @@ function parseISO8601Duration(duration: string): number {
   );
 }
 
-function computeScore(c0: number, fAvg: number, qAvg: number, decayFactor: number): number {
+function computeScore(
+  c0: number,
+  fAvg: number,
+  qAvg: number,
+  decayFactor: number,
+): number {
   return c0 * fAvg * qAvg * decayFactor;
 }
 
@@ -68,9 +78,21 @@ Deno.test("parseISO8601Duration: PT0S = 0", () => {
 });
 
 Deno.test("parseISO8601Duration: invalid string throws", () => {
-  assertThrows(() => parseISO8601Duration("1D"), Error, "Invalid ISO 8601 duration");
-  assertThrows(() => parseISO8601Duration(""), Error, "Invalid ISO 8601 duration");
-  assertThrows(() => parseISO8601Duration("1 day"), Error, "Invalid ISO 8601 duration");
+  assertThrows(
+    () => parseISO8601Duration("1D"),
+    Error,
+    "Invalid ISO 8601 duration",
+  );
+  assertThrows(
+    () => parseISO8601Duration(""),
+    Error,
+    "Invalid ISO 8601 duration",
+  );
+  assertThrows(
+    () => parseISO8601Duration("1 day"),
+    Error,
+    "Invalid ISO 8601 duration",
+  );
 });
 
 // ---------------------------------------------------------------------------
@@ -131,7 +153,11 @@ const passEvidence = {
 
 Deno.test("compute: previousScore is null on first run (no stored resource)", async () => {
   const { context, getWrittenResources } = createModelTestContext({
-    globalArgs: { claimId: "claim-test-001", decayLambda: 0.05, confidenceFloor: 0.01 },
+    globalArgs: {
+      claimId: "claim-test-001",
+      decayLambda: 0.05,
+      confidenceFloor: 0.01,
+    },
     methodName: "compute",
   });
 
@@ -148,7 +174,11 @@ Deno.test("compute: previousScore is null on first run (no stored resource)", as
 Deno.test("compute: previousScore is populated from stored resource on second run", async () => {
   const priorComputedAt = "2026-04-29T10:00:00.000Z";
   const { context, getWrittenResources } = createModelTestContext({
-    globalArgs: { claimId: "claim-test-001", decayLambda: 0.05, confidenceFloor: 0.01 },
+    globalArgs: {
+      claimId: "claim-test-001",
+      decayLambda: 0.05,
+      confidenceFloor: 0.01,
+    },
     methodName: "compute",
     storedResources: {
       current: {
