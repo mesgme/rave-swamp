@@ -25,8 +25,19 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Read tamper-guard config
+        id: config
+        run: |
+          if [ -f rave/config.yaml ]; then
+            ENABLED=$(yq -r '.tamper_guard.enabled // true' rave/config.yaml)
+          else
+            ENABLED=true
+          fi
+          echo "enabled=$ENABLED" >> "$GITHUB_OUTPUT"
+          echo "tamper_guard.enabled = $ENABLED"
+
       - name: Check for mixed spec/app changes
-        if: steps.label-check.outputs.override != 'true'
+        if: steps.config.outputs.enabled == 'true' && steps.label-check.outputs.override != 'true'
         run: |
           CHANGED=$(git diff --name-only origin/main...HEAD)
           GUARDED=$(echo "$CHANGED" | grep -E '^(rave/claims/|rave/scopes/|workflows/workflow-.*\.yaml|extensions/models/rave_.*\.ts)' || true)

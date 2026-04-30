@@ -86,22 +86,22 @@ The RAVE spec lives in `spec/rave-spec-v0.1.md`. Placeholder sections map to Git
 
 ## Rave Spec Change Policy
 
-The following files are **guarded** — they define the rave spec and must not be
-edited as a side effect of unrelated work:
+The following files are **guarded** — in downstream repos they define an imported rave spec and must not be edited as a side effect of unrelated work:
 
 - `rave/claims/**`
 - `rave/scopes/**`
 - `workflows/workflow-*.yaml`
 - `extensions/models/rave_*.ts`
 
-**If you need to edit guarded files as part of a legitimate spec change:**
+**This repo has `tamper_guard.enabled: false` in `rave/config.yaml`.** The tamper-check CI gate is disabled here because these files are application code in the source repo — modifying them is normal development. The guard is meaningful in downstream repos that *adopt* rave-swamp without building it.
+
+**If you are an adopter and need to edit guarded files:**
 
 1. Do it in a dedicated PR that touches only guarded files.
 2. Apply the `rave:spec-change` label to the PR:
    ```bash
    gh pr edit <number> --add-label "rave:spec-change"
    ```
-3. The `rave tamper check` CI gate will skip the rave-check step when this label is present.
+3. The `rave tamper check` CI gate will skip the diff check when this label is present.
 
-**Never mix guarded spec changes with application code changes in a single PR.**
-The `claim-rave-spec-untampered-001` claim will detect and flag this pattern.
+**To enable the tamper guard in a downstream repo:** copy `rave-tamper-check.yml` into `.github/workflows/` and either omit `rave/config.yaml` entirely (defaults to `enabled: true`) or set `tamper_guard.enabled: true`.
