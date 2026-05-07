@@ -1,3 +1,4 @@
+rave_version: "0.2.0"
 claim_id: claim-deno-lock-committed-001
 statement: deno.lock is committed and matches the current import configuration
 owner:
@@ -16,5 +17,6 @@ falsification_signals:
   - deno.lock is absent from the repo root
   - deno cache --frozen exits non-zero indicating the lock file is stale
   - deno.lock appears in .gitignore
-decay_lambda: 0.05
+confidence:
+  decay_lambda: 0.05
 annotations: []

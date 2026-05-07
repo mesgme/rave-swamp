@@ -1,3 +1,4 @@
+rave_version: "0.2.0"
 claim_id: claim-swamp-models-valid-001
 statement: All swamp extension models in extensions/models/ pass schema and argument validation
 owner:
@@ -16,5 +17,6 @@ falsification_signals:
   - "swamp model validate --json returns passed: false for any model"
   - Any model fails definition schema validation
   - Any model method arguments schema is invalid
-decay_lambda: 0.05
+confidence:
+  decay_lambda: 0.05
 annotations: []

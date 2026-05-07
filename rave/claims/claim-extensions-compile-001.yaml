@@ -1,3 +1,4 @@
+rave_version: "0.2.0"
 claim_id: claim-extensions-compile-001
 statement: All extension model TypeScript files in extensions/models/ compile without errors
 owner:
@@ -15,5 +16,6 @@ assumptions:
 falsification_signals:
   - tsc --noEmit exits with a non-zero exit code
   - Any extension model file produces a TypeScript type error
-decay_lambda: 0.05
+confidence:
+  decay_lambda: 0.05
 annotations: []

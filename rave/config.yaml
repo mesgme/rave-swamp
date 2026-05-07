@@ -9,5 +9,6 @@
 #
 # Downstream repos that adopt rave-swamp should omit this file entirely
 # (or keep enabled: true) to get the full protection.
+rave_version: "0.2.0"
 tamper_guard:
   enabled: false

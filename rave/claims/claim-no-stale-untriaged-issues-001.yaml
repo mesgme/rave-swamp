@@ -1,3 +1,4 @@
+rave_version: "0.2.0"
 claim_id: claim-no-stale-untriaged-issues-001
 statement: No open issue is older than 30 days without at least one label
 owner:
@@ -15,5 +16,6 @@ assumptions:
 falsification_signals:
   - Any open issue older than 30 days has no labels attached
   - A burst of unlabelled issues remains unreviewed after the 30-day window
-decay_lambda: 0.10
+confidence:
+  decay_lambda: 0.10
 annotations: []

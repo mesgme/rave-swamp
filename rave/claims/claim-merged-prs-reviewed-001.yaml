@@ -1,3 +1,4 @@
+rave_version: "0.2.0"
 claim_id: claim-merged-prs-reviewed-001
 statement: Every PR merged to main in the last 30 days had at least one approving review before merge
 owner:
@@ -15,5 +16,6 @@ assumptions:
 falsification_signals:
   - Any merged PR in the last 30 days has zero APPROVED reviews
   - A merge commit appears on main from a PR with only COMMENTED or CHANGES_REQUESTED reviews
-decay_lambda: 0.03
+confidence:
+  decay_lambda: 0.03
 annotations: []

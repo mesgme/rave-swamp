@@ -1,3 +1,4 @@
+rave_version: "0.2.0"
 claim_id: claim-rave-spec-untampered-001
 statement: No PR mixes rave spec changes with application code changes
 owner:
@@ -13,4 +14,5 @@ assumptions:
   - git diff origin/main...HEAD accurately reflects the files changed in a PR
 falsification_signals:
   - A PR contains changes to both rave spec files and application code files
-decay_lambda: 0.05
+confidence:
+  decay_lambda: 0.05
