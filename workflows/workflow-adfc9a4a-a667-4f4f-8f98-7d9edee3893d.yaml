@@ -1,10 +1,22 @@
 id: adfc9a4a-a667-4f4f-8f98-7d9edee3893d
 name: readiness-check
-description: On-demand readiness evaluation. Reads latest confidence scores for all active claims and determines if they meet the threshold. Exits successfully regardless of result — output is informative.
+description: On-demand readiness evaluation. Reads all in-scope node YAML files from the repo, cross-references with live confidence scores, and produces a v0.2 readiness assessment. Exits successfully regardless of result — output is informative.
 tags: {}
-version: 1
+version: 2
 inputs:
   properties:
+    scopeType:
+      type: string
+      default: "repository"
+      description: Scope type to evaluate (repository, pipeline, component)
+    scopeTarget:
+      type: string
+      default: "mesgme/rave-swamp"
+      description: Scope target to evaluate
+    includeDescendants:
+      type: boolean
+      default: true
+      description: Whether to include nodes whose scope is a descendant of scopeTarget
     threshold:
       type: number
       default: 0.7
@@ -12,31 +24,84 @@ inputs:
   required: []
 jobs:
   - name: evaluate
-    description: Read confidence scores and evaluate readiness against threshold
+    description: Evaluate readiness for the requested scope using v0.2 assessment shape
     dependsOn: []
     weight: 0
     steps:
       - name: report
-        description: Produce readiness report from latest confidence data
+        description: Produce v0.2 readiness assessment from live confidence data
         allowFailure: false
         task:
           type: model_method
           modelIdOrName: readiness-reporter-001
           methodName: evaluate
           inputs:
+            scopeType: ${{ inputs.scopeType }}
+            scopeTarget: ${{ inputs.scopeTarget }}
+            includeDescendants: ${{ inputs.includeDescendants }}
             threshold: ${{ inputs.threshold }}
-            branchProtectionId: "claim-branch-protection-001"
-            branchProtectionStatus: "active"
-            branchProtectionScore: ${{ data.latest("confidence-claim-branch-protection-001", "current").attributes.confidenceScore }}
-            ciGreenId: "claim-ci-green-on-main-001"
-            ciGreenStatus: "active"
-            ciGreenScore: ${{ data.latest("confidence-claim-ci-green-on-main-001", "current").attributes.confidenceScore }}
-            swampModelsId: "claim-swamp-models-valid-001"
-            swampModelsStatus: "active"
-            swampModelsScore: ${{ data.latest("confidence-claim-swamp-models-valid-001", "current").attributes.confidenceScore }}
-            swampWorkflowsId: "claim-swamp-workflows-valid-001"
-            swampWorkflowsStatus: "active"
-            swampWorkflowsScore: ${{ data.latest("confidence-claim-swamp-workflows-valid-001", "current").attributes.confidenceScore }}
-            extensionsCompileId: "claim-extensions-compile-001"
-            extensionsCompileStatus: "active"
-            extensionsCompileScore: ${{ data.latest("confidence-claim-extensions-compile-001", "current").attributes.confidenceScore }}
+            nodes:
+              - nodeId: "claim-branch-protection-001"
+                nodeType: "claim"
+                status: "active"
+                confidenceScore: ${{ data.latest("confidence-claim-branch-protection-001", "current").attributes.confidenceScore }}
+              - nodeId: "claim-ci-green-on-main-001"
+                nodeType: "claim"
+                status: "active"
+                confidenceScore: ${{ data.latest("confidence-claim-ci-green-on-main-001", "current").attributes.confidenceScore }}
+              - nodeId: "claim-code-coverage-001"
+                nodeType: "claim"
+                status: "active"
+                confidenceScore: ${{ data.latest("confidence-claim-code-coverage-001", "current").attributes.confidenceScore }}
+              - nodeId: "claim-deno-lock-committed-001"
+                nodeType: "claim"
+                status: "active"
+                confidenceScore: ${{ data.latest("confidence-claim-deno-lock-committed-001", "current").attributes.confidenceScore }}
+              - nodeId: "claim-extensions-compile-001"
+                nodeType: "claim"
+                status: "active"
+                confidenceScore: ${{ data.latest("confidence-claim-extensions-compile-001", "current").attributes.confidenceScore }}
+              - nodeId: "claim-lint-clean-001"
+                nodeType: "claim"
+                status: "active"
+                confidenceScore: ${{ data.latest("confidence-claim-lint-clean-001", "current").attributes.confidenceScore }}
+              - nodeId: "claim-main-commits-via-pr-001"
+                nodeType: "claim"
+                status: "active"
+                confidenceScore: ${{ data.latest("confidence-claim-main-commits-via-pr-001", "current").attributes.confidenceScore }}
+              - nodeId: "claim-merged-prs-reviewed-001"
+                nodeType: "claim"
+                status: "active"
+                confidenceScore: ${{ data.latest("confidence-claim-merged-prs-reviewed-001", "current").attributes.confidenceScore }}
+              - nodeId: "claim-no-known-cves-001"
+                nodeType: "claim"
+                status: "active"
+                confidenceScore: ${{ data.latest("confidence-claim-no-known-cves-001", "current").attributes.confidenceScore }}
+              - nodeId: "claim-no-secrets-committed-001"
+                nodeType: "claim"
+                status: "active"
+                confidenceScore: ${{ data.latest("confidence-claim-no-secrets-committed-001", "current").attributes.confidenceScore }}
+              - nodeId: "claim-no-stale-untriaged-issues-001"
+                nodeType: "claim"
+                status: "active"
+                confidenceScore: ${{ data.latest("confidence-claim-no-stale-untriaged-issues-001", "current").attributes.confidenceScore }}
+              - nodeId: "claim-npm-imports-pinned-001"
+                nodeType: "claim"
+                status: "active"
+                confidenceScore: ${{ data.latest("confidence-claim-npm-imports-pinned-001", "current").attributes.confidenceScore }}
+              - nodeId: "claim-rave-spec-untampered-001"
+                nodeType: "claim"
+                status: "active"
+                confidenceScore: ${{ data.latest("confidence-claim-rave-spec-untampered-001", "current").attributes.confidenceScore }}
+              - nodeId: "claim-swamp-models-valid-001"
+                nodeType: "claim"
+                status: "active"
+                confidenceScore: ${{ data.latest("confidence-claim-swamp-models-valid-001", "current").attributes.confidenceScore }}
+              - nodeId: "claim-swamp-workflows-valid-001"
+                nodeType: "claim"
+                status: "active"
+                confidenceScore: ${{ data.latest("confidence-claim-swamp-workflows-valid-001", "current").attributes.confidenceScore }}
+              - nodeId: "claim-unit-tests-pass-001"
+                nodeType: "claim"
+                status: "active"
+                confidenceScore: ${{ data.latest("confidence-claim-unit-tests-pass-001", "current").attributes.confidenceScore }}

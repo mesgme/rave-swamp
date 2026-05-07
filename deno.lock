@@ -4,9 +4,11 @@
     "jsr:@std/assert@1": "1.0.19",
     "jsr:@std/assert@1.0.19": "1.0.19",
     "jsr:@std/internal@^1.0.12": "1.0.12",
+    "jsr:@std/path@1": "1.1.4",
     "jsr:@std/yaml@1": "1.0.12",
     "jsr:@systeminit/swamp-testing@~0.20260424.9": "0.20260424.9",
-    "npm:yaml@2": "2.8.3",
+    "npm:yaml@2": "2.7.0",
+    "npm:yaml@2.7.0": "2.7.0",
     "npm:zod@4": "4.3.6",
     "npm:zod@^4.3.6": "4.3.6"
   },
@@ -20,6 +22,12 @@
     "@std/internal@1.0.12": {
       "integrity": "972a634fd5bc34b242024402972cd5143eac68d8dffaca5eaa4dba30ce17b027"
     },
+    "@std/path@1.1.4": {
+      "integrity": "1d2d43f39efb1b42f0b1882a25486647cb851481862dc7313390b2bb044314b5",
+      "dependencies": [
+        "jsr:@std/internal"
+      ]
+    },
     "@std/yaml@1.0.12": {
       "integrity": "7deabca4545bcedd07c5f69ea53acea71b8b4c67562f224e17b90d75944cb20c"
     },
@@ -32,8 +40,8 @@
     }
   },
   "npm": {
-    "yaml@2.8.3": {
-      "integrity": "sha512-AvbaCLOO2Otw/lW5bmh9d/WEdcDFdQp2Z2ZUH3pX9U2ihyUY0nvLv7J6TrWowklRGPYbB/IuIMfYgxaCPg5Bpg==",
+    "yaml@2.7.0": {
+      "integrity": "sha512-+hSoy/QHluxmC9kCIJyL/uyFmLmc+e5CFR5Wa+bpIhIj85LVb9ZH2nVnqrHoSvKogwODv0ClqZkmiSSaIH5LTA==",
       "bin": true
     },
     "zod@4.3.6": {
