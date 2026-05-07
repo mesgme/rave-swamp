@@ -94,13 +94,14 @@ export const model = {
         if (args.contact) owner.contact = args.contact;
 
         const claim: Record<string, unknown> = {
+          rave_version: "0.2.0",
           claim_id: claimId,
           statement: args.statement,
           owner,
           status: "draft",
           category: args.category,
           scope: { type: args.scopeType, target: args.scopeTarget },
-          decay_lambda: args.decayLambda,
+          confidence: { decay_lambda: args.decayLambda },
           assumptions: args.assumptions,
           falsification_signals: args.falsificationSignals,
           annotations: [],
