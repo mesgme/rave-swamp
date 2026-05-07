@@ -1,4 +1,4 @@
-version: "0.1.0"
+rave_version: "0.2.0"
 description: "Scope hierarchy for the rave-swamp repository"
 scopes:
   - type: "repository"

@@ -1,3 +1,4 @@
+rave_version: "0.2.0"
 claim_id: claim-no-known-cves-001
 statement: No HIGH or CRITICAL CVEs exist in extension model npm dependencies
 owner:
@@ -15,5 +16,6 @@ assumptions:
 falsification_signals:
   - osv-scanner reports a HIGH or CRITICAL finding against any locked package
   - deno.lock is removed, making scanning impossible
-decay_lambda: 0.05
+confidence:
+  decay_lambda: 0.05
 annotations: []

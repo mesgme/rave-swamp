@@ -1,3 +1,4 @@
+rave_version: "0.2.0"
 claim_id: claim-swamp-workflows-valid-001
 statement: All swamp workflow YAML files in workflows/ pass schema validation
 owner:
@@ -15,5 +16,6 @@ falsification_signals:
   - "swamp workflow validate --json returns passed: false for any workflow"
   - Any workflow fails schema validation
   - Any workflow references a model or step that does not exist
-decay_lambda: 0.05
+confidence:
+  decay_lambda: 0.05
 annotations: []

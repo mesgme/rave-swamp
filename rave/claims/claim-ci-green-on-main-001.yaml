@@ -1,3 +1,4 @@
+rave_version: "0.2.0"
 claim_id: claim-ci-green-on-main-001
 statement: All GitHub Actions workflow runs on the main branch succeed
 owner:
@@ -14,5 +15,6 @@ assumptions:
 falsification_signals:
   - Any workflow run on main has conclusion 'failure' or 'timed_out'
   - No workflow runs have occurred on main in the last 7 days
-decay_lambda: 0.05
+confidence:
+  decay_lambda: 0.05
 annotations: []

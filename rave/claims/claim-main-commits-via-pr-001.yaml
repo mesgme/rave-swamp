@@ -1,3 +1,4 @@
+rave_version: "0.2.0"
 claim_id: claim-main-commits-via-pr-001
 statement: Every commit on main arrived via a merged pull request — no direct pushes
 owner:
@@ -15,5 +16,6 @@ assumptions:
 falsification_signals:
   - A commit SHA on main does not appear as the merge_commit_sha of any known merged PR
   - A direct push bypasses branch protection via admin override
-decay_lambda: 0.02
+confidence:
+  decay_lambda: 0.02
 annotations: []

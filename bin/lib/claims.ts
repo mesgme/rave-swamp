@@ -7,7 +7,9 @@ interface RawClaim {
   status: string;
   category: string;
   scope: { type: string; target: string };
-  decay_lambda: number;
+  confidence?: { decay_lambda?: number };
+  /** @deprecated v0.1 top-level field; v0.2 uses confidence.decay_lambda */
+  decay_lambda?: number;
 }
 
 /** Parse a single claim YAML string into a Claim. */
@@ -20,7 +22,7 @@ export function parseClaimYaml(yamlStr: string): Claim {
     category: raw.category,
     scope: raw.scope,
     scopeKey: `${raw.scope.type}:${raw.scope.target}`,
-    decay_lambda: raw.decay_lambda,
+    decay_lambda: raw.confidence?.decay_lambda ?? raw.decay_lambda ?? 0,
   };
 }
 

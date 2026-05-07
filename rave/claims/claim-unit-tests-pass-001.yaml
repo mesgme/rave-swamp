@@ -1,3 +1,4 @@
+rave_version: "0.2.0"
 claim_id: claim-unit-tests-pass-001
 statement: All unit tests for extension models pass on main
 owner:
@@ -15,5 +16,6 @@ assumptions:
 falsification_signals:
   - deno test exits with a non-zero exit code
   - Any test assertion fails
-decay_lambda: 0.05
+confidence:
+  decay_lambda: 0.05
 annotations: []
