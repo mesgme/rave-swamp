@@ -1,5 +1,5 @@
 import { z } from "npm:zod@4";
-import { parse as parseYaml } from "npm:yaml@2.7.0";
+import { parse as parseYaml } from "npm:yaml@2.8.3";
 import { join } from "jsr:@std/path@1";
 
 // ---------------------------------------------------------------------------
