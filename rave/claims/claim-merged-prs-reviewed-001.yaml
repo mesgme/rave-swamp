@@ -1,6 +1,6 @@
 rave_version: "0.2.0"
 claim_id: claim-merged-prs-reviewed-001
-statement: Every PR merged to main in the last 30 days had at least one approving review before merge
+statement: Every PR merged to main in the last 30 days by a non-maintainer contributor had at least one approving review before merge
 owner:
   name: mellens
   contact: mesgme/rave-swamp
@@ -12,10 +12,11 @@ scope:
 assumptions:
   - The GitHub API pulls endpoint is authoritative for review state
   - PRs merged by bots (renovate, dependabot, github-actions) are excluded
-  - A single APPROVED review from any collaborator satisfies the claim
+  - PRs authored by the sole maintainer (mellens) are excluded — GitHub does not allow self-approval
+  - A single APPROVED review from any collaborator satisfies the claim for external contributors
 falsification_signals:
-  - Any merged PR in the last 30 days has zero APPROVED reviews
-  - A merge commit appears on main from a PR with only COMMENTED or CHANGES_REQUESTED reviews
+  - A PR authored by a non-maintainer contributor is merged with zero APPROVED reviews
+  - A merge commit appears on main from an external contributor's PR with only COMMENTED or CHANGES_REQUESTED reviews
 confidence:
   decay_lambda: 0.03
 annotations: []
