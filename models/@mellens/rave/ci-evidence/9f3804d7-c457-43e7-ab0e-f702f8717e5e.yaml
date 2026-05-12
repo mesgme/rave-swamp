@@ -1,5 +1,5 @@
 type: '@mellens/rave/ci-evidence'
-typeVersion: 2026.04.30.1
+typeVersion: 2026.05.01.1
 id: 9f3804d7-c457-43e7-ab0e-f702f8717e5e
 name: evidence-npm-imports-pinned-001
 version: 1
