@@ -10,8 +10,9 @@
   "tasks": {
     "dashboard": "deno run --allow-read --allow-run=swamp bin/rave-dashboard.ts",
     "dashboard:json": "deno run --allow-read --allow-run=swamp bin/rave-dashboard.ts --json",
-    "dashboard:test": "deno test --allow-read bin/",
-    "check": "deno run --allow-read --allow-run=swamp bin/rave-check.ts"
+    "dashboard:test": "deno test --allow-read --allow-write bin/",
+    "cve-scan": "deno run --allow-read --allow-net=api.osv.dev bin/rave-cve-scan.ts",
+    "check": "deno run --allow-read --allow-run=swamp --allow-net=api.osv.dev bin/rave-check.ts"
   },
   "imports": {
     "@systeminit/swamp-testing": "jsr:@systeminit/swamp-testing@^0.20260424.9"
