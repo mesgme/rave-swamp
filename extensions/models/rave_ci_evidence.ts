@@ -29,7 +29,7 @@ function conclusionToOutcome(
 
 export const model = {
   type: "@mellens/rave/ci-evidence",
-  version: "2026.04.30.1",
+  version: "2026.05.01.1",
   globalArguments: GlobalArgsSchema,
   resources: {
     result: {
@@ -43,6 +43,14 @@ export const model = {
     {
       fromVersion: "2026.03.21.1",
       toVersion: "2026.04.30.1",
+      description: "No-op: adds failureReason and remediation to result schema",
+      upgradeAttributes: (old: Record<string, unknown>) => old,
+    },
+    {
+      fromVersion: "2026.04.30.1",
+      toVersion: "2026.05.01.1",
+      description:
+        "No-op: adds optional jobName global argument for per-job CI evidence",
       upgradeAttributes: (old: Record<string, unknown>) => old,
     },
   ],

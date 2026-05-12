@@ -1,5 +1,5 @@
 type: '@mellens/rave/ci-evidence'
-typeVersion: 2026.04.30.1
+typeVersion: 2026.05.01.1
 id: d7ef007e-4b56-4629-a8a9-572c02a086ea
 name: evidence-no-known-cves-001
 version: 1

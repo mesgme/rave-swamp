@@ -1,5 +1,5 @@
 import { z } from "npm:zod@4";
-import * as YAML from "npm:yaml@2";
+import * as YAML from "npm:yaml@2.8.3";
 
 // ---------------------------------------------------------------------------
 // Schemas
