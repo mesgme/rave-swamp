@@ -40,13 +40,13 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          MERGE_SHAS=$(gh api --paginate \
+          MERGE_SHAS=$(gh api \
             "repos/mesgme/rave-swamp/pulls?state=closed&base=main&per_page=100" \
             --jq '[.[] | select(.merged_at != null) | .merge_commit_sha] | .[]')
 
           FAILURES=0
           while read SHA; do
-            PARENT_COUNT=$(git cat-file -p "$SHA" | grep -c '^parent ' || echo 0)
+            PARENT_COUNT=$(git cat-file -p "$SHA" | awk '/^parent / { c++ } END { print c + 0 }')
             if [ "$PARENT_COUNT" -lt 2 ]; then
               continue
             fi
