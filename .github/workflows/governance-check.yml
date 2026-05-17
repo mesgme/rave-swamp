@@ -19,7 +19,7 @@ jobs:
           for PR in $(gh api "repos/mesgme/rave-swamp/pulls?state=closed&base=main&per_page=50" \
               --jq '.[] | select(.merged_at != null and .merged_at > "'"$SINCE"'") | .number'); do
             USER=$(gh api "repos/mesgme/rave-swamp/pulls/$PR" --jq '.user.login')
-            case "$USER" in renovate*|dependabot*|github-actions*|mellens) continue ;; esac
+            case "$USER" in renovate*|dependabot*|github-actions*|mellens|mesgme) continue ;; esac
             APPROVED=$(gh api "repos/mesgme/rave-swamp/pulls/$PR/reviews" \
               --jq '[.[] | select(.state == "APPROVED")] | length')
             if [ "$APPROVED" -eq 0 ]; then
@@ -40,14 +40,14 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          MERGE_SHAS=$(gh api \
+          MERGE_SHAS=$(gh api --paginate \
             "repos/mesgme/rave-swamp/pulls?state=closed&base=main&per_page=100" \
             --jq '[.[] | select(.merged_at != null) | .merge_commit_sha] | .[]')
 
           FAILURES=0
           while read SHA; do
             PARENT_COUNT=$(git cat-file -p "$SHA" | grep -c '^parent ' || echo 0)
-            if [ "$PARENT_COUNT" -eq 0 ]; then
+            if [ "$PARENT_COUNT" -lt 2 ]; then
               continue
             fi
             if ! echo "$MERGE_SHAS" | grep -qx "$SHA"; then
