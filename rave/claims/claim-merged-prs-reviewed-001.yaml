@@ -12,7 +12,7 @@ scope:
 assumptions:
   - The GitHub API pulls endpoint is authoritative for review state
   - PRs merged by bots (renovate, dependabot, github-actions) are excluded
-  - PRs authored by the sole maintainer (mellens) are excluded — GitHub does not allow self-approval
+  - PRs authored by the sole maintainer (mesgme / mellens) are excluded — GitHub does not allow self-approval
   - A single APPROVED review from any collaborator satisfies the claim for external contributors
 falsification_signals:
   - A PR authored by a non-maintainer contributor is merged with zero APPROVED reviews
