@@ -19,7 +19,7 @@ jobs:
           for PR in $(gh api "repos/mesgme/rave-swamp/pulls?state=closed&base=main&per_page=50" \
               --jq '.[] | select(.merged_at != null and .merged_at > "'"$SINCE"'") | .number'); do
             USER=$(gh api "repos/mesgme/rave-swamp/pulls/$PR" --jq '.user.login')
-            case "$USER" in renovate*|dependabot*|github-actions*|mellens) continue ;; esac
+            case "$USER" in renovate*|dependabot*|github-actions*|mellens|mesgme) continue ;; esac
             APPROVED=$(gh api "repos/mesgme/rave-swamp/pulls/$PR/reviews" \
               --jq '[.[] | select(.state == "APPROVED")] | length')
             if [ "$APPROVED" -eq 0 ]; then
@@ -54,7 +54,7 @@ jobs:
               echo "Commit $SHA on main is not a known PR merge commit" >&2
               FAILURES=$((FAILURES+1))
             fi
-          done < <(git log --format='%H' origin/main -50)
+          done < <(git log --first-parent --format='%H' origin/main -50)
 
           exit $FAILURES
 

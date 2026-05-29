@@ -12,7 +12,7 @@ scope:
 assumptions:
   - GitHub API merge_commit_sha fields are reliable identifiers for PR-backed commits
   - Root commits (zero parents) are whitelisted as pre-policy bootstrap commits
-  - The check covers the last 50 commits on main against the last 100 merged PRs
+  - The check covers the last 50 first-parent commits on main against the last 100 merged PRs (feature-branch commits reachable via merge are intentionally excluded)
 falsification_signals:
   - A commit SHA on main does not appear as the merge_commit_sha of any known merged PR
   - A direct push bypasses branch protection via admin override
