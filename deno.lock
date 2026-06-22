@@ -5,6 +5,7 @@
     "jsr:@std/assert@1.0.19": "1.0.19",
     "jsr:@std/internal@^1.0.12": "1.0.12",
     "jsr:@std/path@1": "1.1.4",
+    "jsr:@std/yaml@1": "1.0.12",
     "jsr:@systeminit/swamp-testing@~0.20260424.9": "0.20260424.9",
     "npm:yaml@2.8.3": "2.8.3",
     "npm:zod@4": "4.3.6",
@@ -25,6 +26,9 @@
       "dependencies": [
         "jsr:@std/internal"
       ]
+    },
+    "@std/yaml@1.0.12": {
+      "integrity": "7deabca4545bcedd07c5f69ea53acea71b8b4c67562f224e17b90d75944cb20c"
     },
     "@systeminit/swamp-testing@0.20260424.9": {
       "integrity": "c2364e542bbb5f03cda94aaba070be8710c9533423bbb36c91bd12ce2a45bbc5",
