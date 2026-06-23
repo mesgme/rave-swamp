@@ -1,0 +1,30 @@
+rave_version: "0.2.0"
+claim_id: claim-actions-sha-pinned-001
+statement: No GitHub Actions workflow references an external action by a mutable tag — all external actions are pinned to a full commit SHA
+owner:
+  name: mellens
+  contact: mesgme/rave-swamp
+status: active
+category: security
+scope:
+  type: pipeline
+  target: mesgme/rave-swamp/main
+assumptions:
+  - GitHub Actions workflows in .github/workflows/ are the complete CI surface
+  - A 40-character hex SHA is an immutable reference; semver tags and named branches are mutable
+  - GitHub-hosted runners are trusted; this claim covers action reference hygiene only
+  - First-party inline scripts (run: blocks) are not action references and are excluded
+falsification_signals:
+  - Any uses: line in .github/workflows/*.yml references an external action with a semver tag (e.g. @v4), named branch (e.g. @main), or @latest
+  - A new workflow is added with unpinned action references
+  - The sha-pinned CI job exits non-zero
+confidence:
+  decay_lambda: 0.05
+annotations:
+  - text: >
+      Added in response to the Mini Shai-Hulud supply-chain worm (May 2026,
+      CVE-2026-45321, CVSS 9.6), which exploits mutable GitHub Action tags to
+      inject malicious code into CI runners, extract OIDC tokens, and
+      self-propagate across all packages the compromised maintainer controls.
+    author: mellens
+    created_at: 2026-05-13T00:00:00.000Z

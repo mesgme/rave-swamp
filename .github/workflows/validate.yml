@@ -10,11 +10,11 @@ jobs:
   secrets:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
         with:
           fetch-depth: 0
       - name: Scan for secrets
-        uses: gitleaks/gitleaks-action@v2
+        uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7  # v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
@@ -22,9 +22,9 @@ jobs:
   cve-scan:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
       - name: Install Deno
-        uses: denoland/setup-deno@v2
+        uses: denoland/setup-deno@667a34cdef165d8d2b2e98dde39547c9daac7282  # v2.0.4
         with:
           deno-version: v2.x
       - name: Scan dependencies for CVEs
@@ -52,7 +52,7 @@ jobs:
   swamp-models:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
       - name: Install swamp
         run: curl -fsSL swamp.club/install.sh | sh
       - name: Add swamp to PATH
@@ -63,7 +63,7 @@ jobs:
   swamp-workflows:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
       - name: Install swamp
         run: curl -fsSL swamp.club/install.sh | sh
       - name: Add swamp to PATH
@@ -74,9 +74,9 @@ jobs:
   lock-file:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
       - name: Install Deno
-        uses: denoland/setup-deno@v2
+        uses: denoland/setup-deno@667a34cdef165d8d2b2e98dde39547c9daac7282  # v2.0.4
         with:
           deno-version: v2.x
       - name: Verify lock file is current
@@ -91,7 +91,7 @@ jobs:
   npm-pins:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
       - name: Check npm imports are version-pinned
         run: |
           if grep -rP 'from\s+"npm:(?!zod@)[^@"]+(?<![0-9])"' extensions/models/*.ts; then
@@ -103,9 +103,9 @@ jobs:
   compile:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
       - name: Install Deno
-        uses: denoland/setup-deno@v2
+        uses: denoland/setup-deno@667a34cdef165d8d2b2e98dde39547c9daac7282  # v2.0.4
         with:
           deno-version: v2.x
       - name: TypeScript compile check
@@ -114,9 +114,9 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
       - name: Install Deno
-        uses: denoland/setup-deno@v2
+        uses: denoland/setup-deno@667a34cdef165d8d2b2e98dde39547c9daac7282  # v2.0.4
         with:
           deno-version: v2.x
       - name: Lint extension models
@@ -125,9 +125,9 @@ jobs:
   unit-tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
       - name: Install Deno
-        uses: denoland/setup-deno@v2
+        uses: denoland/setup-deno@667a34cdef165d8d2b2e98dde39547c9daac7282  # v2.0.4
         with:
           deno-version: v2.x
       - name: Unit tests
@@ -136,9 +136,9 @@ jobs:
   coverage:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
       - name: Install Deno
-        uses: denoland/setup-deno@v2
+        uses: denoland/setup-deno@667a34cdef165d8d2b2e98dde39547c9daac7282  # v2.0.4
         with:
           deno-version: v2.x
       - name: Code coverage
@@ -147,10 +147,23 @@ jobs:
   dashboard-tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
       - name: Install Deno
-        uses: denoland/setup-deno@v2
+        uses: denoland/setup-deno@667a34cdef165d8d2b2e98dde39547c9daac7282  # v2.0.4
         with:
           deno-version: v2.x
       - name: Dashboard tests
         run: deno task dashboard:test
+
+  actions-sha-pinned:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+      - name: Check external actions are pinned to commit SHAs
+        run: |
+          # Match any uses: line whose ref is not a 40-char hex SHA
+          if grep -rP '^\s+uses:\s+\S+@(?![0-9a-f]{40}\b)' .github/workflows/*.yml; then
+            echo "ERROR: found action reference with a mutable tag — pin all external actions to a full commit SHA (see claim-actions-sha-pinned-001)" >&2
+            exit 1
+          fi
+          echo "All external action references are SHA-pinned."
