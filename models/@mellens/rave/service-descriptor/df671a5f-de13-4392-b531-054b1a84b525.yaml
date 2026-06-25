@@ -1,0 +1,10 @@
+type: '@mellens/rave/service-descriptor'
+typeVersion: 2026.06.24.1
+id: df671a5f-de13-4392-b531-054b1a84b525
+name: service-descriptor-rave-swamp-001
+version: 1
+tags: {}
+globalArguments:
+  serviceId: rave-swamp
+  repo: mesgme/rave-swamp
+methods: {}
