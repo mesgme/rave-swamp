@@ -1,0 +1,27 @@
+owner:
+  name: Mark Ellens
+  team: RAVE Core
+  confirmedAt: "2026-06-26T00:00:00.000Z"
+
+dependencies:
+  - name: github-actions
+    type: external-api
+    criticality: critical
+    sla: "99.9% uptime per GitHub status page"
+    fallbackPlan: "CI evidence marks inconclusive when unavailable; manual attestation can substitute until restored"
+  - name: swamp-runtime
+    type: service
+    criticality: critical
+    sla: "Self-hosted; maintained by the rave-swamp team"
+    fallbackPlan: "Restore from the latest swamp backup; evidence gathering pauses until runtime is healthy"
+  - name: osv-dev-api
+    type: external-api
+    criticality: standard
+
+slos:
+  - endpoint: "rave-check (readiness gate)"
+    target: 0.95
+    window: "30d"
+  - endpoint: "gather-all-evidence (workflow)"
+    target: 0.9
+    window: "7d"
