@@ -1,0 +1,21 @@
+rave_version: "0.2.0"
+claim_id: claim-slo-catalog-complete-001
+statement: Every endpoint declared in the rave-swamp service's SLO catalog has both an SLO target and a measurement window.
+owner:
+  name: mellens
+  contact: mesgme/rave-swamp
+status: active
+category: slo
+scope:
+  type: repository
+  target: mesgme/rave-swamp
+assumptions:
+  - The SLO catalog is declared via rave_service_descriptor.declare (driven by the rave-assess CLI)
+  - sloComplete is computed deterministically — true only when no endpoint is missing target or window
+  - A complete catalog is a precondition for meaningful SLO measurement
+falsification_signals:
+  - The descriptor reports sloComplete=false (an endpoint is missing target and/or window)
+  - incompleteEndpoints is non-empty
+confidence:
+  decay_lambda: 0.05
+annotations: []
