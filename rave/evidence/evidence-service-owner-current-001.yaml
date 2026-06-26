@@ -1,0 +1,22 @@
+evidence_id: "evidence-service-owner-current-001"
+type: "manual_test"
+description: "Human attestation of rave-swamp service ownership via the rave-assess CLI (drives rave_service_descriptor.declare, which records owner, deps, and SLOs and stamps attestedAt)"
+reference:
+  uri: "swamp://models/service-descriptor-rave-swamp-001/descriptor/current"
+  format: "application/json"
+  authentication:
+    method: "none"
+    hint: "local swamp runtime"
+claim_ids:
+  - "claim-service-owner-current-001"
+freshness_window: "P90D"
+quality_score: 0.90
+methodology:
+  description: "A human runs 'deno task assess', confirms ownership via yes/no prompt, and the CLI calls rave_service_descriptor.declare which writes the descriptor resource with attestedAt = now. The descriptor's timestamp is the evidence timestamp read by the staleness falsifier."
+  tooling: "rave-assess"
+  frequency: "P90D"
+  coverage: "Named owner (person + team) of the rave-swamp service"
+metadata:
+  source_system: "swamp"
+  instance: "service-descriptor-rave-swamp-001"
+  resource: "descriptor"

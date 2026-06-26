@@ -1,0 +1,11 @@
+type: '@mellens/rave/falsifier-engine'
+typeVersion: 2026.03.21.1
+id: 56a69260-c547-4c76-bdff-831fcdf0248b
+name: falsifier-service-owner-stale-001
+version: 1
+tags: {}
+globalArguments:
+  falsifierId: falsifier-service-owner-stale-001
+  conditionType: staleness
+  condition: '{"max_age":"P90D"}'
+methods: {}
