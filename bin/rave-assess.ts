@@ -11,6 +11,7 @@ export interface Question {
   descriptor: string;
   instance: string;
   prompt: string;
+  prompt_initial?: string; // used when never attested; falls back to prompt
   answer_type: "yes_no";
   expected_answer: string;
   freshness_window: string; // ISO 8601 duration e.g. P90D
@@ -270,7 +271,9 @@ async function main() {
   if (jsonMode) {
     const out = pending.map((p) => ({
       question_id: p.question.question_id,
-      prompt: p.question.prompt.trim(),
+      prompt: (p.lastTimestamp === null
+        ? (p.question.prompt_initial ?? p.question.prompt)
+        : p.question.prompt).trim(),
       claim_id: p.question.claim_id,
       instance: p.question.instance,
       lastTimestamp: p.lastTimestamp,
@@ -306,7 +309,10 @@ async function main() {
       ? `last attested ${new Date(lastTimestamp).toISOString().slice(0, 10)}`
       : "never attested";
     console.log(`\n[${question.question_id}] (${age})`);
-    console.log(question.prompt.trim());
+    const displayPrompt = (lastTimestamp === null
+      ? (question.prompt_initial ?? question.prompt)
+      : question.prompt).trim();
+    console.log(displayPrompt);
     const answer = prompt("Answer (yes/no): ")?.trim().toLowerCase();
 
     if (answer !== "yes") {
@@ -341,7 +347,9 @@ async function main() {
         const parsed = JSON.parse(result.output);
         const attrs = parsed?.content ?? parsed?.attributes ?? parsed;
         attestedAt = attrs?.attestedAt ?? attrs?.timestamp ?? "";
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
       console.log(
         `  → Declared. attestedAt: ${attestedAt || "(see swamp output)"}`,
       );
