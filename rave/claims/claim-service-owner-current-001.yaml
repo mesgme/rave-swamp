@@ -1,0 +1,21 @@
+rave_version: "0.2.0"
+claim_id: claim-service-owner-current-001
+statement: The rave-swamp service has a named owning team confirmed within the last 90 days.
+owner:
+  name: mellens
+  contact: mesgme/rave-swamp
+status: active
+category: ownership
+scope:
+  type: repository
+  target: mesgme/rave-swamp
+assumptions:
+  - Ownership is attested by a human via the rave-assess CLI, which calls rave_service_descriptor.declare
+  - A confirmation within 90 days is sufficient evidence the owner is current
+  - The service descriptor's attestedAt timestamp reflects the most recent human confirmation
+falsification_signals:
+  - The service descriptor has not been re-attested (declare) within the last 90 days
+  - The recorded owner team is removed or left blank in the descriptor
+confidence:
+  decay_lambda: 0.0028
+annotations: []
