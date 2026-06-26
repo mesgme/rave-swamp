@@ -12,6 +12,8 @@
     "dashboard:json": "deno run --allow-read --allow-run=swamp bin/rave-dashboard.ts --json",
     "dashboard:test": "deno test --allow-read --allow-write bin/",
     "cve-scan": "deno run --allow-read --allow-net=api.osv.dev bin/rave-cve-scan.ts",
+    "assess": "deno run --allow-read --allow-run=swamp --allow-env bin/rave-assess.ts",
+    "assess:json": "deno run --allow-read --allow-run=swamp --allow-env bin/rave-assess.ts --json",
     "check": "deno run --allow-read --allow-run=swamp --allow-net=api.osv.dev bin/rave-check.ts"
   },
   "imports": {

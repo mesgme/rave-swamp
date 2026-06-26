@@ -1,0 +1,14 @@
+question_id: q-service-owner-001
+claim_id: claim-service-owner-current-001
+evidence_id: evidence-service-owner-current-001
+descriptor: rave-swamp
+instance: service-descriptor-rave-swamp-001
+prompt: >
+  Is the recorded owner for the service under assessment still accurate
+  (correct person and team)?
+prompt_initial: >
+  Who currently owns the service under assessment?
+  Please confirm the owner (person and team) is correctly recorded in the descriptor.
+answer_type: yes_no
+expected_answer: "yes"
+freshness_window: P90D
