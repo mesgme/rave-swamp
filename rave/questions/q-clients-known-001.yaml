@@ -1,0 +1,15 @@
+question_id: q-clients-known-001
+claim_id: claim-clients-known-001
+evidence_id: evidence-clients-known-001
+descriptor: rave-swamp
+instance: service-descriptor-rave-swamp-001
+prompt: >
+  Are all known upstream users and adopters of rave-swamp catalogued,
+  or is it confirmed that no external clients currently exist?
+prompt_initial: >
+  Please check for any known adopters of rave-swamp (GitHub forks, stars, issue reporters
+  using it in production, or direct contacts). Confirm either that all known clients
+  are catalogued, or that no external clients currently exist.
+answer_type: yes_no
+expected_answer: "yes"
+freshness_window: P90D

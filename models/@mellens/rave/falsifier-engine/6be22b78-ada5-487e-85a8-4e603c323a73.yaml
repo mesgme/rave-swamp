@@ -1,0 +1,11 @@
+type: '@mellens/rave/falsifier-engine'
+typeVersion: 2026.03.21.1
+id: 6be22b78-ada5-487e-85a8-4e603c323a73
+name: falsifier-deprecation-procedure-stale-001
+version: 1
+tags: {}
+globalArguments:
+  falsifierId: falsifier-deprecation-procedure-stale-001
+  conditionType: staleness
+  condition: '{"max_age":"P180D"}'
+methods: {}

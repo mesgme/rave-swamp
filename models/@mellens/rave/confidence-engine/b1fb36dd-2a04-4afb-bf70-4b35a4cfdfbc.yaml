@@ -1,0 +1,11 @@
+type: '@mellens/rave/confidence-engine'
+typeVersion: 2026.03.21.1
+id: b1fb36dd-2a04-4afb-bf70-4b35a4cfdfbc
+name: confidence-claim-health-checks-present-001
+version: 1
+tags: {}
+globalArguments:
+  claimId: claim-health-checks-present-001
+  decayLambda: 0.05
+  confidenceFloor: 0.01
+methods: {}

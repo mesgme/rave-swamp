@@ -1,0 +1,11 @@
+type: '@mellens/rave/falsifier-engine'
+typeVersion: 2026.03.21.1
+id: f6ae0831-d590-4441-bc54-0324384a77ad
+name: falsifier-dependencies-unknown-001
+version: 1
+tags: {}
+globalArguments:
+  falsifierId: falsifier-dependencies-unknown-001
+  conditionType: staleness
+  condition: '{"max_age":"P90D"}'
+methods: {}
