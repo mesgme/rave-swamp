@@ -363,3 +363,47 @@ jobs:
                 qualityScore: 0.95
                 failureReason: ${{ data.latest("evidence-rave-spec-untampered-001", "current").attributes.failureReason }}
                 remediation: ${{ data.latest("evidence-rave-spec-untampered-001", "current").attributes.remediation }}
+  - name: service-owner-current
+    description: Recompute confidence for claim-service-owner-current-001
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: compute
+        description: Apply RAVE decay formula with latest service descriptor attestation
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: confidence-claim-service-owner-current-001
+          methodName: compute
+          inputs:
+            currentStatus: "active"
+            evidence:
+              - evidenceId: "evidence-service-owner-current-001"
+                outcome: ${{ data.latest("service-descriptor-rave-swamp-001", "current").attributes.outcome }}
+                timestamp: ${{ data.latest("service-descriptor-rave-swamp-001", "current").attributes.timestamp }}
+                freshnessWindow: "P90D"
+                qualityScore: 0.90
+                failureReason: ${{ data.latest("service-descriptor-rave-swamp-001", "current").attributes.failureReason }}
+                remediation: ${{ data.latest("service-descriptor-rave-swamp-001", "current").attributes.remediation }}
+  - name: slo-catalog-complete
+    description: Recompute confidence for claim-slo-catalog-complete-001
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: compute
+        description: Apply RAVE decay formula with latest SLO completeness evidence
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: confidence-claim-slo-catalog-complete-001
+          methodName: compute
+          inputs:
+            currentStatus: "active"
+            evidence:
+              - evidenceId: "evidence-slo-catalog-complete-001"
+                outcome: ${{ data.latest("service-descriptor-rave-swamp-001", "current").attributes.outcome }}
+                timestamp: ${{ data.latest("service-descriptor-rave-swamp-001", "current").attributes.timestamp }}
+                freshnessWindow: "P1D"
+                qualityScore: 0.90
+                failureReason: ${{ data.latest("service-descriptor-rave-swamp-001", "current").attributes.failureReason }}
+                remediation: ${{ data.latest("service-descriptor-rave-swamp-001", "current").attributes.remediation }}
