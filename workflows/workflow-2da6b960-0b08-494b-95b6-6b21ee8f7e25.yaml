@@ -304,3 +304,43 @@ jobs:
                 freshnessWindow: "P1D"
                 value: null
                 rawData: null
+  - name: service-owner-stale
+    description: Evaluate falsifier-service-owner-stale-001 against the service descriptor attestation timestamp
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: evaluate
+        description: Check whether the service descriptor has been re-attested within 90 days
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: falsifier-service-owner-stale-001
+          methodName: evaluate
+          inputs:
+            evidence:
+              - evidenceId: "evidence-service-owner-current-001"
+                outcome: ${{ data.latest("service-descriptor-rave-swamp-001", "current").attributes.outcome }}
+                timestamp: ${{ data.latest("service-descriptor-rave-swamp-001", "current").attributes.timestamp }}
+                freshnessWindow: "P90D"
+                value: null
+                rawData: null
+  - name: slo-incomplete
+    description: Evaluate falsifier-slo-incomplete-001 against the service descriptor SLO completeness
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: evaluate
+        description: Check whether every declared SLO endpoint has a target and window ($.sloComplete)
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: falsifier-slo-incomplete-001
+          methodName: evaluate
+          inputs:
+            evidence:
+              - evidenceId: "evidence-slo-catalog-complete-001"
+                outcome: ${{ data.latest("service-descriptor-rave-swamp-001", "current").attributes.outcome }}
+                timestamp: ${{ data.latest("service-descriptor-rave-swamp-001", "current").attributes.timestamp }}
+                freshnessWindow: "P1D"
+                value: null
+                rawData: ${{ data.latest("service-descriptor-rave-swamp-001", "current").attributes.rawData }}

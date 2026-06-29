@@ -105,3 +105,11 @@ jobs:
                 nodeType: "claim"
                 status: "active"
                 confidenceScore: ${{ data.latest("confidence-claim-unit-tests-pass-001", "current").attributes.confidenceScore }}
+              - nodeId: "claim-service-owner-current-001"
+                nodeType: "claim"
+                status: "active"
+                confidenceScore: ${{ data.latest("confidence-claim-service-owner-current-001", "current").attributes.confidenceScore }}
+              - nodeId: "claim-slo-catalog-complete-001"
+                nodeType: "claim"
+                status: "active"
+                confidenceScore: ${{ data.latest("confidence-claim-slo-catalog-complete-001", "current").attributes.confidenceScore }}
