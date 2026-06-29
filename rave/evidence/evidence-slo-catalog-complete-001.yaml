@@ -1,0 +1,22 @@
+evidence_id: "evidence-slo-catalog-complete-001"
+type: "policy_output"
+description: "Verification that every SLO endpoint declared in the rave-swamp service descriptor has both a numeric target and a measurement window ($.sloComplete=true in descriptor rawData)"
+reference:
+  uri: "swamp://models/service-descriptor-rave-swamp-001/descriptor/current"
+  format: "application/json"
+  authentication:
+    method: "none"
+    hint: "local swamp runtime"
+claim_ids:
+  - "claim-slo-catalog-complete-001"
+freshness_window: "P1D"
+quality_score: 0.90
+methodology:
+  description: "Read the service descriptor resource and verify $.sloComplete is true (every SLO endpoint declares both target and window); incompleteEndpoints enumerates any failures. The descriptor is written by rave_service_descriptor.declare, driven by the rave-assess CLI."
+  tooling: "rave_service_descriptor"
+  frequency: "P1D"
+  coverage: "All SLO endpoints declared in the rave-swamp service descriptor"
+metadata:
+  source_system: "swamp"
+  instance: "service-descriptor-rave-swamp-001"
+  resource: "descriptor"

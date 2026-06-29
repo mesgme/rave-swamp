@@ -1,0 +1,15 @@
+falsifier_id: "falsifier-slo-incomplete-001"
+name: "SLO Catalog Incomplete"
+description: "Triggers when the service descriptor reports sloComplete=false, meaning at least one declared SLO endpoint is missing a target or measurement window, contradicting the catalog-complete claim."
+condition:
+  type: "boolean"
+  parameters:
+    field: "$.sloComplete"
+    expected: true
+evidence_ids:
+  - "evidence-slo-catalog-complete-001"
+claim_ids:
+  - "claim-slo-catalog-complete-001"
+metadata:
+  service: "rave-swamp"
+  instance: "service-descriptor-rave-swamp-001"

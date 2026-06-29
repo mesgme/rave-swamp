@@ -1,0 +1,11 @@
+type: '@mellens/rave/falsifier-engine'
+typeVersion: 2026.03.21.1
+id: b711fa13-c4c7-4661-bab5-7f8fde617fcd
+name: falsifier-slo-incomplete-001
+version: 1
+tags: {}
+globalArguments:
+  falsifierId: falsifier-slo-incomplete-001
+  conditionType: boolean
+  condition: '{"field":"$.sloComplete","expected":true}'
+methods: {}
