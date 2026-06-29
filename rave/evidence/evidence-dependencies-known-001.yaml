@@ -1,0 +1,22 @@
+evidence_id: "evidence-dependencies-known-001"
+type: "manual_test"
+description: "Human attestation via deno task assess that the dependency list in rave/descriptors/rave-swamp.yaml is complete (all critical deps documented with type, criticality, SLA, and fallback plan)"
+reference:
+  uri: "swamp://models/service-descriptor-rave-swamp-001/descriptor/current"
+  format: "application/json"
+  authentication:
+    method: "none"
+    hint: "local swamp runtime"
+claim_ids:
+  - "claim-dependencies-known-001"
+freshness_window: "P90D"
+quality_score: 0.85
+methodology:
+  description: "A human runs 'deno task assess', confirms the dependency list is complete and current via yes/no prompt, and the CLI calls rave_service_descriptor.declare which stamps attestedAt = now. The staleness falsifier checks this timestamp."
+  tooling: "rave-assess"
+  frequency: "P90D"
+  coverage: "All critical dependencies of the rave-swamp service catalogued in rave/descriptors/rave-swamp.yaml"
+metadata:
+  source_system: "swamp"
+  instance: "service-descriptor-rave-swamp-001"
+  resource: "descriptor"

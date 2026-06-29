@@ -344,3 +344,63 @@ jobs:
                 freshnessWindow: "P1D"
                 value: null
                 rawData: ${{ data.latest("service-descriptor-rave-swamp-001", "current").attributes.rawData }}
+  - name: dependencies-unknown
+    description: Evaluate falsifier-dependencies-unknown-001 against the service descriptor attestation timestamp
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: evaluate
+        description: Check whether the dependency catalog has been re-attested within 90 days
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: falsifier-dependencies-unknown-001
+          methodName: evaluate
+          inputs:
+            evidence:
+              - evidenceId: "evidence-dependencies-known-001"
+                outcome: ${{ data.latest("service-descriptor-rave-swamp-001", "current").attributes.outcome }}
+                timestamp: ${{ data.latest("service-descriptor-rave-swamp-001", "current").attributes.timestamp }}
+                freshnessWindow: "P90D"
+                value: null
+                rawData: null
+  - name: health-checks-absent
+    description: Evaluate falsifier-health-checks-absent-001 against GitHub Contents API evidence
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: evaluate
+        description: Check whether .github/workflows/validate.yml is present in the repository
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: falsifier-health-checks-absent-001
+          methodName: evaluate
+          inputs:
+            evidence:
+              - evidenceId: "evidence-health-checks-present-001"
+                outcome: ${{ data.latest("evidence-health-checks-present-001", "current").attributes.outcome }}
+                timestamp: ${{ data.latest("evidence-health-checks-present-001", "current").attributes.timestamp }}
+                freshnessWindow: "P1D"
+                value: null
+                rawData: ${{ data.latest("evidence-health-checks-present-001", "current").attributes.rawData }}
+  - name: clients-unknown
+    description: Evaluate falsifier-clients-unknown-001 against the service descriptor attestation timestamp
+    dependsOn: []
+    weight: 0
+    steps:
+      - name: evaluate
+        description: Check whether the client/adopter catalog has been re-attested within 90 days
+        allowFailure: true
+        task:
+          type: model_method
+          modelIdOrName: falsifier-clients-unknown-001
+          methodName: evaluate
+          inputs:
+            evidence:
+              - evidenceId: "evidence-clients-known-001"
+                outcome: ${{ data.latest("service-descriptor-rave-swamp-001", "current").attributes.outcome }}
+                timestamp: ${{ data.latest("service-descriptor-rave-swamp-001", "current").attributes.timestamp }}
+                freshnessWindow: "P90D"
+                value: null
+                rawData: null

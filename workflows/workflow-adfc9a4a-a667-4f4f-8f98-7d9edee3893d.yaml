@@ -113,3 +113,15 @@ jobs:
                 nodeType: "claim"
                 status: "active"
                 confidenceScore: ${{ data.latest("confidence-claim-slo-catalog-complete-001", "current").attributes.confidenceScore }}
+              - nodeId: "claim-dependencies-known-001"
+                nodeType: "claim"
+                status: "active"
+                confidenceScore: ${{ data.latest("confidence-claim-dependencies-known-001", "current").attributes.confidenceScore }}
+              - nodeId: "claim-health-checks-present-001"
+                nodeType: "claim"
+                status: "active"
+                confidenceScore: ${{ data.latest("confidence-claim-health-checks-present-001", "current").attributes.confidenceScore }}
+              - nodeId: "claim-clients-known-001"
+                nodeType: "claim"
+                status: "active"
+                confidenceScore: ${{ data.latest("confidence-claim-clients-known-001", "current").attributes.confidenceScore }}

@@ -1,0 +1,21 @@
+rave_version: "0.2.0"
+claim_id: claim-health-checks-present-001
+statement: The rave-swamp CI validation pipeline is configured and present in the repository, providing a machine-callable operational health signal for the service.
+owner:
+  name: mellens
+  contact: mesgme/rave-swamp
+status: active
+category: reliability
+scope:
+  type: repository
+  target: mesgme/rave-swamp
+assumptions:
+  - For a CLI/automation repo, the CI validation workflow (validate.yml) is the functional equivalent of a service health check
+  - The workflow runs on every push to main and on every pull request
+  - Absence of the workflow file indicates the health signal has been removed or broken
+falsification_signals:
+  - .github/workflows/validate.yml is absent from the repository
+  - The CI validation workflow is disabled or deleted
+confidence:
+  decay_lambda: 0.05
+annotations: []

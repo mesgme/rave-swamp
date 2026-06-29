@@ -1,0 +1,22 @@
+rave_version: "0.2.0"
+claim_id: claim-dependencies-known-001
+statement: All critical dependencies of rave-swamp are catalogued with their type, criticality, SLA, and fallback plan.
+owner:
+  name: mellens
+  contact: mesgme/rave-swamp
+status: active
+category: stability
+scope:
+  type: repository
+  target: mesgme/rave-swamp
+assumptions:
+  - All dependencies are documented in rave/descriptors/rave-swamp.yaml under the dependencies key
+  - The service descriptor is re-attested via deno task assess at least every 90 days
+  - A dependency is "critical" if service degradation or outage follows from its unavailability
+falsification_signals:
+  - A new critical dependency is integrated but not added to the descriptor within the attestation window
+  - The service descriptor has not been re-attested within 90 days
+  - A dependency entry is missing its criticality, SLA, or fallbackPlan field
+confidence:
+  decay_lambda: 0.0028
+annotations: []
