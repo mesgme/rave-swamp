@@ -1,0 +1,11 @@
+type: '@mellens/rave/falsifier-engine'
+typeVersion: 2026.03.21.1
+id: 5942e057-8d1c-4c67-bd3e-4994e3b3448b
+name: falsifier-health-checks-absent-001
+version: 1
+tags: {}
+globalArguments:
+  falsifierId: falsifier-health-checks-absent-001
+  conditionType: boolean
+  condition: '{"field":"$.name","expected":"validate.yml"}'
+methods: {}

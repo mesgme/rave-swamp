@@ -1,0 +1,22 @@
+evidence_id: "evidence-clients-known-001"
+type: "manual_test"
+description: "Human attestation via deno task assess that all known upstream users of rave-swamp are catalogued, or that no external clients currently exist"
+reference:
+  uri: "swamp://models/service-descriptor-rave-swamp-001/descriptor/current"
+  format: "application/json"
+  authentication:
+    method: "none"
+    hint: "local swamp runtime"
+claim_ids:
+  - "claim-clients-known-001"
+freshness_window: "P90D"
+quality_score: 0.85
+methodology:
+  description: "A human runs 'deno task assess', confirms the known client/adopter list is complete (or confirms no external clients exist) via yes/no prompt, and the CLI calls rave_service_descriptor.declare which stamps attestedAt = now."
+  tooling: "rave-assess"
+  frequency: "P90D"
+  coverage: "All known upstream adopters of the rave-swamp project"
+metadata:
+  source_system: "swamp"
+  instance: "service-descriptor-rave-swamp-001"
+  resource: "descriptor"

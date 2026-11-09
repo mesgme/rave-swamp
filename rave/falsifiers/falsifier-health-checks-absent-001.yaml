@@ -1,0 +1,15 @@
+falsifier_id: "falsifier-health-checks-absent-001"
+name: "CI Health Pipeline Absent"
+description: "Triggers when .github/workflows/validate.yml is absent from the repository, meaning the primary operational health signal for rave-swamp has been removed."
+condition:
+  type: "boolean"
+  parameters:
+    field: "$.name"
+    expected: "validate.yml"
+evidence_ids:
+  - "evidence-health-checks-present-001"
+claim_ids:
+  - "claim-health-checks-present-001"
+metadata:
+  service: "rave-swamp"
+  instance: "evidence-health-checks-present-001"

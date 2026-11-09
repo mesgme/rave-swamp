@@ -1,0 +1,15 @@
+question_id: q-dependencies-known-001
+claim_id: claim-dependencies-known-001
+evidence_id: evidence-dependencies-known-001
+descriptor: rave-swamp
+instance: service-descriptor-rave-swamp-001
+prompt: >
+  Is the dependency list in rave/descriptors/rave-swamp.yaml complete and current
+  (all critical dependencies documented with name, type, criticality, SLA, and fallback plan)?
+prompt_initial: >
+  Please review rave/descriptors/rave-swamp.yaml and confirm the dependencies section
+  is complete: every critical dependency should have name, type, criticality, an SLA
+  statement, and a fallbackPlan. Add any missing dependencies before confirming.
+answer_type: yes_no
+expected_answer: "yes"
+freshness_window: P90D

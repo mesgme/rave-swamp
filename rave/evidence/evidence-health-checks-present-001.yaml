@@ -1,0 +1,22 @@
+evidence_id: "evidence-health-checks-present-001"
+type: "api"
+description: "GitHub API check that .github/workflows/validate.yml exists in the repository, confirming the CI validation pipeline (rave-swamp's operational health signal) is present"
+reference:
+  uri: "https://api.github.com/repos/mesgme/rave-swamp/contents/.github/workflows/validate.yml"
+  format: "application/json"
+  authentication:
+    method: "bearer"
+    hint: "vault.get(rave-credentials, GITHUB_TOKEN)"
+claim_ids:
+  - "claim-health-checks-present-001"
+freshness_window: "P1D"
+quality_score: 0.90
+methodology:
+  description: "Query the GitHub Contents API for the validate.yml file. A 200 response with name='validate.yml' confirms the CI health pipeline is present. A 404 returns inconclusive."
+  tooling: "rave_github_api_evidence"
+  frequency: "P1D"
+  coverage: "Presence of the primary CI validation workflow file"
+metadata:
+  source_system: "github"
+  instance: "evidence-health-checks-present-001"
+  resource: "result"

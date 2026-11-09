@@ -1,0 +1,14 @@
+falsifier_id: "falsifier-clients-unknown-001"
+name: "Client Catalog Stale"
+description: "Triggers when the rave-swamp client/adopter list has not been human-confirmed within 90 days, meaning the known clients can no longer be assumed current."
+condition:
+  type: "staleness"
+  parameters:
+    max_age: "P90D"
+evidence_ids:
+  - "evidence-clients-known-001"
+claim_ids:
+  - "claim-clients-known-001"
+metadata:
+  service: "rave-swamp"
+  instance: "service-descriptor-rave-swamp-001"

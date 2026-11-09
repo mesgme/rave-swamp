@@ -1,0 +1,21 @@
+rave_version: "0.2.0"
+claim_id: claim-clients-known-001
+statement: All known upstream users and adopters of rave-swamp are catalogued, or it is explicitly confirmed that no external clients currently exist.
+owner:
+  name: mellens
+  contact: mesgme/rave-swamp
+status: active
+category: stability
+scope:
+  type: repository
+  target: mesgme/rave-swamp
+assumptions:
+  - The team is aware of all known adopters through direct contact, GitHub stars/forks, or issue activity
+  - Confirming "no external clients" is a valid attestation for an early-stage open-source tool
+  - The service descriptor attestation is the mechanism by which client knowledge is confirmed
+falsification_signals:
+  - A new adopter is discovered who is not in the known client list and was not previously confirmed as "no external clients"
+  - The descriptor has not been re-attested within 90 days
+confidence:
+  decay_lambda: 0.0028
+annotations: []

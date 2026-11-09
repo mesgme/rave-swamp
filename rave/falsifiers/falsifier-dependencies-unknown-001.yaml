@@ -1,0 +1,14 @@
+falsifier_id: "falsifier-dependencies-unknown-001"
+name: "Dependency Catalog Stale"
+description: "Triggers when the rave-swamp dependency record has not been human-confirmed within 90 days, meaning the catalogued dependencies can no longer be assumed complete and current."
+condition:
+  type: "staleness"
+  parameters:
+    max_age: "P90D"
+evidence_ids:
+  - "evidence-dependencies-known-001"
+claim_ids:
+  - "claim-dependencies-known-001"
+metadata:
+  service: "rave-swamp"
+  instance: "service-descriptor-rave-swamp-001"

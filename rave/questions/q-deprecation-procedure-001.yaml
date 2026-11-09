@@ -1,0 +1,15 @@
+question_id: q-deprecation-procedure-001
+claim_id: claim-deprecation-procedure-001
+evidence_id: evidence-deprecation-procedure-001
+descriptor: rave-swamp
+instance: service-descriptor-rave-swamp-001
+prompt: >
+  Is the deprecation and decommission procedure for rave-swamp still current
+  and documented in the repository?
+prompt_initial: >
+  Does a deprecation and decommission procedure exist for rave-swamp?
+  It should cover how to deprecate extension models, workflows, and the repo itself
+  (e.g. in CONTRIBUTING.md or a dedicated doc). Confirm it exists and is current.
+answer_type: yes_no
+expected_answer: "yes"
+freshness_window: P180D

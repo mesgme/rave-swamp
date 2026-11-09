@@ -1,0 +1,14 @@
+falsifier_id: "falsifier-deprecation-procedure-stale-001"
+name: "Deprecation Procedure Stale"
+description: "Triggers when the rave-swamp deprecation/decommission procedure has not been human-confirmed within 180 days, or has never been attested."
+condition:
+  type: "staleness"
+  parameters:
+    max_age: "P180D"
+evidence_ids:
+  - "evidence-deprecation-procedure-001"
+claim_ids:
+  - "claim-deprecation-procedure-001"
+metadata:
+  service: "rave-swamp"
+  instance: "service-descriptor-rave-swamp-001"

@@ -240,4 +240,18 @@ jobs:
         allowFailure: true
     dependsOn: []
     weight: 0
+  - name: health-checks-present
+    description: Gather CI validation pipeline presence evidence (GitHub Contents API)
+    steps:
+      - name: fetch
+        description: Query GitHub Contents API to confirm validate.yml exists
+        task:
+          type: model_method
+          modelIdOrName: evidence-health-checks-present-001
+          methodName: gather
+          inputs:
+            githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
+        allowFailure: true
+    dependsOn: []
+    weight: 0
 version: 1

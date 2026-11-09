@@ -1,0 +1,12 @@
+type: "@mellens/rave/github-api-evidence"
+typeVersion: 2026.03.22.1
+id: 0afceb28-119a-4a3e-8396-30b744557f6a
+name: evidence-health-checks-present-001
+version: 1
+tags: {}
+globalArguments:
+  evidenceId: evidence-health-checks-present-001
+  repo: mesgme/rave-swamp
+  endpoint: /contents/.github/workflows/validate.yml
+  successField: $.name
+methods: {}
