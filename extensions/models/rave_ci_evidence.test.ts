@@ -72,6 +72,8 @@ Deno.test("ci-evidence: fail outcome → failureReason and remediation are non-n
     assertExists(res.data.remediation);
     assertEquals(typeof res.data.failureReason, "string");
     assertEquals(typeof res.data.remediation, "string");
+    // Falsifiers read $.conclusion from rawData.
+    assertEquals(JSON.parse(res.data.rawData as string).conclusion, "failure");
   } finally {
     globalThis.fetch = original;
   }
@@ -90,6 +92,7 @@ Deno.test("ci-evidence: inconclusive (no runs) → failureReason and remediation
     assertEquals(res.data.outcome, "inconclusive");
     assertEquals(res.data.failureReason, null);
     assertEquals(res.data.remediation, null);
+    assertEquals(res.data.rawData, null);
   } finally {
     globalThis.fetch = original;
   }

@@ -1,241 +1,25 @@
 import { assertEquals, assertThrows } from "jsr:@std/assert@1";
+import { createModelTestContext } from "@systeminit/swamp-testing";
 
-// ---------------------------------------------------------------------------
-// Re-implement the pure functions under test (exact copies from the model).
-// ---------------------------------------------------------------------------
+import {
+  type ConditionResult,
+  dispatchEvaluator,
+  type EvidenceItem,
+  extractJsonPath,
+  model,
+} from "./rave_falsifier_engine.ts";
 
-function parseISO8601Duration(duration: string): number {
-  const re =
-    /^P(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)W)?(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?)?$/;
-  const m = duration.match(re);
-  if (!m) throw new Error(`Invalid ISO 8601 duration: ${duration}`);
-  return (
-    parseFloat(m[1] ?? "0") * 365 * 86400 +
-    parseFloat(m[2] ?? "0") * 30 * 86400 +
-    parseFloat(m[3] ?? "0") * 7 * 86400 +
-    parseFloat(m[4] ?? "0") * 86400 +
-    parseFloat(m[5] ?? "0") * 3600 +
-    parseFloat(m[6] ?? "0") * 60 +
-    parseFloat(m[7] ?? "0")
-  );
-}
-
-function extractJsonPath(data: unknown, path: string): unknown {
-  if (!path.startsWith("$")) {
-    throw new Error(`JSONPath must start with $: ${path}`);
-  }
-  const parts = path
-    .slice(1)
-    .replace(/\[(\*|\d+)\]/g, ".$1")
-    .split(".")
-    .filter((p) => p.length > 0);
-
-  function walk(node: unknown, segments: string[]): unknown {
-    if (segments.length === 0) return node;
-    const [head, ...rest] = segments;
-    if (head === "*") {
-      if (!Array.isArray(node)) return undefined;
-      return node.map((item) => walk(item, rest));
-    }
-    const index = Number(head);
-    if (!isNaN(index) && Array.isArray(node)) {
-      return walk((node as unknown[])[index], rest);
-    }
-    if (node !== null && typeof node === "object" && !Array.isArray(node)) {
-      return walk((node as Record<string, unknown>)[head], rest);
-    }
-    return undefined;
-  }
-  return walk(data, parts);
-}
-
-function flatten(value: unknown): unknown[] {
-  if (!Array.isArray(value)) return [value];
-  return value.flatMap(flatten);
-}
-
-type EvidenceItem = {
-  evidenceId: string;
-  outcome: "pass" | "fail" | "inconclusive";
-  timestamp: string;
-  freshnessWindow: string | null;
-  value: number | null;
-  rawData: string | null;
-};
-
-interface ConditionResult {
-  triggered: boolean;
-  detail: string;
-}
-
-function evaluateBoolean(
+// Tests call the model's real evaluators rather than copies of them.
+const evaluate = (type: string) =>
+(
   params: Record<string, unknown>,
   evidence: EvidenceItem[],
-): ConditionResult {
-  const field = params.field as string;
-  const expected = params.expected;
-  for (const ev of evidence) {
-    if (!ev.rawData) continue;
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(ev.rawData);
-    } catch {
-      continue;
-    }
-    const raw = extractJsonPath(parsed, field);
-    const values = flatten(raw);
-    for (const v of values) {
-      const equal = v === expected ||
-        String(v) === String(expected) ||
-        (expected === true && v !== null && v !== undefined && v !== false);
-      if (!equal) {
-        return {
-          triggered: true,
-          detail: `${field} = ${JSON.stringify(v)}, expected ${
-            JSON.stringify(expected)
-          } (triggered)`,
-        };
-      }
-    }
-    if (values.length === 0) {
-      return {
-        triggered: true,
-        detail: `${field} not present in evidence (triggered)`,
-      };
-    }
-  }
-  return {
-    triggered: false,
-    detail: `${field} matches expected value ${JSON.stringify(expected)}`,
-  };
-}
-
-function evaluateThreshold(
-  params: Record<string, unknown>,
-  evidence: EvidenceItem[],
-): ConditionResult {
-  const metric = params.metric as string;
-  const operator = params.operator as string;
-  const threshold = params.threshold as number;
-  for (const ev of evidence) {
-    if (!ev.rawData) continue;
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(ev.rawData);
-    } catch {
-      continue;
-    }
-    const values = flatten(extractJsonPath(parsed, metric));
-    for (const v of values) {
-      const num = typeof v === "number" ? v : parseFloat(String(v));
-      if (isNaN(num)) continue;
-      let hit = false;
-      switch (operator) {
-        case ">":
-          hit = num > threshold;
-          break;
-        case ">=":
-          hit = num >= threshold;
-          break;
-        case "<":
-          hit = num < threshold;
-          break;
-        case "<=":
-          hit = num <= threshold;
-          break;
-        case "==":
-          hit = num === threshold;
-          break;
-        case "!=":
-          hit = num !== threshold;
-          break;
-      }
-      if (hit) {
-        return {
-          triggered: true,
-          detail: `${metric} = ${num} ${operator} ${threshold} (triggered)`,
-        };
-      }
-    }
-  }
-  return { triggered: false, detail: `No threshold violation` };
-}
-
-function evaluateRegex(
-  params: Record<string, unknown>,
-  evidence: EvidenceItem[],
-): ConditionResult {
-  const field = params.field as string;
-  const pattern = params.pattern as string;
-  const flags = (params.flags as string | undefined) ?? "";
-  const re = new RegExp(pattern, flags);
-  for (const ev of evidence) {
-    if (!ev.rawData) continue;
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(ev.rawData);
-    } catch {
-      continue;
-    }
-    const values = flatten(extractJsonPath(parsed, field));
-    for (const v of values) {
-      if (re.test(String(v))) {
-        return {
-          triggered: true,
-          detail: `${field} value "${v}" matches /${pattern}/${flags}`,
-        };
-      }
-    }
-  }
-  return { triggered: false, detail: `No match for /${pattern}/${flags}` };
-}
-
-function evaluateAbsence(
-  params: Record<string, unknown>,
-  evidence: EvidenceItem[],
-): ConditionResult {
-  if (evidence.length === 0) {
-    return { triggered: true, detail: "No evidence present (triggered)" };
-  }
-  const gracePeriod = params.grace_period as string | undefined;
-  if (!gracePeriod) {
-    return {
-      triggered: false,
-      detail: `${evidence.length} evidence item(s) present`,
-    };
-  }
-  const graceSeconds = parseISO8601Duration(gracePeriod);
-  const now = Date.now();
-  const mostRecent = Math.max(
-    ...evidence.map((ev) => new Date(ev.timestamp).getTime()),
-  );
-  const ageSeconds = (now - mostRecent) / 1000;
-  if (ageSeconds > graceSeconds) {
-    return { triggered: true, detail: `Evidence too old (triggered)` };
-  }
-  return { triggered: false, detail: "Evidence present within grace period" };
-}
-
-function evaluateStaleness(
-  params: Record<string, unknown>,
-  evidence: EvidenceItem[],
-): ConditionResult {
-  const maxAge = params.max_age as string;
-  const maxAgeSeconds = parseISO8601Duration(maxAge);
-  const now = Date.now();
-  if (evidence.length === 0) {
-    return { triggered: true, detail: "No evidence (triggered)" };
-  }
-  const allStale = evidence.every((ev) =>
-    (now - new Date(ev.timestamp).getTime()) / 1000 > maxAgeSeconds
-  );
-  return allStale
-    ? {
-      triggered: true,
-      detail: `All evidence older than ${maxAge} (triggered)`,
-    }
-    : { triggered: false, detail: `Evidence within staleness window` };
-}
+): ConditionResult => dispatchEvaluator(type, params, evidence, 0);
+const evaluateBoolean = evaluate("boolean");
+const evaluateThreshold = evaluate("threshold");
+const evaluateRegex = evaluate("regex");
+const evaluateAbsence = evaluate("absence");
+const evaluateStaleness = evaluate("staleness");
 
 function makeEvidence(
   rawData: string | null,
@@ -281,13 +65,14 @@ Deno.test("evaluateBoolean: field absent from rawData → triggered", () => {
   assertEquals(result.triggered, true);
 });
 
-Deno.test("evaluateBoolean: rawData null → not triggered (skipped)", () => {
+Deno.test("evaluateBoolean: rawData null → unverified, never a pass", () => {
   const ev = makeEvidence(null);
   const result = evaluateBoolean(
     { field: "$.conclusion", expected: "success" },
     [ev],
   );
   assertEquals(result.triggered, false);
+  assertEquals(result.unverified, true);
 });
 
 Deno.test("evaluateBoolean: string equality check", () => {
@@ -352,7 +137,7 @@ Deno.test("evaluateThreshold: exact equality → triggered for ==", () => {
   assertEquals(result.triggered, true);
 });
 
-Deno.test("evaluateThreshold: rawData null → not triggered", () => {
+Deno.test("evaluateThreshold: rawData null → unverified, never a pass", () => {
   const ev = makeEvidence(null);
   const result = evaluateThreshold({
     metric: "$.latency_ms",
@@ -360,6 +145,7 @@ Deno.test("evaluateThreshold: rawData null → not triggered", () => {
     threshold: 100,
   }, [ev]);
   assertEquals(result.triggered, false);
+  assertEquals(result.unverified, true);
 });
 
 // ---------------------------------------------------------------------------
@@ -406,10 +192,11 @@ Deno.test("evaluateRegex: array wildcard — no element matches → not triggere
   assertEquals(result.triggered, false);
 });
 
-Deno.test("evaluateRegex: rawData null → not triggered", () => {
+Deno.test("evaluateRegex: rawData null → unverified, never a pass", () => {
   const ev = makeEvidence(null);
   const result = evaluateRegex({ field: "$.status", pattern: "failure" }, [ev]);
   assertEquals(result.triggered, false);
+  assertEquals(result.unverified, true);
 });
 
 // ---------------------------------------------------------------------------
@@ -509,4 +296,95 @@ Deno.test("extractJsonPath: throws if path does not start with $", () => {
     Error,
     "JSONPath must start with $",
   );
+});
+
+// ---------------------------------------------------------------------------
+// Unverifiable evidence fails closed
+// ---------------------------------------------------------------------------
+
+Deno.test("evaluateBoolean: violation in readable evidence triggers even when other evidence is unreadable", () => {
+  const result = evaluateBoolean(
+    { field: "$.conclusion", expected: "success" },
+    [makeEvidence(null), makeEvidence('{"conclusion": "failure"}')],
+  );
+  assertEquals(result.triggered, true);
+  assertEquals(result.unverified, undefined);
+});
+
+Deno.test("composite OR: unverified sub-condition and no hit → unverified", () => {
+  const result = dispatchEvaluator(
+    "composite",
+    {
+      operator: "OR",
+      sub_conditions: [
+        {
+          type: "boolean",
+          parameters: { field: "$.conclusion", expected: "success" },
+        },
+        { type: "staleness", parameters: { max_age: "P1D" } },
+      ],
+    },
+    [makeEvidence(null)],
+    0,
+  );
+  assertEquals(result.triggered, false);
+  assertEquals(result.unverified, true);
+});
+
+Deno.test("composite AND: a verified false sub-condition decides it despite an unverified one", () => {
+  const result = dispatchEvaluator(
+    "composite",
+    {
+      operator: "AND",
+      sub_conditions: [
+        {
+          type: "boolean",
+          parameters: { field: "$.conclusion", expected: "success" },
+        },
+        { type: "staleness", parameters: { max_age: "P1D" } },
+      ],
+    },
+    [makeEvidence(null)],
+    0,
+  );
+  assertEquals(result.triggered, false);
+  assertEquals(result.unverified, undefined);
+});
+
+async function runEvaluate(evidence: EvidenceItem[]) {
+  const { context, getWrittenResources } = createModelTestContext({
+    globalArgs: {
+      falsifierId: "falsifier-test-001",
+      conditionType: "boolean",
+      condition: '{"field":"$.conclusion","expected":"success"}',
+    },
+    methodName: "evaluate",
+  });
+  let error: unknown = null;
+  try {
+    await model.methods.evaluate.execute({ evidence }, context);
+  } catch (e) {
+    error = e;
+  }
+  return { error, written: getWrittenResources() };
+}
+
+Deno.test("evaluate: failed evidence without rawData records unverified and fails the step", async () => {
+  // The case that silently passed: the CVE scan failed, but the workflow
+  // passed rawData: null and the falsifier recorded triggered: false.
+  const ev = { ...makeEvidence(null), outcome: "fail" as const };
+  const { error, written } = await runEvaluate([ev]);
+  assertEquals(written.length, 1);
+  assertEquals(written[0].data.verdict, "unverified");
+  assertEquals(written[0].data.triggered, false);
+  assertEquals(error instanceof Error, true);
+});
+
+Deno.test("evaluate: readable failing evidence records triggered and does not throw", async () => {
+  const { error, written } = await runEvaluate([
+    makeEvidence('{"conclusion": "failure"}'),
+  ]);
+  assertEquals(error, null);
+  assertEquals(written[0].data.verdict, "triggered");
+  assertEquals(written[0].data.triggered, true);
 });

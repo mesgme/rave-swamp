@@ -4,8 +4,8 @@ description: "Detects when swamp model validate reports one or more models faili
 condition:
   type: "boolean"
   parameters:
-    field: "$.passed"
-    expected: true
+    field: "$.conclusion"
+    expected: "success"
 evidence_ids:
   - "evidence-swamp-model-validate-001"
 claim_ids:

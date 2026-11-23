@@ -4,8 +4,8 @@ description: "Detects when swamp workflow validate reports one or more workflows
 condition:
   type: "boolean"
   parameters:
-    field: "$.passed"
-    expected: true
+    field: "$.conclusion"
+    expected: "success"
 evidence_ids:
   - "evidence-swamp-workflow-validate-001"
 claim_ids:
