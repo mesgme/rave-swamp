@@ -8,8 +8,8 @@
     "jsr:@std/yaml@1": "1.0.12",
     "jsr:@systeminit/swamp-testing@~0.20260424.9": "0.20260424.9",
     "npm:yaml@2.8.3": "2.8.3",
-    "npm:zod@4": "4.3.6",
-    "npm:zod@^4.3.6": "4.3.6"
+    "npm:zod@4": "4.6.7",
+    "npm:zod@^4.3.6": "4.6.7"
   },
   "jsr": {
     "@std/assert@1.0.19": {
@@ -43,8 +43,8 @@
       "integrity": "sha512-AvbaCLOO2Otw/lW5bmh9d/WEdcDFdQp2Z2ZUH3pX9U2ihyUY0nvLv7J6TrWowklRGPYbB/IuIMfYgxaCPg5Bpg==",
       "bin": true
     },
-    "zod@4.3.6": {
-      "integrity": "sha512-rftlrkhHZOcjDwkGlnUtZZkvaPHCsDATp4pGpuOOMDaTdDDXF91wuVDJoWoPsKX/3YPQ5fHuF3STjcYyKr+Qhg=="
+    "zod@4.6.7": {
+      "integrity": "sha512-g8W2D2kU6a8untc053fX1uVBKzM7yqAxW/3zwk83+6RyF2+SKOuV+c0wBDhUwzV1PaGapmZH+rmcUzPf+3CGwg=="
     }
   },
   "workspace": {
