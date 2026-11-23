@@ -7,5 +7,5 @@ tags: {}
 globalArguments:
   falsifierId: falsifier-model-validation-fail-001
   conditionType: boolean
-  condition: '{"field":"$.passed","expected":true}'
+  condition: '{"field":"$.conclusion","expected":"success"}'
 methods: {}

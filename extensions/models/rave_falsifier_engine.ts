@@ -28,6 +28,9 @@ const EvidenceInputSchema = z.object({
 
 const EvaluationSchema = z.object({
   falsifierId: z.string(),
+  // "unverified" means the condition could not be evaluated (for example, the
+  // evidence carried no rawData for a field condition). It is never a pass.
+  verdict: z.enum(["triggered", "not_triggered", "unverified"]),
   triggered: z.boolean(),
   evaluatedAt: z.string(),
   lastTriggeredAt: z.string().nullable(),
@@ -63,7 +66,7 @@ function parseISO8601Duration(duration: string): number {
 //   $.array[0].field          array index
 // ---------------------------------------------------------------------------
 
-function extractJsonPath(data: unknown, path: string): unknown {
+export function extractJsonPath(data: unknown, path: string): unknown {
   if (!path.startsWith("$")) {
     throw new Error(`JSONPath must start with $: ${path}`);
   }
@@ -110,11 +113,40 @@ function flatten(value: unknown): unknown[] {
 // Condition evaluators
 // ---------------------------------------------------------------------------
 
-type EvidenceItem = z.infer<typeof EvidenceInputSchema>;
+export type EvidenceItem = z.infer<typeof EvidenceInputSchema>;
 
-interface ConditionResult {
+export interface ConditionResult {
   triggered: boolean;
+  unverified?: boolean;
   detail: string;
+}
+
+// Field conditions (threshold, boolean, regex) read rawData. Evidence without
+// parseable rawData cannot be checked, so the condition is unverified rather
+// than passed. A violation found in other evidence still triggers.
+function parseRawData(ev: EvidenceItem): unknown | undefined {
+  if (!ev.rawData) return undefined;
+  try {
+    return JSON.parse(ev.rawData);
+  } catch {
+    return undefined;
+  }
+}
+
+function unreadable(evidence: EvidenceItem[]): string[] {
+  return evidence
+    .filter((ev) => parseRawData(ev) === undefined)
+    .map((ev) => ev.evidenceId);
+}
+
+function unverifiedResult(ids: string[], what: string): ConditionResult {
+  return {
+    triggered: false,
+    unverified: true,
+    detail: `Cannot evaluate ${what}: no readable rawData in ${
+      ids.join(", ")
+    } (unverified)`,
+  };
 }
 
 function evaluateThreshold(
@@ -126,13 +158,8 @@ function evaluateThreshold(
   const threshold = params.threshold as number;
 
   for (const ev of evidence) {
-    if (!ev.rawData) continue;
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(ev.rawData);
-    } catch {
-      continue;
-    }
+    const parsed = parseRawData(ev);
+    if (parsed === undefined) continue;
     const raw = extractJsonPath(parsed, metric);
     const values = flatten(raw);
     for (const v of values) {
@@ -167,6 +194,13 @@ function evaluateThreshold(
       }
     }
   }
+  const missingThreshold = unreadable(evidence);
+  if (missingThreshold.length > 0 || evidence.length === 0) {
+    return unverifiedResult(
+      missingThreshold,
+      `${metric} ${operator} ${threshold}`,
+    );
+  }
   return {
     triggered: false,
     detail:
@@ -182,13 +216,8 @@ function evaluateBoolean(
   const expected = params.expected;
 
   for (const ev of evidence) {
-    if (!ev.rawData) continue;
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(ev.rawData);
-    } catch {
-      continue;
-    }
+    const parsed = parseRawData(ev);
+    if (parsed === undefined) continue;
     const raw = extractJsonPath(parsed, field);
     const values = flatten(raw);
     for (const v of values) {
@@ -212,6 +241,13 @@ function evaluateBoolean(
       };
     }
   }
+  const missingBoolean = unreadable(evidence);
+  if (missingBoolean.length > 0 || evidence.length === 0) {
+    return unverifiedResult(
+      missingBoolean,
+      `${field} == ${JSON.stringify(expected)}`,
+    );
+  }
   return {
     triggered: false,
     detail: `${field} matches expected value ${JSON.stringify(expected)}`,
@@ -228,13 +264,8 @@ function evaluateRegex(
   const re = new RegExp(pattern, flags);
 
   for (const ev of evidence) {
-    if (!ev.rawData) continue;
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(ev.rawData);
-    } catch {
-      continue;
-    }
+    const parsed = parseRawData(ev);
+    if (parsed === undefined) continue;
     const raw = extractJsonPath(parsed, field);
     const values = flatten(raw);
     for (const v of values) {
@@ -246,6 +277,10 @@ function evaluateRegex(
         };
       }
     }
+  }
+  const missingRegex = unreadable(evidence);
+  if (missingRegex.length > 0 || evidence.length === 0) {
+    return unverifiedResult(missingRegex, `${field} ~ /${pattern}/${flags}`);
   }
   return {
     triggered: false,
@@ -333,28 +368,54 @@ function evaluateComposite(
     dispatchEvaluator(sub.type, sub.parameters, evidence, depth + 1)
   );
 
+  const state = (r: ConditionResult) =>
+    r.unverified ? "unverified" : r.triggered;
+  const firstUnverified = results.find((r) => r.unverified);
+
   if (operator === "AND") {
-    const triggered = results.every((r) => r.triggered);
+    // One verified false sub-condition decides AND; otherwise an unverified one
+    // leaves it undecided.
+    const decidedFalse = results.some((r) => !r.unverified && !r.triggered);
+    if (!decidedFalse && firstUnverified) {
+      return {
+        triggered: false,
+        unverified: true,
+        detail: `AND[${
+          results.map(state).join(",")
+        }] unverified: ${firstUnverified.detail}`,
+      };
+    }
+    const triggered = !decidedFalse;
     return {
       triggered,
-      detail: `AND[${
-        results.map((r) => r.triggered).join(",")
-      }] = ${triggered}`,
+      detail: `AND[${results.map(state).join(",")}] = ${triggered}`,
     };
   }
   if (operator === "OR") {
-    const triggered = results.some((r) => r.triggered);
     const firstHit = results.find((r) => r.triggered);
+    if (firstHit) {
+      return { triggered: true, detail: `OR triggered: ${firstHit.detail}` };
+    }
+    if (firstUnverified) {
+      return {
+        triggered: false,
+        unverified: true,
+        detail: `OR[${
+          results.map(state).join(",")
+        }] unverified: ${firstUnverified.detail}`,
+      };
+    }
     return {
-      triggered,
-      detail: triggered && firstHit
-        ? `OR triggered: ${firstHit.detail}`
-        : `OR[${results.map((r) => r.triggered).join(",")}] = false`,
+      triggered: false,
+      detail: `OR[${results.map(state).join(",")}] = false`,
     };
   }
   if (operator === "NOT") {
     if (results.length !== 1) {
       throw new Error("NOT operator requires exactly one sub-condition");
+    }
+    if (results[0].unverified) {
+      return { ...results[0], detail: `NOT(unverified): ${results[0].detail}` };
     }
     return {
       triggered: !results[0].triggered,
@@ -364,7 +425,7 @@ function evaluateComposite(
   throw new Error(`Unknown composite operator: ${operator}`);
 }
 
-function dispatchEvaluator(
+export function dispatchEvaluator(
   type: string,
   params: Record<string, unknown>,
   evidence: EvidenceItem[],
@@ -394,7 +455,7 @@ function dispatchEvaluator(
 
 export const model = {
   type: "@mellens/rave/falsifier-engine",
-  version: "2026.03.21.1",
+  version: "2026.11.23.1",
   globalArguments: GlobalArgsSchema,
   resources: {
     evaluation: {
@@ -404,6 +465,15 @@ export const model = {
       garbageCollection: 200,
     },
   },
+  upgrades: [
+    {
+      fromVersion: "2026.03.21.1",
+      toVersion: "2026.11.23.1",
+      description:
+        "No-op: evaluations gain a verdict field; unverifiable conditions fail the step",
+      upgradeAttributes: (old: Record<string, unknown>) => old,
+    },
+  ],
   methods: {
     evaluate: {
       description:
@@ -443,7 +513,17 @@ export const model = {
           0,
         );
 
-        if (result.triggered) {
+        const verdict = result.unverified
+          ? "unverified"
+          : result.triggered
+          ? "triggered"
+          : "not_triggered";
+
+        if (result.unverified) {
+          context.logger.warn(
+            `Falsifier '${falsifierId}' UNVERIFIED: ${result.detail}`,
+          );
+        } else if (result.triggered) {
           lastTriggeredAt = evaluatedAt;
           context.logger.warn(
             `Falsifier '${falsifierId}' TRIGGERED: ${result.detail}`,
@@ -456,12 +536,21 @@ export const model = {
 
         const handle = await context.writeResource("evaluation", "current", {
           falsifierId,
+          verdict,
           triggered: result.triggered,
           evaluatedAt,
           lastTriggeredAt,
           conditionType,
           detail: result.detail,
         });
+
+        // Record the unverified evaluation, then fail the step so the workflow
+        // run cannot report success for a falsifier it could not check.
+        if (result.unverified) {
+          throw new Error(
+            `Falsifier '${falsifierId}' could not be evaluated: ${result.detail}`,
+          );
+        }
 
         return { dataHandles: [handle] };
       },

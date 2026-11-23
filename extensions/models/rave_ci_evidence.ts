@@ -17,6 +17,10 @@ const ResultSchema = z.object({
   rawStatus: z.string(),
   failureReason: z.string().nullable(),
   remediation: z.string().nullable(),
+  // JSON of the GitHub fields falsifiers read with JSONPath ($.conclusion,
+  // $.status). Null when no run or job was found, so falsifiers report the
+  // evidence as unverified instead of passing it.
+  rawData: z.string().nullable(),
 });
 
 function conclusionToOutcome(
@@ -29,7 +33,7 @@ function conclusionToOutcome(
 
 export const model = {
   type: "@mellens/rave/ci-evidence",
-  version: "2026.05.01.1",
+  version: "2026.11.23.1",
   globalArguments: GlobalArgsSchema,
   resources: {
     result: {
@@ -51,6 +55,12 @@ export const model = {
       toVersion: "2026.05.01.1",
       description:
         "No-op: adds optional jobName global argument for per-job CI evidence",
+      upgradeAttributes: (old: Record<string, unknown>) => old,
+    },
+    {
+      fromVersion: "2026.05.01.1",
+      toVersion: "2026.11.23.1",
+      description: "No-op: result records rawData for falsifier evaluation",
       upgradeAttributes: (old: Record<string, unknown>) => old,
     },
   ],
@@ -88,6 +98,7 @@ export const model = {
             rawStatus: "not_found",
             failureReason: null,
             remediation: null,
+            rawData: null,
           });
           return { dataHandles: [handle] };
         }
@@ -121,6 +132,7 @@ export const model = {
             rawStatus: "no_runs",
             failureReason: null,
             remediation: null,
+            rawData: null,
           });
           return { dataHandles: [handle] };
         }
@@ -147,6 +159,10 @@ export const model = {
             remediation: outcome === "fail"
               ? `Check the Actions log for run #${run.id} at https://github.com/${repo}/actions/runs/${run.id}`
               : null,
+            rawData: JSON.stringify({
+              conclusion: run.conclusion ?? null,
+              status: run.status ?? null,
+            }),
           });
 
           return { dataHandles: [handle] };
@@ -230,6 +246,7 @@ async function gatherJobOutcome(
       rawStatus: "job_not_found",
       failureReason: null,
       remediation: null,
+      rawData: null,
     });
     return { dataHandles: [handle] };
   }
@@ -255,6 +272,7 @@ async function gatherJobOutcome(
     remediation: outcome === "fail"
       ? `Check the '${jobName}' job log at https://github.com/${repo}/actions/runs/${runId}`
       : null,
+    rawData: JSON.stringify({ conclusion, status: job.status ?? null }),
   });
 
   return { dataHandles: [handle] };

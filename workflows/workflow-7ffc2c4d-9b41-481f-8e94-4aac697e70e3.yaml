@@ -14,7 +14,6 @@ jobs:
           methodName: gather
           inputs:
             githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
-        allowFailure: true
     dependsOn: []
     weight: 0
   - name: swamp-model-validate
@@ -28,7 +27,6 @@ jobs:
           methodName: gather
           inputs:
             githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
-        allowFailure: true
     dependsOn: []
     weight: 0
   - name: swamp-workflow-validate
@@ -42,7 +40,6 @@ jobs:
           methodName: gather
           inputs:
             githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
-        allowFailure: true
     dependsOn: []
     weight: 0
   - name: typescript-compile
@@ -56,7 +53,6 @@ jobs:
           methodName: gather
           inputs:
             githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
-        allowFailure: true
     dependsOn: []
     weight: 0
   - name: branch-protection
@@ -70,7 +66,6 @@ jobs:
           methodName: gather
           inputs:
             githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
-        allowFailure: true
     dependsOn: []
     weight: 0
   - name: actions-runs
@@ -84,7 +79,6 @@ jobs:
           methodName: gather
           inputs:
             githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
-        allowFailure: true
     dependsOn: []
     weight: 0
   - name: lint
@@ -98,7 +92,6 @@ jobs:
           methodName: gather
           inputs:
             githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
-        allowFailure: true
     dependsOn: []
     weight: 0
   - name: unit-tests
@@ -112,7 +105,6 @@ jobs:
           methodName: gather
           inputs:
             githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
-        allowFailure: true
     dependsOn: []
     weight: 0
   - name: code-coverage
@@ -126,7 +118,6 @@ jobs:
           methodName: gather
           inputs:
             githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
-        allowFailure: true
     dependsOn: []
     weight: 0
   - name: merged-prs-reviewed
@@ -140,7 +131,6 @@ jobs:
           methodName: gather
           inputs:
             githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
-        allowFailure: true
     dependsOn: []
     weight: 0
   - name: no-secrets
@@ -154,7 +144,6 @@ jobs:
           methodName: gather
           inputs:
             githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
-        allowFailure: true
     dependsOn: []
     weight: 0
   - name: main-commits-via-pr
@@ -168,7 +157,6 @@ jobs:
           methodName: gather
           inputs:
             githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
-        allowFailure: true
     dependsOn: []
     weight: 0
   - name: no-known-cves
@@ -182,7 +170,6 @@ jobs:
           methodName: gather
           inputs:
             githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
-        allowFailure: true
     dependsOn: []
     weight: 0
   - name: no-stale-untriaged-issues
@@ -196,7 +183,6 @@ jobs:
           methodName: gather
           inputs:
             githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
-        allowFailure: true
     dependsOn: []
     weight: 0
   - name: deno-lock-committed
@@ -210,7 +196,6 @@ jobs:
           methodName: gather
           inputs:
             githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
-        allowFailure: true
     dependsOn: []
     weight: 0
   - name: npm-imports-pinned
@@ -224,7 +209,6 @@ jobs:
           methodName: gather
           inputs:
             githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
-        allowFailure: true
     dependsOn: []
     weight: 0
   - name: rave-spec-untampered
@@ -237,7 +221,6 @@ jobs:
           modelIdOrName: evidence-rave-spec-untampered-001
           methodName: gather
           inputs: {}
-        allowFailure: true
     dependsOn: []
     weight: 0
   - name: health-checks-present
@@ -251,7 +234,6 @@ jobs:
           methodName: gather
           inputs:
             githubToken: ${{ vault.get(rave-credentials, GITHUB_TOKEN) }}
-        allowFailure: true
     dependsOn: []
     weight: 0
 version: 1
