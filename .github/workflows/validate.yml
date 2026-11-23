@@ -51,7 +51,18 @@ jobs:
 
   swamp-models:
     runs-on: ubuntu-latest
+    # swamp needs a swamp-club.com collective token and the signin token issued
+    # with it: https://swamp-club.com/manual/how-to/authenticate-with-api-keys
+    env:
+      SWAMP_API_KEY: ${{ secrets.SWAMP_API_KEY }}
+      SWAMP_SIGNIN_TOKEN: ${{ secrets.SWAMP_SIGNIN_TOKEN }}
     steps:
+      - name: Check swamp-club credentials are configured
+        run: |
+          if [ -z "$SWAMP_API_KEY" ] || [ -z "$SWAMP_SIGNIN_TOKEN" ]; then
+            echo "ERROR: set the SWAMP_API_KEY and SWAMP_SIGNIN_TOKEN repository secrets (a swamp-club.com collective token and its signin token)" >&2
+            exit 1
+          fi
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
       - name: Install swamp
         run: curl -fsSL swamp.club/install.sh | sh
@@ -62,7 +73,18 @@ jobs:
 
   swamp-workflows:
     runs-on: ubuntu-latest
+    # swamp needs a swamp-club.com collective token and the signin token issued
+    # with it: https://swamp-club.com/manual/how-to/authenticate-with-api-keys
+    env:
+      SWAMP_API_KEY: ${{ secrets.SWAMP_API_KEY }}
+      SWAMP_SIGNIN_TOKEN: ${{ secrets.SWAMP_SIGNIN_TOKEN }}
     steps:
+      - name: Check swamp-club credentials are configured
+        run: |
+          if [ -z "$SWAMP_API_KEY" ] || [ -z "$SWAMP_SIGNIN_TOKEN" ]; then
+            echo "ERROR: set the SWAMP_API_KEY and SWAMP_SIGNIN_TOKEN repository secrets (a swamp-club.com collective token and its signin token)" >&2
+            exit 1
+          fi
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
       - name: Install swamp
         run: curl -fsSL swamp.club/install.sh | sh
